@@ -10,8 +10,6 @@ from database import add_account_row
 #     return None
 
 
-
-
 # Database setup
 def bobs():
     connection = create_connection()

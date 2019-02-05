@@ -6,66 +6,32 @@ from database import create_connection
 from database import query_account_row
 from database import query_username_password
 from database import add_account_row
-import pprint
-import json
-import requests
 
 
 # Account class
 class Account:
     log_in_dic = {}
 
-    def __init__(self, acc_id, name, password, admin):
+    def __init__(self, acc_id, name, password):
         self.id = acc_id
         self.name = name    # Username
         self.password = password    # Password
-        self.admin = admin  # is admin. uses boolean True/False
-
-    # TODO Check if still needed. Add logout method.
-    # Adds account name:password as key:value pair.
-    def add_account(self):
-        Account.log_in_dic[self.name] = self.password
 
 
 # Player Class
 class Player:
-    def __init__(self, player_id, name, currency, inventories, is_dm):
+    def __init__(self, player_id, name, currency, inventories):
         self.id = player_id
         self.currency = currency    # All currency held in cp. cp is then formatted via convert_currency() before view.
         self.name = name  # Character(DM) name.
         self.inventories = inventories  # Character(DM) Inventories(Stores)
-        self.is_dm = is_dm  # is dm. Uses True/False boolean.
 
     # Inventory management
 
-    def add_item(self, store, some_item):
+    def add_item(self, inventory, some_item):
         item = search(some_item)  # Search returns ['Item', 'api url']
-        self.inventories[store][item[0]] = item[1]  # Adds above to inventory dictionary as key:value pair
+        self.inventories[inventory][item[0]] = item[1]  # Adds above to inventory dictionary as key:value pair
 
-
-
-    # # Inventory management
-    # def add_item_dict(self, item):
-    #     url = "http://www.dnd5eapi.co/api/equipment/"  # Storing API url as var
-    #     response = requests.get(url)  # stores response from .get ping as response
-    #     response.raise_for_status()  # Checks response for errors
-    #     equipment = json.loads(response.text)  # json.load turns json data to a python dictionary
-    #     list_of_dict = equipment['results']  # Dictionary containing Name/url: Values
-    #     print('What are you looking for?')
-    #     # Asks for item to search for
-    #     for dic in list_of_dict:  # For dic in list of dicts
-    #         if dic['name'] == item:  # If dic[name] == item searched for
-    #             self.inventories[dic['name']] = dict({})  # Adds item name as key of above dictionary
-    #             # Adds quantity as key for nested item dictionary. Value of 1.
-    #             self.inventories[dic['name']]['quantity'] = 1
-    #             # Adds api url as key for nested item dictionary. Value is api url related to item name.
-    #             self.inventories[dic['name']]['api url'] = dic['url']
-    #             pprint.pprint(self.inventories)
-
-    # def remove_bag_item(self, item):
-    #     del self.inventories[item]
-
-    # Converts base currency unit cp to gp:sp:cp format and returns in a dictionary.
     def convert_currency(self):
         amount_in_cp = self.currency
         g = int(amount_in_cp / 100)
@@ -97,7 +63,7 @@ class Inventory:
 
 
 # Creates new admin account. Adds information to accounts table in database.
-def user_creates_admin_account():
+def user_creates_account():
     print('create name')
     dm_name = input()
     print('create password')
@@ -106,16 +72,6 @@ def user_creates_admin_account():
     with connection:
         account_info = (dm_name, password, True)
         add_account_row(connection, account_info)
-
-# Creates new user account. Adds information to accounts table in database.
-def user_creates_user_account():
-    # print('Name player')
-    # player_name = input()
-    # print('create password')
-    # password = input()
-    # Currency Dictionary starts at 0 on all values.       # TODO Update to DM account creation standards
-    player = Character('bob', 'tree53', False, {}, 13260, False)     # TODO change back to user input and 0 currency
-    return player                                          # TODO Local dict and DB dump
 
 
 # Loads all account username/password information and stores as key:value pairs in lof_in_dict.

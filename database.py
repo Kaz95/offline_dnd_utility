@@ -24,15 +24,13 @@ def create_schema():
         k = """CREATE TABLE IF NOT EXISTS accounts (
                id integer PRIMARY KEY,
                username varchar NOT NULL,
-               password varchar NOT NULL,
-               admin boolean); """
+               password varchar NOT NULL); """
                
         a = """CREATE TABLE IF NOT EXISTS characters (
                id integer PRIMARY KEY,
                account_id integer,
                name text,
                currency integer,
-               dm boolean,
                FOREIGN KEY (account_id) REFERENCES accounts (id));"""
                
         b = """CREATE TABLE IF NOT EXISTS inventories (
@@ -58,8 +56,8 @@ def create_schema():
 
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_account_row(conn, some_account):
-    k = """INSERT INTO accounts (username, password, admin)
-            VALUES(?,?,?)"""
+    k = """INSERT INTO accounts (username, password)
+            VALUES(?,?)"""
     cursor = conn.cursor()
     cursor.execute(k, some_account)
     # return cursor.lastrowid
@@ -75,8 +73,8 @@ def add_inventory_row(conn, some_inventory):
 
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_character_row(conn, some_character):
-    k = """INSERT INTO characters (account_id, name, currency, dm )
-            VALUES(?,?,?,?)"""
+    k = """INSERT INTO characters (account_id, name, currency)
+            VALUES(?,?,?)"""
     cursor = conn.cursor()
     cursor.execute(k, some_character)
 
@@ -106,7 +104,7 @@ def query_username_password(conn):
 
 
 def query_account_row(conn, username):
-    k = """SELECT id, username, password, admin FROM accounts WHERE username = ?;"""
+    k = """SELECT id, username, password FROM accounts WHERE username = ?;"""
     cursor = conn.cursor()
     cursor.execute(k, [username])
     some_account = cursor.fetchone()
@@ -114,7 +112,7 @@ def query_account_row(conn, username):
 
 
 def query_character_row(conn, character_name):
-    k = """SELECT id, name, currency, dm FROM characters WHERE name = ?;"""
+    k = """SELECT id, name, currency FROM characters WHERE name = ?;"""
     cursor = conn.cursor()
     cursor.execute(k, [character_name])
     some_account = cursor.fetchone()
@@ -130,7 +128,7 @@ def query_inventory_row(conn, inventory_name):
 
 
 def query_all_characters(conn, account_id):
-    k = """SELECT name, currency, dm FROM characters WHERE account_id = ?;"""
+    k = """SELECT name, currency FROM characters WHERE account_id = ?;"""
     cursor = conn.cursor()
     cursor.execute(k, [account_id])
     some_account = cursor.fetchall()

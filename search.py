@@ -70,8 +70,8 @@ def convert_price_info(price_dict):
 
 # Slices index number from api url
 def regex(api):
-    rege = re.compile(r'(?<=equipment/)\d{1,3}')
-    temp_obj = rege.search(api)
+    reg = re.compile(r'(?<=equipment/)\d{1,3}')
+    temp_obj = reg.search(api)
     # print(temp_obj)
     string = temp_obj.group()
     return string

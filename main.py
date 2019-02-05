@@ -1,5 +1,5 @@
-from account import user_creates_user_account
-from account import user_creates_admin_account
+
+from account import user_creates_account
 from account import log_in
 from account import load_account_object
 from account import Player
@@ -32,12 +32,7 @@ def main_menu():
         print('1: Login       2: Sign-up')
         answer = input()
         if answer == '2':
-            print('Admin or user?')
-            ctype = 'Admin'    # TODO Change back to input once Player option is live.
-            if ctype == 'Admin':
-                user_creates_admin_account()
-            elif ctype == 'user':
-                user_creates_user_account()
+            user_creates_account()
             new = True
         elif answer == '1':
             username = log_in()
@@ -50,40 +45,22 @@ def character_creation():
     # current_account = None
     connection = create_connection()
     with connection:
-        if current_account.admin == 1:
-            print('1: DM       2: Player')
-            rank = '2'  # TODO Change back to input at some point
-            if rank == '1':
-                print('name character')
-                name = input()
-                character_info = (current_account.id, name, None, True)
-                add_character_row(connection, character_info)
-            elif rank == '2':
-                print('name character')
-                name = input()
-                character_info = (current_account.id, name, 5000, False)
-                add_character_row(connection, character_info)
-        elif current_account.admin == 0:
-            print('name character')
-            name = input()
-            character_info = (current_account.id, name, 5000, False)
-            add_character_row(connection, character_info)
+        print('name character')
+        name = input()
+        character_info = (current_account.id, name, 5000, False)
+        add_character_row(connection, character_info)
 
 
 def character_selection():
     conn = create_connection()
     with conn:
-        current_character = None
         print('choose a character')
         query_all_characters(conn, current_account.id)
         char_name = input()
         current_character_info = query_character_row(conn, char_name)
         print(current_character_info)
-        if current_character_info[3] == 1:
-            current_character = Player(current_character_info[0], current_character_info[1], None, [], True)
-        elif current_character_info[3] == 0:
-            current_character = Player(current_character_info[0], current_character_info[1], current_character_info[2],
-                                       [], False)
+        current_character = Player(current_character_info[0], current_character_info[1], current_character_info[2],
+                                   [], False)
     return current_character
 
 
@@ -116,14 +93,6 @@ def stock_stores():
             print(temp)
             add_store_item(conn, temp)
 
-# def create_store():
-#     conn = create_connection()
-#     with conn:
-#         print('make a store')
-#         store_name = input()
-#         store_info = (character.id, store_name)
-#         add_inventory_row(conn, store_info)
-
 
 def create_backpack():
     conn = create_connection()
@@ -143,28 +112,10 @@ def inventory_selection():
     return current_inventory
 
 
-def add_store_items():
-    conn = create_connection()
-    with conn:
-        while True:
-            print('stock store')
-            print('------------')
-            print('Search:')
-            item = input()
-            result = search(item)
-            item_info = (inventory.id, result[0], result[1], None)
-            add_item_row(conn, item_info)
-            print(result[0] + ' added.')
-            print('---------------')
-            print('again?')
-            answer = input()
-            if answer != '':
-                break
-
-
 # Working model for main
 if __name__ == '__main__':
     create_schema()
+    stock_stores()
     current_account = load_account_object(main_menu())  # account object fields populated via main menu. Set to cur acc.
     # If current account has characters
     if current_account.id in query_accounts_with_characters(create_connection()):
@@ -174,20 +125,7 @@ if __name__ == '__main__':
         print('make a character')
         character_creation()
         character = character_selection()
-    stock_stores()
-
-    if character.is_dm:
-        if character.id in query_characters_with_inventories(create_connection()):
-            inventory = inventory_selection()
-        else:
-            print('no inventory')
-            print('make an inventory')
-            # create_store()    # TODO turn back on once DM is live again.
-            inventory = inventory_selection()
-    else:
         create_backpack()
-    # if character.isDM:
-        # add_store_items()
 
     # TODO Make sure add/remove item from store and buy/sell methods work.
     # TODO Code review
