@@ -65,12 +65,12 @@ class Inventory:
 # Creates new admin account. Adds information to accounts table in database.
 def user_creates_account():
     print('create name')
-    dm_name = input()
+    username = input()
     print('create password')
     password = input()
     connection = create_connection()
     with connection:
-        account_info = (dm_name, password, True)
+        account_info = (username, password)
         add_account_row(connection, account_info)
 
 
@@ -100,7 +100,7 @@ def load_account_object(username):
     connection = create_connection()
     with connection:
         p1_info = query_account_row(connection, username)
-        acc = Account(p1_info[0], p1_info[1], p1_info[2], p1_info[3])
+        acc = Account(p1_info[0], p1_info[1], p1_info[2])
         return acc
 
 

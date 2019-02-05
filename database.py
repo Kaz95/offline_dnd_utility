@@ -13,6 +13,40 @@ def create_connection():
     return None
 
 
+# Verifies user ahs database setup correctly
+def wrong_schema():
+    schema = ['accounts', 'characters', 'inventories', 'items']
+    con = create_connection()
+    with con:
+        schema.sort()
+        cur_tables = []
+        cursor = con.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+        for t in tables:
+            for i in t:
+                cur_tables.append(i)
+        cur_tables.sort()
+        if cur_tables == schema:
+            return False
+        else:
+            return True
+
+
+def wrong_item_count():
+    store_item_count = 256
+    con = create_connection()
+    with con:
+        cursor = con.cursor()
+        cursor.execute("SELECT count(*) FROM items;")
+        cur_item_count = cursor.fetchone()
+        cur_item_count = cur_item_count[0]
+        if cur_item_count == store_item_count:
+            return False
+        else:
+            return True
+
+
 def create_table(con, sql_statement):
     cur = con.cursor()
     cur.execute(sql_statement)

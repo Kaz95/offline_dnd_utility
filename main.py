@@ -13,7 +13,7 @@ from database import add_inventory_row
 from database import query_characters_with_inventories
 from database import query_all_inventories
 from database import query_inventory_row
-from database import add_item_row, add_store_item,create_schema
+from database import add_item_row, add_store_item, create_schema, wrong_schema
 from search import search
 from stores import stores
 import requests
@@ -47,7 +47,7 @@ def character_creation():
     with connection:
         print('name character')
         name = input()
-        character_info = (current_account.id, name, 5000, False)
+        character_info = (current_account.id, name, 5000)
         add_character_row(connection, character_info)
 
 
@@ -58,9 +58,8 @@ def character_selection():
         query_all_characters(conn, current_account.id)
         char_name = input()
         current_character_info = query_character_row(conn, char_name)
-        print(current_character_info)
         current_character = Player(current_character_info[0], current_character_info[1], current_character_info[2],
-                                   [], False)
+                                   [])
     return current_character
 
 
@@ -90,7 +89,6 @@ def stock_stores():
                     else:
                         temp.append('No Store')
             temp = tuple(temp)
-            print(temp)
             add_store_item(conn, temp)
 
 
@@ -112,10 +110,17 @@ def inventory_selection():
     return current_inventory
 
 
-# Working model for main
-if __name__ == '__main__':
+def fresh_installation():
     create_schema()
     stock_stores()
+
+
+# Working model for main
+if __name__ == '__main__':
+    if wrong_schema():
+        fresh_installation()
+    # TODO check if store is stocked here via database.wrong_item_count().
+    # TODO currently assumes stores are stocked if all tables exist.
     current_account = load_account_object(main_menu())  # account object fields populated via main menu. Set to cur acc.
     # If current account has characters
     if current_account.id in query_accounts_with_characters(create_connection()):
@@ -127,5 +132,3 @@ if __name__ == '__main__':
         character = character_selection()
         create_backpack()
 
-    # TODO Make sure add/remove item from store and buy/sell methods work.
-    # TODO Code review
