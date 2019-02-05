@@ -6,22 +6,27 @@ import re
 
 
 # Search
+# Searches for a given string value in a nested dictionary.
+# Dictionary is called from a static api address.
+# Returns [name, api]
+# TODO rename to get_api_info
 def search(name):
     url = "http://www.dnd5eapi.co/api/equipment/"  # Storing API url as var
     response = requests.get(url)    # stores response from .get ping as response
     response.raise_for_status()     # Checks response for errors
     equipment = json.loads(response.text)   # json.load turns json data to a python dictionary
     list_of_dic = equipment['results']  # Dictionary containing Name/url: Values
-    print('What are you looking for?')
     item = name  # Asks for item to search for
     for dic in list_of_dic:   # For dic in list of dics
-        if dic['name'] == item:   # If dic[name] == item searched for
+        if dic['name'] == item:   # If dic['name'] == item searched for
             api_info = list([dic['name']] + [dic['url']])  # Double bracket to make sure string isn't slice by character
             # print(api_info)
             return api_info
 
 
-# Returns nested dictionary of all item information
+# Passed an item name in form of string.
+# Returns nested dictionary of all item information.
+# TODO rename to get_detailed_info
 def get_all_info(name):
     url = "http://www.dnd5eapi.co/api/equipment/"  # Storing API url as var
     response = requests.get(url)  # stores response from .get ping as response
