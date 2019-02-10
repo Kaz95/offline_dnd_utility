@@ -251,3 +251,10 @@ def stock_stores():
                         temp.append('No Store')
             temp = tuple(temp)
             add_store_item(conn, temp)
+
+
+
+if __name__ == '__main__':
+    con = create_connection()
+    with con:
+        print(count_rows(con, 'items', 'Shipyard'))
