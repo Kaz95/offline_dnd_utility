@@ -1,24 +1,11 @@
-
-from account import user_creates_account
-from account import log_in
-from account import load_account_object
-from account import Player
-from account import Inventory
+from account import user_creates_account, log_in, load_account_object
+from player import Player
+from inventory import Inventory
 from database import create_connection
-from database import add_character_row
-from database import query_character_row
-from database import query_all_characters
-from database import query_accounts_with_characters
-from database import add_inventory_row
-from database import query_characters_with_inventories
+from database import add_character_row, add_inventory_row
+from database import query_character_row, query_all_characters, query_accounts_with_characters, query_inventory_row
 from database import query_all_inventories
-from database import query_inventory_row
-from database import add_item_row, add_store_item, create_schema, wrong_schema
-from search import search
-from stores import stores
-import requests
-from search import regex
-import json
+from database import create_schema, wrong_schema, stock_stores
 
 
 # Used to flesh out log-in features
@@ -61,35 +48,6 @@ def character_selection():
         current_character = Player(current_character_info[0], current_character_info[1], current_character_info[2],
                                    [])
     return current_character
-
-
-def stock_stores():
-    store_dict = stores()
-    conn = create_connection()
-    with conn:
-        url = "http://www.dnd5eapi.co/api/equipment/"
-        response = requests.get(url)
-        response.raise_for_status()
-        json_shit = json.loads(response.text)
-        json_shit = json_shit['results']
-        for dic in json_shit:
-            temp = []
-            for k, v in dic.items():
-                temp.append(v)
-                if v[0:37] == 'http://www.dnd5eapi.co/api/equipment/':
-                    num = regex(v)
-                    if num in store_dict['GS']:
-                        temp.append('General Store')
-                    elif num in store_dict['BS']:
-                        temp.append('Blacksmith')
-                    elif num in store_dict['Ship']:
-                        temp.append('Shipyard')
-                    elif num in store_dict['Stables']:
-                        temp.append('Stables')
-                    else:
-                        temp.append('No Store')
-            temp = tuple(temp)
-            add_store_item(conn, temp)
 
 
 def create_backpack():

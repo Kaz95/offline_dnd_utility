@@ -1,5 +1,10 @@
 import sqlite3
 from sqlite3 import Error
+from stores import stores
+from search import regex
+import json
+import requests
+from tkinter import *
 
 
 # Creates a connection to test.db
@@ -13,7 +18,7 @@ def create_connection():
     return None
 
 
-# Verifies user ahs database setup correctly
+# Verifies database setup correctly
 def wrong_schema():
     schema = ['accounts', 'characters', 'inventories', 'items']
     con = create_connection()
@@ -33,6 +38,8 @@ def wrong_schema():
             return True
 
 
+# Verifies store item count via sqlite count(*) method which returns row count for a given table.
+# Not currently used.
 def wrong_item_count():
     store_item_count = 256
     con = create_connection()
@@ -47,33 +54,38 @@ def wrong_item_count():
             return True
 
 
+# TODO refactor name for reflect how reusable this chunk is.
+# TODO consider refactoring into other database functions.
+# Modular sqlite execute function which is passed a connection and some sql
 def create_table(con, sql_statement):
     cur = con.cursor()
     cur.execute(sql_statement)
 
 
+# TODO consider refactoring to a single .executemany()
+# Four sqlite statements which create the database schema.
 def create_schema():
     con = create_connection()
     with con:
-        k = """CREATE TABLE IF NOT EXISTS accounts (
+        accounts = """CREATE TABLE IF NOT EXISTS accounts (
                id integer PRIMARY KEY,
                username varchar NOT NULL,
                password varchar NOT NULL); """
                
-        a = """CREATE TABLE IF NOT EXISTS characters (
+        characters = """CREATE TABLE IF NOT EXISTS characters (
                id integer PRIMARY KEY,
                account_id integer,
                name text,
                currency integer,
                FOREIGN KEY (account_id) REFERENCES accounts (id));"""
                
-        b = """CREATE TABLE IF NOT EXISTS inventories (
+        inventories = """CREATE TABLE IF NOT EXISTS inventories (
                id integer PRIMARY KEY,
                character_id integer,
                name text,
                FOREIGN KEY (character_id) REFERENCES characters (id));"""
                
-        c = """CREATE TABLE IF NOT EXISTS items (
+        items = """CREATE TABLE IF NOT EXISTS items (
                id integer PRIMARY KEY,
                inventory_id integer,
                item text,
@@ -82,12 +94,13 @@ def create_schema():
                store text,
                FOREIGN KEY (inventory_id) REFERENCES inventories (id));"""
 
-        create_table(con, k)
-        create_table(con, a)
-        create_table(con, b)
-        create_table(con, c)
+        create_table(con, accounts)
+        create_table(con, characters)
+        create_table(con, inventories)
+        create_table(con, items)
 
 
+# TODO Refactor ALL THIS SHIT to use what is currently create_table().
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_account_row(conn, some_account):
     k = """INSERT INTO accounts (username, password)
@@ -201,11 +214,40 @@ def query_all_inventories(conn, character_id):
         print(list(character))
 
 
-def count_rows(conn, where):
+# TODO Figure out what this is.
+def count_rows(conn, some_table):
+    ka = """SELECT count(*) FROM {};""".format(some_table)
+    cur = conn.cursor()
+    cur.execute(ka)
+    yup = cur.fetchone()
+    return yup[0]
+
+
+# TODO comment this shit.
+def stock_stores():
+    store_dict = stores()
     conn = create_connection()
     with conn:
-        k = """SELECT count(*) FROM inventories WHERE character_id = ?;"""
-        cur = conn.cursor()
-        cur.execute(k)
-        yup = cur.fetchone()
-        print(yup)
+        url = "http://www.dnd5eapi.co/api/equipment/"
+        response = requests.get(url)
+        response.raise_for_status()
+        json_shit = json.loads(response.text)
+        json_shit = json_shit['results']
+        for dic in json_shit:
+            temp = []
+            for k, v in dic.items():
+                temp.append(v)
+                if v[0:37] == 'http://www.dnd5eapi.co/api/equipment/':
+                    num = regex(v)
+                    if num in store_dict['GS']:
+                        temp.append('General Store')
+                    elif num in store_dict['BS']:
+                        temp.append('Blacksmith')
+                    elif num in store_dict['Ship']:
+                        temp.append('Shipyard')
+                    elif num in store_dict['Stables']:
+                        temp.append('Stables')
+                    else:
+                        temp.append('No Store')
+            temp = tuple(temp)
+            add_store_item(conn, temp)
