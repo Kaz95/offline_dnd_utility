@@ -1,9 +1,70 @@
-from database import create_connection, count_rows
 from tkinter import *
 from tkinter import ttk
+from database import create_connection, count_rows
 from stores import stores
+# TODO Refactor element names to be more modular. 'Title Label' for example.
 
-selected = {'selected': 'none'}
+
+def clear(root):
+    for i in root.grid_slaves():
+        i.grid_forget()
+
+
+def login_page(root):
+    clear(root)
+    big_label = ttk.Style()
+    big_label.configure('big.TLabel', font=('Times', 25))
+    login_label = ttk.Label(text='Log-In', width='48', style='big.TLabel', anchor='center').grid(column=0, row=0,
+                                                                                                 sticky=W+E)
+    username_label = ttk.Label(text='Username').grid(column=0, row=1)
+    username_entry = ttk.Entry().grid(column=0, row=2)
+    password_label = ttk.Label(text='Password').grid(column=0, row=3)
+    password_entry = ttk.Entry().grid(column=0, row=4)
+    login_button = ttk.Button(text='Log-in', command=lambda: character_creation_page(root)).grid(column=0, row=5)
+    signup_button = ttk.Button(text='Sign-up', command=lambda: signup_page(root)).grid(column=0, row=6)
+
+
+def signup_page(root):
+    clear(root)
+    big_label = ttk.Style()
+    big_label.configure('big.TLabel', font=('Times', 25))
+    signup_label = ttk.Label(text='Sign-up', width='48', style='big.TLabel', anchor='center').grid(column=0, row=0,
+                                                                                                   sticky=W+E)
+    username_label = ttk.Label(text='Username').grid(column=0, row=1)
+    username_entry = ttk.Entry().grid(column=0, row=2)
+    password_label = ttk.Label(text='Password').grid(column=0, row=3)
+    password_entry = ttk.Entry().grid(column=0, row=4)
+    signup_button = ttk.Button(text='Sign-up', command=lambda: login_page(root)).grid(column=0, row=5)
+    login_button = ttk.Button(text='Login-in', command=lambda: login_page(root)).grid(column=0, row=6)
+
+
+def character_creation_page(root):
+    clear(root)
+    big_label = ttk.Style()
+    big_label.configure('big.TLabel', font=('Times', 25))
+    title_label = ttk.Label(text='Character Creation', width='48', style='big.TLabel', anchor='center').grid(column=0,
+                                                                                                             row=0,
+                                                                                                             sticky=W+E)
+
+    name_label = ttk.Label(text='Name').grid(column=0, row=1)
+    name_entry = ttk.Entry().grid(column=0, row=2)
+    currency_label = ttk.Label(text='Currency').grid(column=0, row=3)
+    currency_entry = ttk.Entry().grid(column=0, row=4)
+    create_character_button = ttk.Button(text='Create', command=lambda: character_selection_page(root)).grid(column=0,
+                                                                                                             row=5)
+    logout_button = ttk.Button(text='Log-out', command=lambda: login_page(root)).grid(column=0, row=6)
+
+
+def character_selection_page(root):
+    clear(root)
+    big_label = ttk.Style()
+    big_label.configure('big.TLabel', font=('Times', 25))
+    title_label = ttk.Label(text='Character Selection', width='48', style='big.TLabel', anchor='center').grid(column=0,
+                                                                                                              row=0,
+                                                                                                              sticky=W+E)
+    characters_label = ttk.Label(text='Characters').grid(column=0, row=1)
+    chars_combo = ttk.Combobox(values=['1', '2', '3']).grid(column=0, row=2)
+    select_button = ttk.Button(text='Select', command=lambda: dashboard(root)).grid(column=0, row=3)
 
 
 def populate_tree(some_tree, some_store):
@@ -32,6 +93,9 @@ def populate_tree(some_tree, some_store):
 
 
 def dashboard(root):
+    clear(root)
+    selected = {'selected': 'none'}
+
     # Treeviews
     shipyard_treeview = ttk.Treeview(root)  # ttk.Treeview(parent) Sets a treeview to a given parent window
     general_store_treeview = ttk.Treeview(root)
@@ -152,7 +216,7 @@ def dashboard(root):
 
     # Buttons
     sell = ttk.Button(root, text='Sell', command=lambda: sell_item_gui(selected['selected'])).grid(row=3, columnspan=4,
-                                                                                                   sticky=W + E)
+                                                                                                   sticky=W+E)
 
     buy = ttk.Button(root, text='Buy', command=lambda: buy_item_gui(selected['selected'])).grid(row=1, columnspan=4,
-                                                                                                sticky=W + E)
+                                                                                                sticky=W+E)
