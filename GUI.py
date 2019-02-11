@@ -22,6 +22,22 @@ def populate_tree(some_tree, some_store):
                 continue
 
 
+def buy_item_gui(some_callback):
+    dic = stores()
+    if some_callback[0] in dic['Ship']:
+        inventory_treeview.insert('', 'end', text=shipyard_treeview.item(some_callback[0])['text'])
+    elif some_callback[0] in dic['BS']:
+        inventory_treeview.insert('', 'end', text=blacksmith_treeview.item(some_callback[0])['text'])
+    elif some_callback[0] in dic['GS']:
+        inventory_treeview.insert('', 'end', text=general_store_treeview.item(some_callback[0])['text'])
+    elif some_callback[0] in dic['Stables']:
+        inventory_treeview.insert('', 'end', text=stables_treeview.item(some_callback[0])['text'])
+
+
+def sell_item_gui(some_callback):
+    inventory_treeview.delete(some_callback)
+
+
 root = Tk()     # Tk() Creates main window
 
 shipyard_treeview = ttk.Treeview(root)   # ttk.Treeview(parent) Sets a treeview to a given parent window
@@ -37,13 +53,13 @@ def print_button(some_callback):
     tup = some_callback
     dic = stores()
     if some_callback[0] in dic['Ship']:
-        print(shipyard_treeview.item(tup[0])['text'])
+        print(shipyard_treeview.item(some_callback[0])['text'])
     elif some_callback[0] in dic['BS']:
-        print(blacksmith_treeview.item(tup[0])['text'])
+        print(blacksmith_treeview.item(some_callback[0])['text'])
     elif some_callback[0] in dic['GS']:
-        print(general_store_treeview.item(tup[0])['text'])
+        print(general_store_treeview.item(some_callback[0])['text'])
     elif some_callback[0] in dic['Stables']:
-        print(stables_treeview.item(tup[0])['text'])
+        print(stables_treeview.item(some_callback[0])['text'])
     else:
         print(inventory_treeview.item(tup[0]['text']))
 
@@ -60,6 +76,7 @@ def shipyard_callback(event):
     selected['selected'] = shipyard_treeview.selection()
 
 
+
 def general_store_callback(event):
     selected['selected'] = general_store_treeview.selection()
 
@@ -74,6 +91,7 @@ def stables_callback(event):
 
 def inventory_callback(event):
     selected['selected'] = inventory_treeview.selection()
+    print(inventory_treeview.selection())
 
 
 # General grid formatting
@@ -81,7 +99,7 @@ general_store_treeview.grid(row=0, column=0)
 blacksmith_treeview.grid(row=0, column=1)
 stables_treeview.grid(row=0, column=2)
 shipyard_treeview.grid(row=0, column=3)
-inventory_treeview.grid(row=1, columnspan=4, sticky=W+E, pady=50)
+inventory_treeview.grid(row=2, columnspan=4, sticky=W+E, pady=50)
 
 # Gen Store formatting
 general_store_treeview.config(columns='quantity')
@@ -120,8 +138,11 @@ inventory_treeview.heading('#0', text='Item')
 
 # Buttons
 
-ttk.Button(root, text='Print', command=lambda: print_button(selected['selected'])).grid(row=2, columnspan=4, sticky=W+E)
+sell = ttk.Button(root, text='Sell', command=lambda: sell_item_gui(selected['selected'])).grid(row=3, columnspan=4,
+                                                                                               sticky=W+E)
 
+buy = ttk.Button(root, text='Buy', command=lambda: buy_item_gui(selected['selected'])).grid(row=1, columnspan=4,
+                                                                                            sticky=W+E)
 # # Example for inserting values
 # Shipyard values
 # shipyard_treeview.insert('', 'end', i[1], text=i[0])
