@@ -30,3 +30,12 @@
 #             item_info = json.loads(call_api(new_call))
 #             price_info = item_info['cost']
 #             return price_info
+
+
+# # Slices index number from api url
+# def regex(api):
+#     reg = re.compile(r'(?<=equipment/)\d{1,3}')
+#     temp_obj = reg.search(api)
+#     # print(temp_obj)
+#     string = temp_obj.group()
+#     return string
