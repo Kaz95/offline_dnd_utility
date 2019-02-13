@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 from stores import stores
-from search import regex
+from api import regex
 import json
 import requests
 from tkinter import *
