@@ -84,6 +84,9 @@ class TestDatabase(unittest.TestCase):
             self.assertEqual(add_store_item(conn, [1, 2, 3]), """INSERT INTO items (item, api, store)
              VALUES(?,?,?)""")
 
+    def test_create_schema(self):
+        self.assertEqual(print(1), 2)
+
 
 if __name__ == '__main__':
     unittest.main()
