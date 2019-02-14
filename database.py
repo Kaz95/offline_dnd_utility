@@ -32,25 +32,6 @@ def create_connection(db_path):
 #         else:
 #             return True
 
-
-# Modular sqlite execute function which is passed a connection and some sql
-def execute_sql(con, sql_statement, *args):
-    cur = con.cursor()
-    cur.execute(sql_statement, args)
-
-
-def execute_fetchone_sql(con, sql_statement, *args):
-    cur = con.cursor()
-    cur.execute(sql_statement, args)
-    return cur.fetchone()
-
-
-def execute_fetchall_sql(con, sql_statement, *args):
-    cur = con.cursor()
-    cur.execute(sql_statement, args)
-    return cur.fetchall()
-
-
 # SQL statements
 
 
@@ -83,62 +64,62 @@ def execute_fetchall_sql(con, sql_statement, *args):
 
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_account_row(conn, some_account):
-    sql = """INSERT INTO accounts (username, password)
+    some_sql = """INSERT INTO accounts (username, password)
             VALUES(?,?)"""
 
-    execute_sql(conn, sql, some_account[0], some_account[1])
+    sql.execute_sql(conn, some_sql, some_account[0], some_account[1])
     # cursor = conn.cursor()
     # cursor.execute(sql, some_account)
-    return sql
+    return some_sql
 
 
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_inventory_row(conn, some_inventory):
-    sql = """INSERT INTO inventories (character_id, name)
+    some_sql = """INSERT INTO inventories (character_id, name)
             VALUES(?,?)"""
-    execute_sql(conn, sql, some_inventory[0], some_inventory[1])
-    return sql
+    sql.execute_sql(conn, some_sql, some_inventory[0], some_inventory[1])
+    return some_sql
 
 
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_character_row(conn, some_character):
-    sql = """INSERT INTO characters (account_id, name, currency)
+    some_sql = """INSERT INTO characters (account_id, name, currency)
             VALUES(?,?,?)"""
-    execute_sql(conn, sql, some_character[0], some_character[1], some_character[2])
-    return sql
+    sql.execute_sql(conn, some_sql, some_character[0], some_character[1], some_character[2])
+    return some_sql
 
 
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_item_row(conn, some_item):
-    sql = """INSERT INTO items (inventory_id, item, api, quantity)
+    some_sql = """INSERT INTO items (inventory_id, item, api, quantity)
             VALUES(?,?,?,?)"""
-    execute_sql(conn, sql, some_item[0], some_item[1], some_item[2], some_item[3])
-    return sql
+    sql.execute_sql(conn, some_sql, some_item[0], some_item[1], some_item[2], some_item[3])
+    return some_sql
 
 
 # Used to populate stores
 def add_store_item(con, item_info):
-    sql = """INSERT INTO items (item, api, store)
+    some_sql = """INSERT INTO items (item, api, store)
              VALUES(?,?,?)"""
-    execute_sql(con, sql, item_info[0], item_info[1], item_info[2])
-    return sql
+    sql.execute_sql(con, some_sql, item_info[0], item_info[1], item_info[2])
+    return some_sql
 
 
 # QUERY
-def query_fetchone(conn, sql):
-    return execute_fetchone_sql(conn, sql)
+def query_fetchone(conn, some_sql):
+    return sql.execute_fetchone_sql(conn, some_sql)
 
 
-def query_fetchall(conn, sql):
-    return execute_fetchall_sql(conn, sql)
+def query_fetchall(conn, some_sql):
+    return sql.execute_fetchall_sql(conn, some_sql)
 
 
-def query_fetchone_list(conn, sql, var):
-    return list(execute_fetchone_sql(conn, sql, var))
+def query_fetchone_list(conn, some_sql, var):
+    return list(sql.execute_fetchone_sql(conn, some_sql, var))
 
 
-def query_fetchall_list(conn, sql, var):
-    return list(execute_fetchall_sql(conn, sql, var))
+def query_fetchall_list(conn, some_sql, var):
+    return list(sql.execute_fetchall_sql(conn, some_sql, var))
 
 
 # def query_username_password(conn, sql):
@@ -179,20 +160,20 @@ def query_fetchall_list(conn, sql, var):
 #         print(list(character))
 
 # TODO test
-def query_accounts_with_characters(conn, sql):
+def query_accounts_with_characters(conn, some_sql):
     temp = []
     # sql = """SELECT DISTINCT account_id FROM characters;"""
-    account_id_list = execute_fetchall_sql(conn, sql)
+    account_id_list = sql.execute_fetchall_sql(conn, some_sql)
     for tup in account_id_list:
         temp.append(tup[0])
     return temp
 
 
 # TODO test
-def query_characters_with_inventories(conn,  sql):
+def query_characters_with_inventories(conn,  some_sql):
     temp = []
     # sql = """SELECT DISTINCT character_id FROM inventories;"""
-    account_id_list = execute_fetchall_sql(conn, sql)
+    account_id_list = sql.execute_fetchall_sql(conn, some_sql)
     for tup in account_id_list:
         temp.append(tup[0])
     return temp
@@ -202,8 +183,8 @@ def query_characters_with_inventories(conn,  sql):
 
 # TODO decouple sql and test....maybe?
 def count_rows(conn, some_table):
-    sql = """SELECT count(*) FROM {};""".format(some_table)
-    yup = execute_fetchone_sql(conn, sql)
+    some_sql = """SELECT count(*) FROM {};""".format(some_table)
+    yup = sql.execute_fetchone_sql(conn, some_sql)
     return yup[0]
 
 
@@ -219,11 +200,14 @@ if __name__ == '__main__':
         add_character_row(con, char)
         add_item_row(con, item)
 
+        # modular queries
         print(query_fetchall(con, sql.sql_username_password()))
         print(query_fetchone_list(con, sql.sql_account_row(), acc[0]))
         print(query_fetchone_list(con, sql.sql_character_row(), char[1]))
         print(query_fetchone_list(con, sql.sql_inventory_row(), inv[1]))
         print(query_fetchall_list(con, sql.sql_all_characters(), 1))
+
+        # Use these as reference for new queries
 
         # print(query_username_password(con, sql_username_password()))
         # print(query_account_row(con, sql_account_row(), 'Kazact'))
