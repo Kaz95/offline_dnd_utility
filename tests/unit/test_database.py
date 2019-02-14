@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import patch
 from database import create_connection, execute_fetchall_sql, execute_fetchone_sql
-from database import sql_username_password, sql_account_row, sql_accounts_with_characters, sql_all_characters
-from database import sql_all_inventories, sql_character_row, sql_characters_with_inventories, sql_inventory_row
+from sql import sql_username_password, sql_account_row, sql_accounts_with_characters, sql_all_characters
+from sql import sql_all_inventories, sql_character_row, sql_characters_with_inventories, sql_inventory_row
 from database import add_account_row, add_inventory_row, add_item_row, add_character_row, add_store_item
 
 
@@ -84,8 +84,7 @@ class TestDatabase(unittest.TestCase):
             self.assertEqual(add_store_item(conn, [1, 2, 3]), """INSERT INTO items (item, api, store)
              VALUES(?,?,?)""")
 
-    def test_create_schema(self):
-        self.assertEqual(print(1), 2)
+
 
 
 if __name__ == '__main__':
