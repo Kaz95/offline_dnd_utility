@@ -2,7 +2,6 @@ import database
 import sql
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
-# comment
 
 
 # Account class. Stores account_id(primary key of account table), username, and password.
