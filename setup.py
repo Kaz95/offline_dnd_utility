@@ -59,7 +59,6 @@ def wrong_schema(conn):
             for i in t:
                 cur_tables.append(i)
         cur_tables.sort()
-        print(cur_tables)
         if cur_tables == schema:
             return False
         else:

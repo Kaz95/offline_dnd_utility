@@ -93,5 +93,9 @@ def sql_characters_with_inventories():
     return """SELECT DISTINCT character_id FROM inventories;"""
 
 
-def sql_all_inventories():
+def sql_characters_inventory_ids():
+    return """SELECT id FROM inventories WHERE character_id = ?;"""
+
+
+def sql_all_inventory_names():
     return """SELECT name FROM inventories WHERE character_id = ?;"""

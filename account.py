@@ -51,6 +51,8 @@ def log_in():
     if username in Account.log_in_dic and Account.log_in_dic[username] == password:
         print('Welcome: ' + username)
         return username
+    else:
+        log_in()
 
 
 # TODO integration test
@@ -61,3 +63,9 @@ def load_account_object(username):
         p1_info = database.query_fetchone_list(conn, sql.sql_account_row(), username)
         acc = Account(p1_info[0], p1_info[1], p1_info[2])
         return acc
+
+
+if __name__ == '__main__':
+    user_creates_account()
+    load_account_archive()
+    print(Account.log_in_dic)
