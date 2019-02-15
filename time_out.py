@@ -96,15 +96,14 @@
 #             return True
 #
 #
-# # TODO refactor name for reflect how reusable this chunk is.
-# # TODO consider refactoring into other database functions.
+#
 # # Modular sqlite execute function which is passed a connection and some sql
 # def create_table(con, sql_statement):
 #     cur = con.cursor()
 #     cur.execute(sql_statement)
 #
 #
-# # TODO consider refactoring to a single .executemany()
+#
 # # Four sqlite statements which create the database schema.
 # def create_schema():
 #     con = create_connection()
@@ -142,7 +141,7 @@
 #         create_table(con, items)
 #
 #
-# # TODO Refactor ALL THIS SHIT to use what is currently create_table().
+#
 # # Inserts given values into accounts table at given columns. Returns last row id.
 # def add_account_row(conn, some_account):
 #     k = """INSERT INTO accounts (username, password)
@@ -256,7 +255,7 @@
 #         print(list(character))
 #
 #
-# # TODO Figure out what this is.
+#
 # def count_rows(conn, some_table):
 #     ka = """SELECT count(*) FROM {};""".format(some_table)
 #     cur = conn.cursor()
@@ -265,7 +264,7 @@
 #     return yup[0]
 #
 #
-# # TODO comment this shit.
+#
 # def stock_stores():
 #     store_dict = stores()
 #     conn = create_connection()

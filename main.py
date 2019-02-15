@@ -6,6 +6,10 @@ from database import add_character_row, add_inventory_row
 from database import query_character_row, query_all_characters, query_accounts_with_characters, query_inventory_row
 from database import query_all_inventories
 from database import create_schema, wrong_schema, stock_stores
+import setup
+
+db = 'C:\\sqlite\\db\\test.db'
+mem = ':memory:'
 
 
 # Used to flesh out log-in features
@@ -30,7 +34,7 @@ def main_menu():
 # Working model for character creation
 def character_creation():
     # current_account = None
-    connection = create_connection()
+    connection = create_connection(db)
     with connection:
         print('name character')
         name = input()
@@ -39,7 +43,7 @@ def character_creation():
 
 
 def character_selection():
-    conn = create_connection()
+    conn = create_connection(db)
     with conn:
         print('choose a character')
         query_all_characters(conn, current_account.id)
@@ -51,14 +55,14 @@ def character_selection():
 
 
 def create_backpack():
-    conn = create_connection()
+    conn = create_connection(db)
     with conn:
         backpack_info = (character.id, character.name)
         add_inventory_row(conn, backpack_info)
 
 
 def inventory_selection():
-    conn = create_connection()
+    conn = create_connection(db)
     with conn:
         print('choose inventory')
         query_all_inventories(conn, character.id)
@@ -69,8 +73,8 @@ def inventory_selection():
 
 
 def fresh_installation():
-    create_schema()
-    stock_stores()
+    setup.create_schema()
+    setup.stock_stores()
 
 
 # Working model for main
@@ -81,7 +85,7 @@ if __name__ == '__main__':
     # TODO currently assumes stores are stocked if all tables exist.
     current_account = load_account_object(main_menu())  # account object fields populated via main menu. Set to cur acc.
     # If current account has characters
-    if current_account.id in query_accounts_with_characters(create_connection()):
+    if current_account.id in query_accounts_with_characters(create_connection(db)):
         character = character_selection()
     else:
         print('no characters')

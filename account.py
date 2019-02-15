@@ -1,8 +1,5 @@
-from database import create_connection
-# from database import query_account_row
-# from database import query_username_password
-from database import add_account_row
-
+import database
+import sql
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
@@ -27,18 +24,17 @@ def user_creates_account():
     username = input()
     print('create password')
     password = input()
-    connection = create_connection(db)
+    connection = database.create_connection(db)
     with connection:
         account_info = (username, password)
-        add_account_row(connection, account_info)
+        database.add_account_row(connection, account_info)
 
 
-# TODO redesign with modular query
 # Loads all account username/password information and stores as key:value pairs in Account.log_in_dict.
 def load_account_archive():
-    connection = create_connection(db)
-    with connection:
-        a = query_username_password(connection)
+    conn = database.create_connection(db)
+    with conn:
+        a = database.query_fetchall(conn, sql.sql_username_password())
         for i in a:
             Account.log_in_dic[i[0]] = i[1]
 
@@ -56,11 +52,10 @@ def log_in():
         return username
 
 
-# TODO redesign with modular query
 # query ALL account information from accounts table based on username. Returns Account object based on query.
 def load_account_object(username):
-    connection = create_connection(db)
-    with connection:
-        p1_info = query_account_row(connection, username)
+    conn = database.create_connection(db)
+    with conn:
+        p1_info = database.query_fetchone_list(conn, sql.sql_account_row(), username)
         acc = Account(p1_info[0], p1_info[1], p1_info[2])
         return acc
