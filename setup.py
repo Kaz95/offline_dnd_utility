@@ -97,7 +97,6 @@ def stock_stores():
 
 
 if __name__ == '__main__':
-    create_schema()
     if wrong_schema():
         print('Wrong schema')
-    stock_stores()
+
