@@ -1,6 +1,8 @@
 from api import get_api_info, convert_price_info, get_price_info
 
 
+# TODO Redesign all this shits
+
 # Player Class. Holds player_id(Primary Key of characters table), character name, currency, and player inventories.
 class Player:
     def __init__(self, player_id, name, currency, inventories):

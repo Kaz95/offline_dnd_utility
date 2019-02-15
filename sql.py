@@ -1,3 +1,6 @@
+import sqlite3
+
+
 # Modular sqlite execute function which is passed a connection and some sql
 def execute_sql(con, sql_statement, *args):
     cur = con.cursor()
@@ -18,7 +21,7 @@ def execute_fetchall_sql(con, sql_statement, *args):
 
 # SQL statements
 
-# TODO unit test with commmented statements as reference
+
 # CREATE TABLE
 def sql_accounts_table():
     return """CREATE TABLE IF NOT EXISTS accounts (
@@ -27,7 +30,6 @@ def sql_accounts_table():
                password varchar NOT NULL);"""
 
 
-# TODO unit test with commmented statements as reference
 def sql_characters_table():
     return """CREATE TABLE IF NOT EXISTS characters (
                id integer PRIMARY KEY,
@@ -37,7 +39,6 @@ def sql_characters_table():
                FOREIGN KEY (account_id) REFERENCES accounts (id));"""
 
 
-# TODO unit test with commmented statements as reference
 def sql_inventories_table():
     return """CREATE TABLE IF NOT EXISTS inventories (
                id integer PRIMARY KEY,
@@ -46,7 +47,6 @@ def sql_inventories_table():
                FOREIGN KEY (character_id) REFERENCES characters (id));"""
 
 
-# TODO unit test with commmented statements as reference
 def sql_items_table():
     return """CREATE TABLE IF NOT EXISTS items (
                id integer PRIMARY KEY,

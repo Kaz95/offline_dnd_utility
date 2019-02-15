@@ -2,6 +2,7 @@ import database
 import sql
 import stores
 import api
+import sqlite3
 
 
 db = 'C:\\sqlite\\db\\test.db'
@@ -18,7 +19,7 @@ def create_schema():
         #        id integer PRIMARY KEY,
         #        username varchar NOT NULL,
         #        password varchar NOT NULL);"""
-        #
+
         # characters = """CREATE TABLE IF NOT EXISTS characters (
         #        id integer PRIMARY KEY,
         #        account_id integer,
@@ -47,7 +48,6 @@ def create_schema():
         sql.execute_sql(con, sql.sql_items_table())
 
 
-# TODO mock fetchall and unit test
 # Verifies database setup correctly
 def wrong_schema():
     schema = ['accounts', 'characters', 'inventories', 'items']
