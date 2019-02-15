@@ -30,6 +30,7 @@ def user_creates_account():
         database.add_account_row(connection, account_info)
 
 
+# TODO integration test
 # Loads all account username/password information and stores as key:value pairs in Account.log_in_dict.
 def load_account_archive():
     conn = database.create_connection(db)
@@ -52,6 +53,7 @@ def log_in():
         return username
 
 
+# TODO integration test
 # query ALL account information from accounts table based on username. Returns Account object based on query.
 def load_account_object(username):
     conn = database.create_connection(db)
