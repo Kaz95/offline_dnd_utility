@@ -6,7 +6,6 @@ db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
 
-# TODO refactor to not hard code database path. Will not work for others trying to use codebase.
 # Creates a connection to test.db
 def create_connection(db_path):
     try:
@@ -118,8 +117,11 @@ def query_fetchone_list(conn, some_sql, var):
     return list(sql.execute_fetchone_sql(conn, some_sql, var))
 
 
-def query_fetchall_list(conn, some_sql, var):
-    return list(sql.execute_fetchall_sql(conn, some_sql, var))
+def query_fetchall_list(conn, some_sql, var=None):
+    if var is not None:
+        return list(sql.execute_fetchall_sql(conn, some_sql, var))
+    else:
+        return list(sql.execute_fetchall_sql(con, some_sql))
 
 
 # def query_username_password(conn, sql):
@@ -153,30 +155,35 @@ def query_fetchall_list(conn, some_sql, var):
 #         print(list(character))
 #
 #
-# def query_all_inventories(conn, sql, character_id):
+# def query_all_inventories(conn, some_sql, character_id):
 #     # sql = """SELECT name FROM inventories WHERE character_id = ?;"""
-#     some_account = execute_fetchall_sql(conn, sql, character_id)
+#     some_account = sql.execute_fetchall_sql(conn, some_sql, character_id)
 #     for character in some_account:
 #         print(list(character))
 
-# TODO test
-def query_accounts_with_characters(conn, some_sql):
-    temp = []
-    # sql = """SELECT DISTINCT account_id FROM characters;"""
-    account_id_list = sql.execute_fetchall_sql(conn, some_sql)
-    for tup in account_id_list:
-        temp.append(tup[0])
-    return temp
 
-
-# TODO test
-def query_characters_with_inventories(conn,  some_sql):
-    temp = []
-    # sql = """SELECT DISTINCT character_id FROM inventories;"""
-    account_id_list = sql.execute_fetchall_sql(conn, some_sql)
-    for tup in account_id_list:
-        temp.append(tup[0])
-    return temp
+#
+# def query_accounts_with_characters(conn, some_sql):
+#     temp = []
+#     # sql = """SELECT DISTINCT account_id FROM characters;"""
+#     account_id_list = sql.execute_fetchall_sql(conn, some_sql)
+#     print(account_id_list)
+#     for tup in account_id_list:
+#         # print(tup)
+#         temp.append(tup[0])
+#     return temp
+#
+#
+#
+# def query_characters_with_inventories(conn,  some_sql):
+#     temp = []
+#     # sql = """SELECT DISTINCT character_id FROM inventories;"""
+#     account_id_list = sql.execute_fetchall_sql(conn, some_sql)
+#     print(account_id_list)
+#     for tup in account_id_list:
+#         # print(tup)
+#         temp.append(tup[0])
+#     return temp
 
 
 # SELECT
@@ -195,17 +202,20 @@ if __name__ == '__main__':
     item = (1, 'item name', 'api url', 1)
     con = create_connection(db)
     with con:
-        print(add_account_row(con, acc))
-        add_inventory_row(con, inv)
-        add_character_row(con, char)
-        add_item_row(con, item)
+        # add_account_row(con, acc)
+        # add_inventory_row(con, inv)
+        # add_character_row(con, char)
+        # add_item_row(con, item)
 
         # modular queries
-        print(query_fetchall(con, sql.sql_username_password()))
-        print(query_fetchone_list(con, sql.sql_account_row(), acc[0]))
-        print(query_fetchone_list(con, sql.sql_character_row(), char[1]))
-        print(query_fetchone_list(con, sql.sql_inventory_row(), inv[1]))
-        print(query_fetchall_list(con, sql.sql_all_characters(), 1))
+        # print(query_fetchall(con, sql.sql_username_password()))
+        # print(query_fetchone_list(con, sql.sql_account_row(), acc[0]))
+        # print(query_fetchone_list(con, sql.sql_character_row(), char[1]))
+        # print(query_fetchone_list(con, sql.sql_inventory_row(), inv[1]))
+        # print(query_fetchall_list(con, sql.sql_all_characters(), 1))
+        # print(query_fetchall_list(con, sql.sql_all_inventories(), 1))
+        # print(query_fetchall(con, sql.sql_accounts_with_characters()))
+        # print(query_fetchall(con, sql.sql_characters_with_inventories()))
 
         # Use these as reference for new queries
 
@@ -214,9 +224,8 @@ if __name__ == '__main__':
         # print(query_character_row(con, sql_character_row(), 'char name'))
         # print(query_inventory_row(con, sql_inventory_row(), 'Kazact'))
         # print(query_all_characters(con, sql_all_characters(), '1'))
-
-        # print(query_accounts_with_characters(con, sql_accounts_with_characters()))
-        # print(query_characters_with_inventories(con, sql_characters_with_inventories()))
-        # print(query_all_inventories(con, sql_all_inventories(), 1))
+        # print(query_all_inventories(con, sql.sql_all_inventories(), 1))
+        print(query_accounts_with_characters(con, sql.sql_accounts_with_characters()))
+        print(query_characters_with_inventories(con, sql.sql_characters_with_inventories()))
         # print(count_rows(con, 'items'))
-    # # stock_stores()
+
