@@ -202,10 +202,10 @@ if __name__ == '__main__':
     item = (1, 'item name', 'api url', 1)
     con = create_connection(db)
     with con:
-        # add_account_row(con, acc)
-        # add_inventory_row(con, inv)
-        # add_character_row(con, char)
-        # add_item_row(con, item)
+        add_account_row(con, acc)
+        add_inventory_row(con, inv)
+        add_character_row(con, char)
+        add_item_row(con, item)
 
         # modular queries
         # print(query_fetchall(con, sql.sql_username_password()))
@@ -225,7 +225,7 @@ if __name__ == '__main__':
         # print(query_inventory_row(con, sql_inventory_row(), 'Kazact'))
         # print(query_all_characters(con, sql_all_characters(), '1'))
         # print(query_all_inventories(con, sql.sql_all_inventories(), 1))
-        print(query_accounts_with_characters(con, sql.sql_accounts_with_characters()))
-        print(query_characters_with_inventories(con, sql.sql_characters_with_inventories()))
+        # print(query_accounts_with_characters(con, sql.sql_accounts_with_characters()))
+        # print(query_characters_with_inventories(con, sql.sql_characters_with_inventories()))
         # print(count_rows(con, 'items'))
 
