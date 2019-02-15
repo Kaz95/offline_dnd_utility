@@ -49,18 +49,18 @@ def create_schema():
 
 
 # Verifies database setup correctly
-def wrong_schema():
+def wrong_schema(con):
     schema = ['accounts', 'characters', 'inventories', 'items']
-    con = database.create_connection(db)
+    # con = database.create_connection(db)
     with con:
-        # schema.sort()
+        schema.sort()
         cur_tables = []
         tables = sql.execute_fetchall_sql(con, sql.sql_check_table_schema())
         for t in tables:
             for i in t:
                 cur_tables.append(i)
-        print(cur_tables)
-        # cur_tables.sort()
+        cur_tables.sort()
+        # print(cur_tables)
         if cur_tables == schema:
             return False
         else:
@@ -98,6 +98,7 @@ def stock_stores():
 
 
 if __name__ == '__main__':
-    if wrong_schema():
+    con = database.create_connection(db)
+    if wrong_schema(con):
         print('Wrong schema')
 
