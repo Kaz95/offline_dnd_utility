@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+import mock
 from api import call_api, get_api_all, make_api_url, get_nested_api_dict, url_call, get_api_info, get_item_url
 from api import convert_price_info, regex
 
@@ -7,7 +7,7 @@ from api import convert_price_info, regex
 class TestApi(unittest.TestCase):
 
     def test_call_api(self):
-        with patch('api.requests.get') as mocked_get:
+        with mock.patch('api.requests.get') as mocked_get:
             mocked_get.return_value.ok = True
             mocked_get.return_value.text = 'Success'
 

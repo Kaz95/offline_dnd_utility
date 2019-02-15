@@ -1,19 +1,19 @@
 import unittest
-from unittest.mock import patch
+import mock
 import sql
 
 
 class TestSQL(unittest.TestCase):
 
     def test_execute_fetchall_sql(self):
-        with patch('sql.sqlite3') as mocksql:
+        with mock.patch('sql.sqlite3') as mocksql:
             conn = mocksql.connect()
             mocksql.connect().cursor().fetchall.return_value = 'Success'
             response = sql.execute_fetchall_sql(conn, """SELECT username, password FROM accounts;""")
             self.assertEqual(response, 'Success')
 
     def test_execute_fetchone_sql(self):
-        with patch('sql.sqlite3') as mocksql:
+        with mock.patch('sql.sqlite3') as mocksql:
             conn = mocksql.connect()
             mocksql.connect().cursor().fetchone.return_value = 'Success'
             response = sql.execute_fetchone_sql(conn, """SELECT username, password FROM accounts;""")
