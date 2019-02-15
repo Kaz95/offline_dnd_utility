@@ -53,14 +53,14 @@ def wrong_schema():
     schema = ['accounts', 'characters', 'inventories', 'items']
     con = database.create_connection(db)
     with con:
-        schema.sort()
+        # schema.sort()
         cur_tables = []
         tables = sql.execute_fetchall_sql(con, sql.sql_check_table_schema())
         for t in tables:
             for i in t:
                 cur_tables.append(i)
-        cur_tables.sort()
         print(cur_tables)
+        # cur_tables.sort()
         if cur_tables == schema:
             return False
         else:
