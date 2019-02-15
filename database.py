@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 import sql
-
+#
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
