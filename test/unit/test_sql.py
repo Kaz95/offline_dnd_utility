@@ -81,3 +81,7 @@ class TestSQL(unittest.TestCase):
     def test_sql_all_inventories(self):
         self.assertEqual(sql.sql_all_inventory_names(),
                          """SELECT name FROM inventories WHERE character_id = ?;""")
+
+    def test_sql_query_accounts_with_characters(self):
+        self.assertEqual(sql.sql_query_accounts_with_characters(),
+                         """SELECT DISTINCT account_id FROM characters;""")

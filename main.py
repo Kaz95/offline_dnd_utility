@@ -43,7 +43,7 @@ def character_creation(conn):
     with conn:
         print('name character')
         name = input()
-        character_info = (current_account.id, name, 5000)
+        character_info = (account.id, name, 5000)
         database.add_character_row(conn, character_info)
 
 
@@ -51,7 +51,7 @@ def character_selection(conn):
     # conn = database.create_connection(db)
     with conn:
         print('choose a character')
-        print(database.query_fetchall_list(conn, sql.sql_all_characters(), current_account.id))
+        print(database.query_fetchall_list(conn, sql.sql_all_characters(), account.id))
         char_name = input()
         current_character_info = database.query_fetchone_list(conn, sql.sql_character_row(), char_name)
 
@@ -85,7 +85,10 @@ def fresh_installation():
 
 # # Working model for main
 if __name__ == '__main__':
-    character = None
+    cur_character = None
+    cur_account = None
+    cur_inventory = None
+
     conn = database.create_connection(db)
     with conn:
         if setup.wrong_schema(conn):
@@ -93,40 +96,18 @@ if __name__ == '__main__':
         # TODO check if store is stocked here via database.wrong_item_count().
         # TODO currently assumes stores are stocked if all tables exist.
         # account object fields populated via main menu. Set to cur acc.
-        current_account = account.load_account_object(main_menu())
+        account = account.load_account_object(main_menu())
         # If current account has characters
-        accounts_with_characters = database.query_fetchall(conn, sql.sql_accounts_with_characters())
-        print(accounts_with_characters)
-
-        # TODO GO BACK TO THE OLD SHIT THIS BLOCK IS TRASH
-        if not accounts_with_characters:    # if list is empty
-            print('+')
-            print('no characters')
-            print('make a character')
+        if account.id in database.query_accounts_with_characters(conn, sql.sql_accounts_with_characters()):
+            character = character_selection(conn)
+        else:
             character_creation(conn)
             character = character_selection(conn)
             create_backpack(conn)
-        else:
-            for i in database.query_fetchall(conn, sql.sql_accounts_with_characters()):
-                if current_account.id == i[0]:
-                    character = character_selection(conn)
-                    break
-                else:
-                    print('-')
-                    print('no characters')
-                    print('make a character')
-                    character_creation(conn)
-                    character = character_selection(conn)
-                    create_backpack(conn)
-                    inv_ids = database.query_fetchall_list(conn, sql.sql_characters_inventory_ids(),
-                                                           character.id)
-                    print(inv_ids)
-                    for tup in inv_ids:
-                        character.inventories.append(tup[0])
-                    break
-        # TODO END OF TRASH BLOCK
+
         inventory = inventory_selection(conn)
         print(inventory.name)
+        character.inventories.append(inventory.id)
         character.buy_item('Club', conn)
 
 

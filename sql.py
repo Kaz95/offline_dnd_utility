@@ -99,3 +99,7 @@ def sql_characters_inventory_ids():
 
 def sql_all_inventory_names():
     return """SELECT name FROM inventories WHERE character_id = ?;"""
+
+
+def sql_query_accounts_with_characters():
+    return """SELECT DISTINCT account_id FROM characters;"""

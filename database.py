@@ -163,15 +163,15 @@ def query_fetchall_list(conn, some_sql, var=None):
 
 
 # TODO BRING THIS SHIT BACK ITS WAY BETTER. ADD INTO MAIN.PY @ TRASH BLOCK
-# def query_accounts_with_characters(conn, some_sql):
-#     temp = []
-#     # sql = """SELECT DISTINCT account_id FROM characters;"""
-#     account_id_list = sql.execute_fetchall_sql(conn, some_sql)
-#     print(account_id_list)
-#     for tup in account_id_list:
-#         # print(tup)
-#         temp.append(tup[0])
-#     return temp
+def query_accounts_with_characters(conn, some_sql):
+    temp = []
+    # sql = """SELECT DISTINCT account_id FROM characters;"""
+    account_id_list = sql.execute_fetchall_sql(conn, some_sql)
+    print(account_id_list)
+    for tup in account_id_list:
+        # print(tup)
+        temp.append(tup[0])
+    return temp
 #
 #
 #
