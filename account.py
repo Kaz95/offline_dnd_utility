@@ -19,21 +19,21 @@ class Account:
 
 # TODO refactor for GUI
 # Creates new admin account. Adds information to accounts table in database.
-def user_creates_account():
+def user_creates_account(conn):
     print('create name')
     username = input()
     print('create password')
     password = input()
-    connection = database.create_connection(db)
-    with connection:
+    # connection = database.create_connection(db)
+    with conn:
         account_info = (username, password)
-        database.add_account_row(connection, account_info)
+        database.add_account_row(conn, account_info)
 
 
 # TODO integration test
 # Loads all account username/password information and stores as key:value pairs in Account.log_in_dict.
-def load_account_archive():
-    conn = database.create_connection(db)
+def load_account_archive(conn):
+    # conn = database.create_connection(db)
     with conn:
         a = database.query_fetchall(conn, sql.sql_username_password())
         for i in a:
@@ -42,8 +42,8 @@ def load_account_archive():
 
 # TODO refactor for GUI
 # Requests username/password from user. Returns username if authenticated
-def log_in():
-    load_account_archive()  # Loads account info for authentication.
+def log_in(conn):
+    load_account_archive(conn)  # Loads account info for authentication.
     print('enter username')
     username = input()
     print('enter password')
@@ -52,7 +52,7 @@ def log_in():
         print('Welcome: ' + username)
         return username
     else:
-        log_in()
+        log_in(conn)
 
 
 # TODO integration test

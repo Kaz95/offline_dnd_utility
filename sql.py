@@ -5,6 +5,7 @@ import sqlite3
 def execute_sql(con, sql_statement, *args):
     cur = con.cursor()
     cur.execute(sql_statement, args)
+    con.commit()
 
 
 def execute_fetchone_sql(con, sql_statement, *args):
