@@ -83,8 +83,8 @@ def fresh_installation():
     setup.stock_stores()
 
 
-def log_out():
-    main_menu()
+# def log_out():
+#     main_menu()
 
 
 # # Working model for main
@@ -113,6 +113,7 @@ if __name__ == '__main__':
             print(cur_inventory.name)
             cur_character.inventories.append(cur_inventory.id)
             cur_character.buy_item('Club', conn)
+            cur_character.add_item('Club', conn)
             print('go again?')
             a = input()
             if a != '':

@@ -161,8 +161,7 @@ def query_fetchall_list(conn, some_sql, var=None):
 #     for character in some_account:
 #         print(list(character))
 
-
-# TODO BRING THIS SHIT BACK ITS WAY BETTER. ADD INTO MAIN.PY @ TRASH BLOCK
+# TODO Reminder: Complex is better than complicated. Remember the shit block. Never forget.
 def query_accounts_with_characters(conn, some_sql):
     temp = []
     # sql = """SELECT DISTINCT account_id FROM characters;"""
