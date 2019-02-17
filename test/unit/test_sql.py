@@ -19,36 +19,36 @@ class TestSQL(unittest.TestCase):
             response = sql.execute_fetchone_sql(conn, """SELECT username, password FROM accounts;""")
             self.assertEqual(response, 'Success')
 
-    def test_sql_accounts_table(self):
-        self.assertEqual(sql.sql_accounts_table(), """CREATE TABLE IF NOT EXISTS accounts (
-               id integer PRIMARY KEY,
-               username varchar NOT NULL,
-               password varchar NOT NULL);""")
+    # def test_sql_accounts_table(self):
+    #     self.assertEqual(sql.sql_accounts_table(), """CREATE TABLE IF NOT EXISTS accounts (
+    #            id integer PRIMARY KEY,
+    #            username varchar NOT NULL,
+    #            password varchar NOT NULL);""")
 
-    def test_sql_characters_table(self):
-        self.assertEqual(sql.sql_characters_table(), """CREATE TABLE IF NOT EXISTS characters (
-               id integer PRIMARY KEY,
-               account_id integer,
-               name text,
-               currency integer,
-               FOREIGN KEY (account_id) REFERENCES accounts (id));""")
+    # def test_sql_characters_table(self):
+    #     self.assertEqual(sql.sql_characters_table(), """CREATE TABLE IF NOT EXISTS characters (
+    #            id integer PRIMARY KEY,
+    #            account_id integer,
+    #            name text,
+    #            currency integer,
+    #            FOREIGN KEY (account_id) REFERENCES accounts (id));""")
 
-    def test_sql_inventories_table(self):
-        self.assertEqual(sql.sql_inventories_table(), """CREATE TABLE IF NOT EXISTS inventories (
-               id integer PRIMARY KEY,
-               character_id integer,
-               name text,
-               FOREIGN KEY (character_id) REFERENCES characters (id));""")
+    # def test_sql_inventories_table(self):
+    #     self.assertEqual(sql.sql_inventories_table(), """CREATE TABLE IF NOT EXISTS inventories (
+    #            id integer PRIMARY KEY,
+    #            character_id integer,
+    #            name text,
+    #            FOREIGN KEY (character_id) REFERENCES characters (id));""")
 
-    def test_sql_items_table(self):
-        self.assertEqual(sql.sql_items_table(), """CREATE TABLE IF NOT EXISTS items (
-               id integer PRIMARY KEY,
-               inventory_id integer,
-               item text,
-               api varchar,
-               quantity integer,
-               store text,
-               FOREIGN KEY (inventory_id) REFERENCES inventories (id));""")
+    # def test_sql_items_table(self):
+    #     self.assertEqual(sql.sql_items_table(), """CREATE TABLE IF NOT EXISTS items (
+    #            id integer PRIMARY KEY,
+    #            inventory_id integer,
+    #            item text,
+    #            api varchar,
+    #            quantity integer,
+    #            store text,
+    #            FOREIGN KEY (inventory_id) REFERENCES inventories (id));""")
 
     def test_sql_username_password(self):
         self.assertEqual(sql.sql_username_password(),

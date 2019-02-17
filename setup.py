@@ -12,9 +12,9 @@ mem = ':memory:'
 # TODO integration test
 # TODO consider refactoring to a single .executemany()
 # Four sqlite statements which create the database schema.
-def create_schema():
-    con = database.create_connection(db)
-    with con:
+def create_schema(conn):
+    # con = database.create_connection(db)
+    with conn:
         # accounts = """CREATE TABLE IF NOT EXISTS accounts (
         #        id integer PRIMARY KEY,
         #        username varchar NOT NULL,
@@ -42,10 +42,10 @@ def create_schema():
         #        store text,
         #        FOREIGN KEY (inventory_id) REFERENCES inventories (id));"""
 
-        sql.execute_sql(con, sql.sql_accounts_table())
-        sql.execute_sql(con, sql.sql_characters_table())
-        sql.execute_sql(con, sql.sql_inventories_table())
-        sql.execute_sql(con, sql.sql_items_table())
+        sql.execute_sql(conn, sql.sql_accounts_table())
+        sql.execute_sql(conn, sql.sql_characters_table())
+        sql.execute_sql(conn, sql.sql_inventories_table())
+        sql.execute_sql(conn, sql.sql_items_table())
 
 
 # Verifies database setup correctly
@@ -67,9 +67,9 @@ def wrong_schema(conn):
 
 # TODO integration test
 # TODO comment this shit.
-def stock_stores():
+def stock_stores(conn):
     store_dict = stores.stores()
-    conn = database.create_connection(db)
+    # conn = database.create_connection(db)
     with conn:
         url = api.make_api_url('equipment')
         response = api.call_api(url)
@@ -97,6 +97,7 @@ def stock_stores():
 
 if __name__ == '__main__':
     con = database.create_connection(db)
-    if wrong_schema(con):
-        print('Wrong schema')
-
+    # create_schema(con)
+    # if wrong_schema(con):
+    #     print('Wrong schema')
+    # stock_stores(con)

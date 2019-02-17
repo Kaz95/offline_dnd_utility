@@ -74,9 +74,9 @@ def add_account_row(conn, some_account):
 
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_inventory_row(conn, some_inventory):
-    some_sql = """INSERT INTO inventories (character_id, name)
-            VALUES(?,?)"""
-    sql.execute_sql(conn, some_sql, some_inventory[0], some_inventory[1])
+    some_sql = """INSERT INTO inventories (account_id, character_id, name)
+            VALUES(?,?,?)"""
+    sql.execute_sql(conn, some_sql, some_inventory[0], some_inventory[1], some_inventory[2])
     return some_sql
 
 
@@ -90,9 +90,9 @@ def add_character_row(conn, some_character):
 
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_item_row(conn, some_item):
-    some_sql = """INSERT INTO items (inventory_id, item, api, quantity)
-            VALUES(?,?,?,?)"""
-    sql.execute_sql(conn, some_sql, some_item[0], some_item[1], some_item[2], some_item[3])
+    some_sql = """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
+            VALUES(?,?,?,?,?,?)"""
+    sql.execute_sql(conn, some_sql, some_item[0], some_item[1], some_item[2], some_item[3], some_item[4], some_item[5])
     return some_sql
 
 

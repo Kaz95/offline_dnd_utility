@@ -19,9 +19,9 @@ class Player:
         self.inventories = inventories  # List of player inventory names in string format.
 
     # Inventory management
-    def add_item(self, item, conn):
+    def add_item(self, item, conn, account_id, cur_inventory_id):
         url = api.get_item_url(item, Player.list_of_dics)   # TODO NOT DRY
-        item_info = (self.inventories[0], item, url, 1)
+        item_info = (account_id, self.id, cur_inventory_id, item, url, 1)
         database.add_item_row(conn, item_info)
 
     def add_currency(self, amount):

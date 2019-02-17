@@ -63,7 +63,7 @@ def character_selection(conn):
 def create_backpack(conn):
     # conn = database.create_connection(db)
     with conn:
-        backpack_info = (cur_character.id, cur_character.name)
+        backpack_info = (cur_account.id, cur_character.id, cur_character.name)
         database.add_inventory_row(conn, backpack_info)
 
 
@@ -78,13 +78,15 @@ def inventory_selection(conn):
     return current_inventory
 
 
-def fresh_installation():
-    setup.create_schema()
-    setup.stock_stores()
+def fresh_installation(conn):
+    setup.create_schema(conn)
+    setup.stock_stores(conn)
 
 
-# def log_out():
-#     main_menu()
+# def add_item(self, item, conn):
+#     url = api.get_item_url(item, Player.list_of_dics)   # TODO NOT DRY
+#     item_info = (self.inventories[0], item, url, 1)
+#     database.add_item_row(conn, item_info)
 
 
 # # Working model for main
@@ -96,7 +98,7 @@ if __name__ == '__main__':
         conn = database.create_connection(db)
         with conn:
             if setup.wrong_schema(conn):
-                fresh_installation()
+                fresh_installation(conn)
             # TODO check if store is stocked here via database.wrong_item_count().
             # TODO currently assumes stores are stocked if all tables exist.
             # account object fields populated via main menu. Set to cur acc.
@@ -112,8 +114,8 @@ if __name__ == '__main__':
             cur_inventory = inventory_selection(conn)
             print(cur_inventory.name)
             cur_character.inventories.append(cur_inventory.id)
-            cur_character.buy_item('Club', conn)
-            cur_character.add_item('Club', conn)
+            cur_character.buy_sell('Club', 'buy')
+            cur_character.add_item('Club', conn, cur_account.id, cur_inventory.id)
             print('go again?')
             a = input()
             if a != '':
