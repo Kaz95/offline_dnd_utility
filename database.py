@@ -198,7 +198,7 @@ if __name__ == '__main__':
     acc = ('username', 'password')
     inv = (1, 'inv name')
     char = (1, 'char name', 420)
-    item = (1, 'item name', 'api url', 1)
+    item = (2, 2, 2, 'item name', 'api url', 1)
     # con = create_connection(db)
     # with con:
         # add_account_row(con, acc)

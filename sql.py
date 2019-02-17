@@ -147,3 +147,9 @@ def sql_all_inventory_names():
 
 def sql_query_accounts_with_characters():
     return """SELECT DISTINCT account_id FROM characters;"""
+
+
+# Delete
+
+def sql_delete(table):
+    return """DELETE FROM {} WHERE character_id = ?""".format(table)

@@ -123,17 +123,11 @@ if __name__ == '__main__':
             # log_out()
 
 
-# TODO figure out why character c doesnt have 2 clubs
 # if __name__ == '__main__':
 #     cur_character = None
-    # conn = database.create_connection(db)
-    # with conn:
-    #     cur_account = None
-    #     cur_inventory = None
-    #     cur_character = player.Player(4, 'k', 5000, [4])
-    #     cur_character.buy_item('Club', conn)
-    #     cur_character.buy_item('Club', conn)
-    #     cur_character.buy_item('Club', conn)
+#     conn = database.create_connection(db)
+#     with conn:
+#         sql.execute_sql(conn, sql.sql_delete('items'), 2)
 
 
 
