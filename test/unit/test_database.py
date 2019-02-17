@@ -22,8 +22,8 @@ class TestDatabase(unittest.TestCase):
     def test_add_inventory_row(self):
         with mock.patch('database.sqlite3') as mocksql:
             conn = mocksql.connect()
-            self.assertEqual(database.add_inventory_row(conn, [1, 2]), """INSERT INTO inventories (character_id, name)
-            VALUES(?,?)""")
+            self.assertEqual(database.add_inventory_row(conn, [1, 2, 3]), """INSERT INTO inventories (account_id, character_id, name)
+            VALUES(?,?,?)""")
 
     def test_add_character_row(self):
         with mock.patch('database.sqlite3') as mocksql:
@@ -34,8 +34,8 @@ class TestDatabase(unittest.TestCase):
     def test_add_item_row(self):
         with mock.patch('database.sqlite3') as mocksql:
             conn = mocksql.connect()
-            self.assertEqual(database.add_item_row(conn, [1, 2, 3, 4]), """INSERT INTO items (inventory_id, item, api, quantity)
-            VALUES(?,?,?,?)""")
+            self.assertEqual(database.add_item_row(conn, [1, 2, 3, 4, 5, 6]), """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
+            VALUES(?,?,?,?,?,?)""")
 
     def test_add_store_item(self):
         with mock.patch('database.sqlite3') as mocksql:
