@@ -1,6 +1,6 @@
 import api
 import database
-
+import sql
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
@@ -9,6 +9,7 @@ mem = ':memory:'
 
 # Player Class. Holds player_id(Primary Key of characters table), character name, currency, and player inventories.
 class Player:
+    # TODO: unit_integration_test
     # [{'name': 'some name', 'url': 'some url'}, {'name': 'some name', 'url': 'some url'}]
     list_of_dics = api.get_nested_api_dict(api.get_api_all(api.call_api(api.make_api_url('equipment'))), 'results')
 
@@ -18,11 +19,14 @@ class Player:
         self.name = name
         self.inventories = inventories  # List of player inventory names in string format.
 
+    # TODO: class_unit_integration_test
     # Inventory management
     def add_item(self, item, conn, account_id, cur_inventory_id):
-        url = api.get_item_url(item, Player.list_of_dics)   # TODO NOT DRY
-        item_info = (account_id, self.id, cur_inventory_id, item, url, 1)
-        database.add_item_row(conn, item_info)
+        url = api.get_item_url(item, Player.list_of_dics)
+        # item_info = (account_id, self.id, cur_inventory_id, item, url, 1)
+        item_info = {'acc_id': account_id, 'char_id': self.id, 'inv_id': cur_inventory_id, 'item': item, 'api': url,
+                     'quant': 1}
+        database.add_item_row(conn, sql.sql_add_item_row(), item_info)
 
     def add_currency(self, amount):
         self.currency += amount
@@ -30,6 +34,7 @@ class Player:
     def subtract_currency(self, amount):
         self.currency -= amount
 
+    # TODO: class_integration_test
     # TODO refactor for GUI
     def convert_currency(self):
         amount_in_cp = self.currency
@@ -39,6 +44,7 @@ class Player:
         converted_dict = {'gp': g, 'sp': s, 'cp': c}
         return converted_dict
 
+    # TODO: class_unit_integration_test
     # Gets item price info and adds/subtracts it to/from currency dictionary based on [unit] key.
     # See convert_price_info in api.py for more information on conversion.
     def buy_sell(self, item, action=None):

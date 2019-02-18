@@ -9,7 +9,7 @@ db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
 
-# TODO integration test
+# TODO database_integration_test
 # TODO consider refactoring to a single .executemany()
 # Four sqlite statements which create the database schema.
 def create_schema(conn):
@@ -65,7 +65,7 @@ def wrong_schema(conn):
             return True
 
 
-# TODO integration test
+# TODO database_integration_test
 # TODO comment this shit.
 def stock_stores(conn):
     store_dict = stores.stores()
@@ -76,28 +76,31 @@ def stock_stores(conn):
         response_dict = api.get_api_all(response)
         usable_dict = api.get_nested_api_dict(response_dict, 'results')
         for dic in usable_dict:
-            temp = []
+            temp = {}
             for k, v in dic.items():
-                temp.append(v)
+                if not temp:
+                    temp['item'] = v
+                else:
+                    temp['api'] = v
                 if v[0:37] == url:
                     num = api.regex(v, 'equipment/')
                     if num in store_dict['GS']:
-                        temp.append('General Store')
+                        temp['store'] = 'General Store'
                     elif num in store_dict['BS']:
-                        temp.append('Blacksmith')
+                        temp['store'] = 'Blacksmith'
                     elif num in store_dict['Ship']:
-                        temp.append('Shipyard')
+                        temp['store'] = 'Shipyard'
                     elif num in store_dict['Stables']:
-                        temp.append('Stables')
+                        temp['store'] = 'Stables'
                     else:
-                        temp.append('No Store')
-            temp = tuple(temp)
-            database.add_store_item(conn, temp)
+                        temp['store'] = 'No Store'
+
+            database.add_store_item(conn, sql.sql_add_store_item(), temp)
 
 
 if __name__ == '__main__':
     con = database.create_connection(db)
-    # create_schema(con)
-    # if wrong_schema(con):
-    #     print('Wrong schema')
-    # stock_stores(con)
+    create_schema(con)
+    if wrong_schema(con):
+        print('Wrong schema')
+    stock_stores(con)

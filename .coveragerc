@@ -1,0 +1,15 @@
+[run]
+source=
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility
+omit=
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility\venv\*
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility\test\*
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility\time_out.py
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility\account.py
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility\gui.py
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility\inventory.py
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility\main.py
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility\pages.py
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility\scratch.py
+    C:\Users\Terrance\PycharmProjects\offline_dnd_utility\stores.py
+

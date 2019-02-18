@@ -3,6 +3,8 @@ from tkinter import ttk
 from database import create_connection, count_rows
 from stores import stores
 # TODO Refactor element names to be more modular. 'Title Label' for example.
+db = 'C:\\sqlite\\db\\test.db'
+mem = ':memory:'
 
 
 def clear(root):
@@ -65,10 +67,11 @@ def character_selection_page(root):
     characters_label = ttk.Label(text='Characters').grid(column=0, row=1)
     chars_combo = ttk.Combobox(values=['1', '2', '3']).grid(column=0, row=2)
     select_button = ttk.Button(text='Select', command=lambda: dashboard(root)).grid(column=0, row=3)
+    delete_button = ttk.Button(text='Delete').grid(column=0, row=4)
 
 
 def populate_tree(some_tree, some_store):
-    conn = create_connection()
+    conn = create_connection(db)
     with conn:
         for i in range(count_rows(conn, 'items')):
             d = {}

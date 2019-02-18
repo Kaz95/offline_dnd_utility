@@ -43,8 +43,9 @@ def character_creation(conn):
     with conn:
         print('name character')
         name = input()
-        character_info = (cur_account.id, name, 5000)
-        database.add_character_row(conn, character_info)
+        # character_info = (cur_account.id, name, 5000)
+        character_info = {'acc_id': cur_account.id, 'name': name, 'currency': 5000}
+        database.add_character_row(conn, sql.sql_add_character_row(), character_info)
 
 
 def character_selection(conn):
@@ -63,8 +64,9 @@ def character_selection(conn):
 def create_backpack(conn):
     # conn = database.create_connection(db)
     with conn:
-        backpack_info = (cur_account.id, cur_character.id, cur_character.name)
-        database.add_inventory_row(conn, backpack_info)
+        # backpack_info = (cur_account.id, cur_character.id, cur_character.name)
+        backpack_info = {'acc_id': cur_account.id, 'char_id': cur_character.id, 'name': cur_character.name}
+        database.add_inventory_row(conn, sql.sql_add_inventory_row(), backpack_info)
 
 
 def inventory_selection(conn):

@@ -148,8 +148,38 @@ def sql_all_inventory_names():
 def sql_query_accounts_with_characters():
     return """SELECT DISTINCT account_id FROM characters;"""
 
+# def sql_query_accounts_with_characters():
+#     return """SELECT id FROM accounts INTERSECT SELECT account_id FROM characters;"""
+
 
 # Delete
 
 def sql_delete(table):
     return """DELETE FROM {} WHERE character_id = ?""".format(table)
+
+
+# Query
+
+def sql_add_item_row():
+    return """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
+            VALUES(?,?,?,?,?,?)"""
+
+
+def sql_add_account_row():
+    return """INSERT INTO accounts (username, password)
+            VALUES(?,?)"""
+
+
+def sql_add_inventory_row():
+    return """INSERT INTO inventories (account_id, character_id, name)
+            VALUES(?,?,?)"""
+
+
+def sql_add_character_row():
+    return """INSERT INTO characters (account_id, name, currency)
+            VALUES(?,?,?)"""
+
+
+def sql_add_store_item():
+    return """INSERT INTO items (item, api, store)
+             VALUES(?,?,?)"""

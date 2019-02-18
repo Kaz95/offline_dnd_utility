@@ -61,62 +61,72 @@ def create_connection(db_path):
 
 # INSERT
 
+# TODO: refactor inject sql
+# TODO: unit_integration_test
 # Inserts given values into accounts table at given columns. Returns last row id.
-def add_account_row(conn, some_account):
-    some_sql = """INSERT INTO accounts (username, password)
-            VALUES(?,?)"""
+def add_account_row(conn, some_sql, some_account):
+    # some_sql = """INSERT INTO accounts (username, password)
+    #         VALUES(?,?)"""
 
-    sql.execute_sql(conn, some_sql, some_account[0], some_account[1])
+    sql.execute_sql(conn, some_sql, some_account['user'], some_account['pass'])
     # cursor = conn.cursor()
     # cursor.execute(sql, some_account)
-    return some_sql
 
 
+# TODO: refactor inject sql
+# TODO: unit_integration_test
 # Inserts given values into accounts table at given columns. Returns last row id.
-def add_inventory_row(conn, some_inventory):
-    some_sql = """INSERT INTO inventories (account_id, character_id, name)
-            VALUES(?,?,?)"""
-    sql.execute_sql(conn, some_sql, some_inventory[0], some_inventory[1], some_inventory[2])
-    return some_sql
+def add_inventory_row(conn, some_sql, some_inventory):
+    # some_sql = """INSERT INTO inventories (account_id, character_id, name)
+    #         VALUES(?,?,?)"""
+    sql.execute_sql(conn, some_sql, some_inventory['acc_id'], some_inventory['char_id'], some_inventory['name'])
 
 
+# TODO: refactor inject sql
+# TODO: unit_integration_test
 # Inserts given values into accounts table at given columns. Returns last row id.
-def add_character_row(conn, some_character):
-    some_sql = """INSERT INTO characters (account_id, name, currency)
-            VALUES(?,?,?)"""
-    sql.execute_sql(conn, some_sql, some_character[0], some_character[1], some_character[2])
-    return some_sql
+def add_character_row(conn, some_sql, some_character):
+    # some_sql = """INSERT INTO characters (account_id, name, currency)
+    #         VALUES(?,?,?)"""
+    sql.execute_sql(conn, some_sql, some_character['acc_id'], some_character['name'], some_character['currency'])
 
 
+# TODO: refactor inject sql
+# TODO: unit_integration_test
 # Inserts given values into accounts table at given columns. Returns last row id.
-def add_item_row(conn, some_item):
-    some_sql = """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
-            VALUES(?,?,?,?,?,?)"""
-    sql.execute_sql(conn, some_sql, some_item[0], some_item[1], some_item[2], some_item[3], some_item[4], some_item[5])
-    return some_sql
+def add_item_row(conn, some_sql, some_item):
+    # some_sql = """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
+    #         VALUES(?,?,?,?,?,?)"""
+    sql.execute_sql(conn, some_sql, some_item['acc_id'], some_item['char_id'], some_item['inv_id'], some_item['item'],
+                    some_item['api'], some_item['quant'])
 
 
+# TODO: refactor inject sql
+# TODO: unit_integration_test
 # Used to populate stores
-def add_store_item(con, item_info):
-    some_sql = """INSERT INTO items (item, api, store)
-             VALUES(?,?,?)"""
-    sql.execute_sql(con, some_sql, item_info[0], item_info[1], item_info[2])
-    return some_sql
+def add_store_item(con, some_sql, item_info):
+    # some_sql = """INSERT INTO items (item, api, store)
+    #          VALUES(?,?,?)"""
+    sql.execute_sql(con, some_sql, item_info['item'], item_info['api'], item_info['store'])
 
 
+# TODO unit_integration_test
 # QUERY
 def query_fetchone(conn, some_sql):
     return sql.execute_fetchone_sql(conn, some_sql)
 
 
+# TODO unit_integration_test
 def query_fetchall(conn, some_sql):
     return sql.execute_fetchall_sql(conn, some_sql)
 
 
+# TODO unit_integration_test
 def query_fetchone_list(conn, some_sql, var):
     return list(sql.execute_fetchone_sql(conn, some_sql, var))
 
 
+# TODO unit_integration_test
 def query_fetchall_list(conn, some_sql, var=None):
     if var is not None:
         return list(sql.execute_fetchall_sql(conn, some_sql, var))
@@ -162,6 +172,7 @@ def query_fetchall_list(conn, some_sql, var=None):
 #         print(list(character))
 
 # TODO Reminder: Complex is better than complicated. Remember the shit block. Never forget.
+# TODO unit_integration_test
 def query_accounts_with_characters(conn, some_sql):
     temp = []
     # sql = """SELECT DISTINCT account_id FROM characters;"""
@@ -188,6 +199,7 @@ def query_accounts_with_characters(conn, some_sql):
 # SELECT
 
 # TODO decouple sql and test....maybe?
+# TODO unit_integration_test
 def count_rows(conn, some_table):
     some_sql = """SELECT count(*) FROM {};""".format(some_table)
     yup = sql.execute_fetchone_sql(conn, some_sql)
@@ -199,12 +211,16 @@ if __name__ == '__main__':
     inv = (1, 'inv name')
     char = (1, 'char name', 420)
     item = (2, 2, 2, 'item name', 'api url', 1)
-    # con = create_connection(db)
-    # with con:
-        # add_account_row(con, acc)
+    account1 = {'user': 'kaza', 'pass': 'tree'}
+    character1 = {'acc_id': 1, 'name': 'char name', 'currency': 5000}
+    inventory1 = {'acc_id': 1, 'char_id': 1, 'name': 'inv name'}
+    item1 = {'acc_id': 1, 'char_id': 1, 'inv_id': 1, 'item': 'item name', 'api': 'api url', 'quant': 1}
+    con = create_connection(db)
+    with con:
+        # add_account_row(con, account1)
         # add_inventory_row(con, inv)
         # add_character_row(con, char)
-        # add_item_row(con, item)
+        add_item_row(con, sql.sql_add_item_row(), item1)
 
         # modular queries
         # print('1', query_fetchall(con, sql.sql_username_password()))
@@ -228,3 +244,7 @@ if __name__ == '__main__':
         # print('7', query_characters_with_inventories(con, sql.sql_characters_with_inventories()))
         # print(count_rows(con, 'items'))
 
+# if __name__ == '__main__':
+#     con = create_connection(db)
+#     with con:
+#         print(list(query_fetchall(con, sql.sql_query_accounts_with_characters())))
