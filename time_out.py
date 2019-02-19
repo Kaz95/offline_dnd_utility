@@ -292,3 +292,22 @@
 #                         temp.append('No Store')
 #             temp = tuple(temp)
 #             add_store_item(conn, temp)
+
+
+
+
+# account1 = {'user': 'acc1', 'pass': 'pass1'}
+# account2 = {'user': 'acc2', 'pass': 'pass2'}
+# player1 = {'acc_id': 1, 'name': 'char1', 'currency': 5000}
+# player2 = {'acc_id': 2, 'name': 'char2', 'currency': 5000}
+# player3 = {'acc_id': 2, 'name': 'char3', 'currency': 5000}
+# inventory1 = {'acc_id': 1, 'char_id': 1, 'name': 'inv1'}
+# inventory2 = {'acc_id': 2, 'char_id': 2, 'name': 'inv2'}
+# inventory3 = {'acc_id': 2, 'char_id': 3, 'name': 'inv3'}
+# item1 = {'acc_id': 1, 'char_id': 1, 'inv_id': 1, 'item': 'Club', 'api': 'http://www.dnd5eapi.co/api/equipment/1', 'quant': 1}
+# item2 = {'acc_id': 1, 'char_id': 1, 'inv_id': 1, 'item': 'Dagger', 'api': 'http://www.dnd5eapi.co/api/equipment/2', 'quant': 1}
+# item3 = {'acc_id': 2, 'char_id': 2, 'inv_id': 2, 'item': 'Greatclub', 'api': 'http://www.dnd5eapi.co/api/equipment/3', 'quant': 1}
+# item4 = {'acc_id': 2, 'char_id': 2, 'inv_id': 2, 'item': 'Handaxe', 'api': 'http://www.dnd5eapi.co/api/equipment/4', 'quant': 1}
+# item5 = {'acc_id': 2, 'char_id': 2, 'inv_id': 2, 'item': 'Javelin', 'api': 'http://www.dnd5eapi.co/api/equipment/5', 'quant': 1}
+# item6 = {'acc_id': 2, 'char_id': 3, 'inv_id': 3, 'item': 'Light hammer', 'api': 'http://www.dnd5eapi.co/api/equipment/6', 'quant': 1}
+# item7 = {'acc_id': 2, 'char_id': 3, 'inv_id': 3, 'item': 'Mace', 'api': 'http://www.dnd5eapi.co/api/equipment/7', 'quant': 1}

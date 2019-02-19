@@ -154,8 +154,8 @@ def sql_query_accounts_with_characters():
 
 # Delete
 
-def sql_delete(table):
-    return """DELETE FROM {} WHERE character_id = ?""".format(table)
+def sql_delete(table, where):
+    return """DELETE FROM {} WHERE {} = ?""".format(table, where)
 
 
 # TODO: test these
