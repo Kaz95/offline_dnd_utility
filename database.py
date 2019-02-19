@@ -61,8 +61,7 @@ def create_connection(db_path):
 
 # INSERT
 
-# TODO: refactor inject sql
-# TODO: unit_integration_test
+
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_account_row(conn, some_sql, some_account):
     # some_sql = """INSERT INTO accounts (username, password)
@@ -73,8 +72,6 @@ def add_account_row(conn, some_sql, some_account):
     # cursor.execute(sql, some_account)
 
 
-# TODO: refactor inject sql
-# TODO: unit_integration_test
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_inventory_row(conn, some_sql, some_inventory):
     # some_sql = """INSERT INTO inventories (account_id, character_id, name)
@@ -82,8 +79,6 @@ def add_inventory_row(conn, some_sql, some_inventory):
     sql.execute_sql(conn, some_sql, some_inventory['acc_id'], some_inventory['char_id'], some_inventory['name'])
 
 
-# TODO: refactor inject sql
-# TODO: unit_integration_test
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_character_row(conn, some_sql, some_character):
     # some_sql = """INSERT INTO characters (account_id, name, currency)
@@ -91,8 +86,6 @@ def add_character_row(conn, some_sql, some_character):
     sql.execute_sql(conn, some_sql, some_character['acc_id'], some_character['name'], some_character['currency'])
 
 
-# TODO: refactor inject sql
-# TODO: unit_integration_test
 # Inserts given values into accounts table at given columns. Returns last row id.
 def add_item_row(conn, some_sql, some_item):
     # some_sql = """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
@@ -101,8 +94,6 @@ def add_item_row(conn, some_sql, some_item):
                     some_item['api'], some_item['quant'])
 
 
-# TODO: refactor inject sql
-# TODO: unit_integration_test
 # Used to populate stores
 def add_store_item(con, some_sql, item_info):
     # some_sql = """INSERT INTO items (item, api, store)
@@ -110,74 +101,12 @@ def add_store_item(con, some_sql, item_info):
     sql.execute_sql(con, some_sql, item_info['item'], item_info['api'], item_info['store'])
 
 
-# TODO unit_integration_test
-# QUERY
-def query_fetchone(conn, some_sql):
-    return sql.execute_fetchone_sql(conn, some_sql)
-
-
-# TODO unit_integration_test
-def query_fetchall(conn, some_sql):
-    return sql.execute_fetchall_sql(conn, some_sql)
-
-
-# TODO unit_integration_test
-def query_fetchone_list(conn, some_sql, var):
-    return list(sql.execute_fetchone_sql(conn, some_sql, var))
-
-
-# TODO unit_integration_test
-def query_fetchall_list(conn, some_sql, var=None):
-    if var is not None:
-        return list(sql.execute_fetchall_sql(conn, some_sql, var))
-    else:
-        return list(sql.execute_fetchall_sql(conn, some_sql))
-
-
-# def query_username_password(conn, sql):
-#     # sql = """SELECT username, password FROM accounts;"""
-#     some_account = execute_fetchall_sql(conn, sql)
-#     return some_account
-#
-#
-# def query_account_row(conn, sql, username):
-#     # sql = """SELECT id, username, password FROM accounts WHERE username = ?;"""
-#     some_account = execute_fetchone_sql(conn, sql, username)
-#     return list(some_account)
-#
-#
-# def query_character_row(conn, sql, character_name):
-#     # sql = """SELECT id, name, currency FROM characters WHERE name = ?;"""
-#     some_account = execute_fetchone_sql(conn, sql, character_name)
-#     return list(some_account)
-#
-#
-# def query_inventory_row(conn, sql, inventory_name):
-#     # sql = """SELECT id, name FROM inventories WHERE name = ?;"""
-#     some_account = execute_fetchone_sql(conn, sql, inventory_name)
-#     return list(some_account)
-#
-#
-# def query_all_characters(conn, sql, account_id):
-#     # sql = """SELECT name, currency FROM characters WHERE account_id = ?;"""
-#     some_account = execute_fetchall_sql(conn, sql, account_id)
-#     for character in some_account:
-#         print(list(character))
-#
-#
-# def query_all_inventories(conn, some_sql, character_id):
-#     # sql = """SELECT name FROM inventories WHERE character_id = ?;"""
-#     some_account = sql.execute_fetchall_sql(conn, some_sql, character_id)
-#     for character in some_account:
-#         print(list(character))
-
 # TODO Reminder: Complex is better than complicated. Remember the shit block. Never forget.
-# TODO unit_integration_test
 def query_accounts_with_characters(conn, some_sql):
     temp = []
     # sql = """SELECT DISTINCT account_id FROM characters;"""
     account_id_list = sql.execute_fetchall_sql(conn, some_sql)
-    print(account_id_list)
+    # print(account_id_list)
     for tup in account_id_list:
         # print(tup)
         temp.append(tup[0])
@@ -198,12 +127,11 @@ def query_accounts_with_characters(conn, some_sql):
 
 # SELECT
 
-# TODO decouple sql and test....maybe?
-# TODO unit_integration_test
-def count_rows(conn, some_table):
-    some_sql = """SELECT count(*) FROM {};""".format(some_table)
-    yup = sql.execute_fetchone_sql(conn, some_sql)
-    return yup[0]
+
+def count_rows(conn, some_sql, some_table):
+    new_sql = some_sql.format(some_table)
+    yup = sql.execute_fetchone_sql(conn, new_sql)
+    return yup
 
 
 if __name__ == '__main__':
@@ -215,12 +143,12 @@ if __name__ == '__main__':
     character1 = {'acc_id': 1, 'name': 'char name', 'currency': 5000}
     inventory1 = {'acc_id': 1, 'char_id': 1, 'name': 'inv name'}
     item1 = {'acc_id': 1, 'char_id': 1, 'inv_id': 1, 'item': 'item name', 'api': 'api url', 'quant': 1}
-    con = create_connection(db)
-    with con:
+    # con = create_connection(db)
+    # with con:
         # add_account_row(con, account1)
         # add_inventory_row(con, inv)
         # add_character_row(con, char)
-        add_item_row(con, sql.sql_add_item_row(), item1)
+        # add_item_row(con, sql.sql_add_item_row(), item1)
 
         # modular queries
         # print('1', query_fetchall(con, sql.sql_username_password()))
@@ -244,7 +172,7 @@ if __name__ == '__main__':
         # print('7', query_characters_with_inventories(con, sql.sql_characters_with_inventories()))
         # print(count_rows(con, 'items'))
 
-# if __name__ == '__main__':
-#     con = create_connection(db)
-#     with con:
-#         print(list(query_fetchall(con, sql.sql_query_accounts_with_characters())))
+if __name__ == '__main__':
+    con = create_connection(db)
+    with con:
+        print(count_rows(con, sql.sql_count_rows(), 'items')[0])

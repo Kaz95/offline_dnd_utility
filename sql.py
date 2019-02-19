@@ -158,6 +158,7 @@ def sql_delete(table):
     return """DELETE FROM {} WHERE character_id = ?""".format(table)
 
 
+# TODO: test these
 # Query
 
 def sql_add_item_row():
@@ -183,3 +184,7 @@ def sql_add_character_row():
 def sql_add_store_item():
     return """INSERT INTO items (item, api, store)
              VALUES(?,?,?)"""
+
+
+def sql_count_rows():
+    return """SELECT count(*) FROM {};"""

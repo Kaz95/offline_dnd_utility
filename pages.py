@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from database import create_connection, count_rows
 from stores import stores
+import sql
 # TODO Refactor element names to be more modular. 'Title Label' for example.
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
@@ -73,7 +74,7 @@ def character_selection_page(root):
 def populate_tree(some_tree, some_store):
     conn = create_connection(db)
     with conn:
-        for i in range(count_rows(conn, 'items')):
+        for i in range(count_rows(conn, sql.sql_count_rows(), 'items')[0]):
             d = {}
             i += 1
             k = """SELECT id, item FROM items WHERE id = ? AND store = ?;"""

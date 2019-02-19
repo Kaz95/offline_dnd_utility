@@ -12,7 +12,7 @@ import account
 import player
 import database
 import setup
-
+# TODO: fix this shite
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
@@ -23,15 +23,19 @@ def main_menu(conn):
     while True:
         if new:
             print('---Log in---')
-            username = account.log_in(conn)
+            username = account.log_in(conn, username, password)
             break
         print('1: Login       2: Sign-up')
         answer = input()
+        print('create name')
+        username = input()
+        print('create password')
+        password = input()
         if answer == '2':
-            account.user_creates_account(conn)
+            account.user_creates_account(conn, username, password)
             new = True
         elif answer == '1':
-            username = account.log_in(conn)
+            username = account.log_in(conn, username, password)
             break
     return username
 
@@ -52,9 +56,9 @@ def character_selection(conn):
     # conn = database.create_connection(db)
     with conn:
         print('choose a character')
-        print(database.query_fetchall_list(conn, sql.sql_all_characters(), cur_account.id))
+        print(list(sql.execute_fetchall_sql(conn, sql.sql_all_characters(), cur_account.id)))
         char_name = input()
-        current_character_info = database.query_fetchone_list(conn, sql.sql_character_row(), char_name)
+        current_character_info = list(sql.execute_fetchone_sql(conn, sql.sql_character_row(), char_name))
 
         current_character = player.Player(current_character_info[0], current_character_info[1],
                                           current_character_info[2], [])
@@ -73,9 +77,9 @@ def inventory_selection(conn):
     # conn = database.create_connection(db)
     with conn:
         print('choose inventory')
-        print(database.query_fetchall_list(conn, sql.sql_all_inventory_names(), cur_character.id))
+        print(list(sql.execute_fetchall_sql(conn, sql.sql_all_inventory_names(), cur_character.id)))
         inv_name = input()
-        current_character_info = database.query_fetchone_list(conn, sql.sql_inventory_row(), inv_name)
+        current_character_info = list(sql.execute_fetchone_sql(conn, sql.sql_inventory_row(), inv_name))
         current_inventory = inventory.Inventory(current_character_info[0], current_character_info[1])
     return current_inventory
 
