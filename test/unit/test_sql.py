@@ -100,4 +100,4 @@ class TestSQL(unittest.TestCase):
                          """SELECT DISTINCT account_id FROM characters;""")
 
     def test_sql_delete(self):
-        self.assertEqual(sql.sql_delete('items'), """DELETE FROM items WHERE character_id = ?""")
+        self.assertEqual(sql.sql_delete('items', 'character_id'), """DELETE FROM items WHERE character_id = ?""")

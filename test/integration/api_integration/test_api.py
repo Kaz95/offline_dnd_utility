@@ -2,8 +2,6 @@ import unittest
 import api
 
 
-# TODO: Write some tests that use actual api calls
-
 class TestAPI(unittest.TestCase):
 
     def setUp(self):

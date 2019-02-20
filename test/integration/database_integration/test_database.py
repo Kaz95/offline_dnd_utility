@@ -1,22 +1,16 @@
 import unittest
 import database
-import account
-import player
-import inventory
 import sql
 import setup
-import sqlite3
-import os
+# import os
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
 
-# TODO: Write some tests that use actual (in memory) database
-
 class TestDatabase(unittest.TestCase):
 
     def setUp(self):
-        self.conn = database.create_connection(db)
+        self.conn = database.create_connection(mem)
         setup.create_schema(self.conn)
         self.assertFalse(setup.wrong_schema(self.conn))
         setup.stock_stores(self.conn)
@@ -54,7 +48,7 @@ class TestDatabase(unittest.TestCase):
 
     def tearDown(self):
         self.conn.close()
-        os.remove('C:\\sqlite\\db\\test.db')
+        # os.remove('C:\\sqlite\\db\\test.db')
 
     def test_queries(self):
         self.assertEqual(sql.execute_fetchone_sql(self.conn, sql.sql_username_password()), ('acc1', 'pass1'))
