@@ -1,7 +1,5 @@
 # Inventory class. Used to keep track of current inventory selected.
 # This allows items to capture the inventory_id value.
-import database
-import api
 
 
 class Inventory:

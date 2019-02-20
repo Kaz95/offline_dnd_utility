@@ -13,35 +13,7 @@ mem = ':memory:'
 # TODO consider refactoring to a single .executemany()
 # Four sqlite statements which create the database schema.
 def create_schema(conn):
-    # con = database.create_connection(db)
     with conn:
-        # accounts = """CREATE TABLE IF NOT EXISTS accounts (
-        #        id integer PRIMARY KEY,
-        #        username varchar NOT NULL,
-        #        password varchar NOT NULL);"""
-
-        # characters = """CREATE TABLE IF NOT EXISTS characters (
-        #        id integer PRIMARY KEY,
-        #        account_id integer,
-        #        name text,
-        #        currency integer,
-        #        FOREIGN KEY (account_id) REFERENCES accounts (id));"""
-        #
-        # inventories = """CREATE TABLE IF NOT EXISTS inventories (
-        #        id integer PRIMARY KEY,
-        #        character_id integer,
-        #        name text,
-        #        FOREIGN KEY (character_id) REFERENCES characters (id));"""
-        #
-        # items = """CREATE TABLE IF NOT EXISTS items (
-        #        id integer PRIMARY KEY,
-        #        inventory_id integer,
-        #        item text,
-        #        api varchar,
-        #        quantity integer,
-        #        store text,
-        #        FOREIGN KEY (inventory_id) REFERENCES inventories (id));"""
-
         sql.execute_sql(conn, sql.sql_accounts_table())
         sql.execute_sql(conn, sql.sql_characters_table())
         sql.execute_sql(conn, sql.sql_inventories_table())
@@ -49,6 +21,7 @@ def create_schema(conn):
 
 
 # Verifies database setup correctly
+# You want a False return
 def wrong_schema(conn):
     schema = ['accounts', 'characters', 'inventories', 'items']
     with conn:
@@ -68,22 +41,24 @@ def wrong_schema(conn):
 # TODO database_integration_test
 # TODO comment this shit.
 def stock_stores(conn):
-    store_dict = stores.stores()
-    # conn = database.create_connection(db)
+    store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
     with conn:
         url = api.make_api_url('equipment')
         response = api.call_api(url)
         response_dict = api.get_api_all(response)
-        usable_dict = api.get_nested_api_dict(response_dict, 'results')
+        usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
         for dic in usable_dict:
             temp = {}
             for k, v in dic.items():
-                if not temp:
-                    temp['item'] = v
+                if not temp:    # If temp dictionary is empty
+                    temp['item'] = v    # add value with key 'item'
                 else:
-                    temp['api'] = v
-                if v[0:37] == url:
-                    num = api.regex(v, 'equipment/')
+                    temp['api'] = v     # add value with key 'api'
+                if v[0:37] == url:  # if one of those values beings with a url like string
+                    num = api.regex(v, 'equipment/')    # slices number off url and captures as variable
+
+                    # This logic compares the captured number to the numbers in the dict imported earlier
+                    # Then it adds a 'store':'some_store' key:value to the temp dictionary
                     if num in store_dict['GS']:
                         temp['store'] = 'General Store'
                     elif num in store_dict['BS']:
@@ -95,6 +70,7 @@ def stock_stores(conn):
                     else:
                         temp['store'] = 'No Store'
 
+            # adds an item to a store table based on information stored in dictionary
             database.add_store_item(conn, sql.sql_add_store_item(), temp)
 
 

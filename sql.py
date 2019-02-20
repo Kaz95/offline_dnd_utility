@@ -1,7 +1,7 @@
-import sqlite3
+import sqlite3  # required for a mock
 
 
-# Modular sqlite execute function which is passed a connection and some sql
+# Modular sqlite execute functions which are passed a connection and some sql
 def execute_sql(con, sql_statement, *args):
     cur = con.cursor()
     cur.execute(sql_statement, args)
@@ -21,43 +21,6 @@ def execute_fetchall_sql(con, sql_statement, *args):
 
 
 # SQL statements
-
-
-# CREATE TABLE
-# def sql_accounts_table():
-#     return """CREATE TABLE IF NOT EXISTS accounts (
-#                id integer PRIMARY KEY,
-#                username varchar NOT NULL,
-#                password varchar NOT NULL);"""
-#
-#
-# def sql_characters_table():
-#     return """CREATE TABLE IF NOT EXISTS characters (
-#                id integer PRIMARY KEY,
-#                account_id integer,
-#                name text,
-#                currency integer,
-#                FOREIGN KEY (account_id) REFERENCES accounts (id));"""
-#
-#
-# def sql_inventories_table():
-#     return """CREATE TABLE IF NOT EXISTS inventories (
-#                id integer PRIMARY KEY,
-#                character_id integer,
-#                name text,
-#                FOREIGN KEY (character_id) REFERENCES characters (id));"""
-#
-#
-# def sql_items_table():
-#     return """CREATE TABLE IF NOT EXISTS items (
-#                id integer PRIMARY KEY,
-#                inventory_id integer,
-#                item text,
-#                api varchar,
-#                quantity integer,
-#                store text,
-#                FOREIGN KEY (inventory_id) REFERENCES inventories (id));"""
-#
 
 
 # CREATE TABLE
@@ -105,8 +68,6 @@ def sql_items_table():
 def sql_check_table_schema():
     return "SELECT name FROM sqlite_master WHERE type='table';"
 
-# INSERT
-
 
 # QUERY
 def sql_username_password():
@@ -148,9 +109,6 @@ def sql_all_inventory_names():
 def sql_query_accounts_with_characters():
     return """SELECT DISTINCT account_id FROM characters;"""
 
-# def sql_query_accounts_with_characters():
-#     return """SELECT id FROM accounts INTERSECT SELECT account_id FROM characters;"""
-
 
 # Delete
 
@@ -158,9 +116,8 @@ def sql_delete(table, where):
     return """DELETE FROM {} WHERE {} = ?""".format(table, where)
 
 
+# INSERT
 # TODO: test these
-# Query
-
 def sql_add_item_row():
     return """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
             VALUES(?,?,?,?,?,?)"""

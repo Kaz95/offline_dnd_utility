@@ -9,6 +9,7 @@ mem = ':memory:'
 
 # Player Class. Holds player_id(Primary Key of characters table), character name, currency, and player inventories.
 class Player:
+
     # TODO: unit_integration_test: FIXTURE REQUIRED
     # [{'name': 'some name', 'url': 'some url'}, {'name': 'some name', 'url': 'some url'}]
     list_of_dics = api.get_nested_api_dict(api.get_api_all(api.call_api(api.make_api_url('equipment'))), 'results')
@@ -22,7 +23,6 @@ class Player:
     # Inventory management
     def add_item(self, conn, item, account_id, cur_inventory_id):
         url = api.get_item_url(item, Player.list_of_dics)
-        # item_info = (account_id, self.id, cur_inventory_id, item, url, 1)
         item_info = {'acc_id': account_id, 'char_id': self.id, 'inv_id': cur_inventory_id, 'item': item, 'api': url,
                      'quant': 1}
         database.add_item_row(conn, sql.sql_add_item_row(), item_info)
@@ -45,14 +45,13 @@ class Player:
     # Gets item price info and adds/subtracts it to/from currency dictionary based on [unit] key.
     # See convert_price_info in api.py for more information on conversion.
     def buy_sell(self, item, action=None):
-        # item_and_url = api.get_api_info(item, Player.list_of_dics)
         url = api.get_item_url(item, Player.list_of_dics)
         item_info = api.get_api_all(api.call_api(url))
         item_cost = api.get_nested_api_dict(item_info, 'cost')
         value = api.convert_price_info(item_cost)
         if action == 'buy':
             if value > self.currency:
-                print('not enough currency')
+                print('not enough currency')  # TODO remove when GUI
             else:
                 print('---item bought---')  # TODO remove when GUI
                 self.currency -= value

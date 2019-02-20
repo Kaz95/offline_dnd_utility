@@ -17,9 +17,8 @@ class Account:
         self.password = password
 
 
-# Creates new admin account. Adds information to accounts table in database.
+# Creates new account. Adds information to accounts table in database.
 def user_creates_account(conn, username, password):
-    # connection = database.create_connection(db)
     with conn:
         account_info = {'user': username, 'pass': password}
         database.add_account_row(conn, sql.sql_add_account_row(), account_info)
@@ -27,15 +26,15 @@ def user_creates_account(conn, username, password):
 
 # Loads all account username/password information and stores as key:value pairs in Account.log_in_dict.
 def load_account_archive(conn):
-    # conn = database.create_connection(db)
     with conn:
         a = sql.execute_fetchall_sql(conn, sql.sql_username_password())
         for i in a:
             Account.log_in_dic[i[0]] = i[1]
 
 
-# TODO: unit_integration_test
-# Requests username/password from user. Returns username if authenticated
+# TODO: test
+# Returns username if authenticated. Else loops back to login
+# TODO: refactor for GUI
 def log_in(conn, username, password):
     load_account_archive(conn)  # Loads account info for authentication.
     if username in Account.log_in_dic and Account.log_in_dic[username] == password:
@@ -45,10 +44,9 @@ def log_in(conn, username, password):
         log_in(conn, username, password)
 
 
-# TODO: unit_integration_test
+# TODO: test
 # query ALL account information from accounts table based on username. Returns Account object based on query.
 def load_account_object(conn, username):
-    # conn = database.create_connection(db)
     with conn:
         p1_info = list(sql.execute_fetchone_sql(conn, sql.sql_account_row(), username))
         acc = Account(p1_info[0], p1_info[1], p1_info[2])

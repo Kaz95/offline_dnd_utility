@@ -4,6 +4,9 @@ import sql
 #
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
+# TODO: Write query functions similar to the add functions i have now.
+# TODO: This will allow a dictionary to be passed. Meaning my variables can be passed unordered
+# TODO: Refactor database integration tests when this is done.
 
 
 # Creates a connection to test.db
@@ -31,107 +34,60 @@ def create_connection(db_path):
 #         else:
 #             return True
 
-# SQL statements
-
-
-# def execute_sql_2(con, sql_statement, var=None):
-#     cur = con.cursor()
-#     cur.execute(sql_statement, var)
-
-
-# def execute_fetchone_sql_2(con, sql_statement, var=None):
-#     cur = con.cursor()
-#     if var is not None:
-#         cur.execute(sql_statement, var)
-#     else:
-#         cur.execute(sql_statement)
-#
-#     return cur.fetchone()
-
-
-# def execute_fetchall_sql_2(con, sql_statement, var=None):
-#     cur = con.cursor()
-#     if var is not None:
-#         cur.execute(sql_statement, var)
-#     else:
-#         cur.execute(sql_statement)
-#
-#     return cur.fetchall()
-
 
 # INSERT
 
 
-# Inserts given values into accounts table at given columns. Returns last row id.
+# Inserts given values into accounts table at given columns.
 def add_account_row(conn, some_sql, some_account):
-    # some_sql = """INSERT INTO accounts (username, password)
-    #         VALUES(?,?)"""
-
     sql.execute_sql(conn, some_sql, some_account['user'], some_account['pass'])
-    # cursor = conn.cursor()
-    # cursor.execute(sql, some_account)
 
 
-# Inserts given values into accounts table at given columns. Returns last row id.
+# Inserts given values into accounts table at given columns.
 def add_inventory_row(conn, some_sql, some_inventory):
-    # some_sql = """INSERT INTO inventories (account_id, character_id, name)
-    #         VALUES(?,?,?)"""
     sql.execute_sql(conn, some_sql, some_inventory['acc_id'], some_inventory['char_id'], some_inventory['name'])
 
 
-# Inserts given values into accounts table at given columns. Returns last row id.
+# Inserts given values into accounts table at given columns.
 def add_character_row(conn, some_sql, some_character):
-    # some_sql = """INSERT INTO characters (account_id, name, currency)
-    #         VALUES(?,?,?)"""
     sql.execute_sql(conn, some_sql, some_character['acc_id'], some_character['name'], some_character['currency'])
 
 
-# Inserts given values into accounts table at given columns. Returns last row id.
+# Inserts given values into accounts table at given columns.
 def add_item_row(conn, some_sql, some_item):
-    # some_sql = """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
-    #         VALUES(?,?,?,?,?,?)"""
     sql.execute_sql(conn, some_sql, some_item['acc_id'], some_item['char_id'], some_item['inv_id'], some_item['item'],
                     some_item['api'], some_item['quant'])
 
 
-# Used to populate stores
-def add_store_item(con, some_sql, item_info):
-    # some_sql = """INSERT INTO items (item, api, store)
-    #          VALUES(?,?,?)"""
-    sql.execute_sql(con, some_sql, item_info['item'], item_info['api'], item_info['store'])
+# Used to populate store tables
+def add_store_item(conn, some_sql, item_info):
+    sql.execute_sql(conn, some_sql, item_info['item'], item_info['api'], item_info['store'])
 
 
 # TODO Reminder: Complex is better than complicated. Remember the shit block. Never forget.
 def query_accounts_with_characters(conn, some_sql):
     temp = []
-    # sql = """SELECT DISTINCT account_id FROM characters;"""
     account_id_list = sql.execute_fetchall_sql(conn, some_sql)
-    # print(account_id_list)
     for tup in account_id_list:
-        # print(tup)
         temp.append(tup[0])
     return temp
-#
-#
-#
-# def query_characters_with_inventories(conn,  some_sql):
-#     temp = []
-#     # sql = """SELECT DISTINCT character_id FROM inventories;"""
-#     account_id_list = sql.execute_fetchall_sql(conn, some_sql)
-#     print(account_id_list)
-#     for tup in account_id_list:
-#         # print(tup)
-#         temp.append(tup[0])
-#     return temp
+
+
+def query_characters_with_inventories(conn,  some_sql):
+    temp = []
+    account_id_list = sql.execute_fetchall_sql(conn, some_sql)
+    print(account_id_list)
+    for tup in account_id_list:
+        temp.append(tup[0])
+    return temp
 
 
 # SELECT
 
-
 def count_rows(conn, some_sql, some_table):
     new_sql = some_sql.format(some_table)
-    yup = sql.execute_fetchone_sql(conn, new_sql)
-    return yup
+    count_tuple = sql.execute_fetchone_sql(conn, new_sql)
+    return count_tuple
 
 
 if __name__ == '__main__':
