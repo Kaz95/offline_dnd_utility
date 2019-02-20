@@ -3,7 +3,7 @@ from tkinter import ttk
 from database import create_connection, count_rows
 from stores import stores
 import sql
-# TODO Refactor element names to be more modular. 'Title Label' for example.
+
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
@@ -16,7 +16,6 @@ def screen_size(root):
     return {'w': width, 'h': height}
 
 
-# TODO: This is a quick and dirty solution
 def center(root, dash=None):
     cur_size = screen_size(root)
     ws = root.winfo_screenwidth()

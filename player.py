@@ -5,8 +5,6 @@ db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
 
-# TODO Comment/clean-up
-
 # Player Class. Holds player_id(Primary Key of characters table), character name, currency, and player inventories.
 class Player:
 

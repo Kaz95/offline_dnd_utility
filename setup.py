@@ -9,7 +9,6 @@ db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
 
-# TODO database_integration_test
 # TODO consider refactoring to a single .executemany()
 # Four sqlite statements which create the database schema.
 def create_schema(conn):
@@ -38,8 +37,6 @@ def wrong_schema(conn):
             return True
 
 
-# TODO database_integration_test
-# TODO comment this shit.
 def stock_stores(conn):
     store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
     with conn:
