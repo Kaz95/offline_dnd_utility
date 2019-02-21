@@ -34,7 +34,6 @@ def load_account_archive(conn):
 
 # TODO: test
 # Returns username if authenticated. Else loops back to login
-# TODO: refactor for GUI
 def log_in(conn, username, password):
     load_account_archive(conn)  # Loads account info for authentication.
     if username in Account.log_in_dic and Account.log_in_dic[username] == password:

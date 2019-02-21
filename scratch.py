@@ -1,11 +1,20 @@
 from tkinter import *
 from tkinter import ttk
-from database import create_connection, count_rows
 from stores import stores
 import sql
+import account
+import setup
+import database
+
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 selected = {'selected': 'none'}
+
+# Setup in mem DB for testing purposes
+conn = database.create_connection(mem)
+setup.create_schema(conn)
+if not setup.wrong_schema(conn):
+    setup.stock_stores(conn)
 
 
 # Methods
@@ -77,9 +86,9 @@ def print_button(some_callback):
 
 
 def populate_tree(some_tree, some_store):
-    conn = create_connection(db)
+    # conn = create_connection(db)
     with conn:
-        for i in range(count_rows(conn, sql.sql_count_rows(), 'items')[0]):
+        for i in range(database.count_rows(conn, sql.sql_count_rows(), 'items')[0]):
             d = {}
             i += 1
             k = """SELECT id, item FROM items WHERE id = ? AND store = ?;"""
@@ -275,12 +284,24 @@ def dashboard():
     center([832, 630])
 
 
+# Button functions (backend integration)
+
+def signup_page_signup_command():
+    account.user_creates_account(conn, username_entry.get(), password_entry.get())
+    log_in_page()
+
+
+def login_page_login_command():
+    account.log_in(conn, username_entry.get(), password_entry.get())
+    character_creation_page()
+
+
 # Button
 
-login_page_login_button = ttk.Button(text='Log-in', command=character_creation_page)
+login_page_login_button = ttk.Button(text='Log-in', command=login_page_login_command)
 login_page_signup_button = ttk.Button(text='Sign-up', command=sign_up_page)
 signup_page_login_button = ttk.Button(text='Log-in', command=log_in_page)
-signup_page_signup_button = ttk.Button(text='Sign-up', command=log_in_page)
+signup_page_signup_button = ttk.Button(text='Sign-up', command=signup_page_signup_command)
 create_character_button = ttk.Button(text='Create', command=character_selection_page)
 logout_button = ttk.Button(text='Log-out', command=log_in_page)
 select_button = ttk.Button(text='Select', command=dashboard)
