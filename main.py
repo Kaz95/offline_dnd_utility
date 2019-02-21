@@ -41,14 +41,21 @@ def main_menu(conn):
 
 
 # Working model for character creation
-def character_creation(conn):
+# def character_creation(conn):
     # current_account = None
     # connection = database.create_connection(db)
-    with conn:
-        print('name character')
-        name = input()
+    # with conn:
+    #     print('name character')
+    #     name = input()
+    #     character_info = (cur_account.id, name, 5000)
+        # character_info = {'acc_id': cur_account.id, 'name': name, 'currency': 5000}
+        # database.add_character_row(conn, sql.sql_add_character_row(), character_info)
+
+
+# Working model for character creation
+def character_creation(conn, name, currency):
         # character_info = (cur_account.id, name, 5000)
-        character_info = {'acc_id': cur_account.id, 'name': name, 'currency': 5000}
+        character_info = {'acc_id': cur_account.id, 'name': name, 'currency': currency}
         database.add_character_row(conn, sql.sql_add_character_row(), character_info)
 
 

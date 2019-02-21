@@ -8,6 +8,8 @@ import database
 
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
+
+user_info = {'acc': None, 'char': None, 'inv': None}
 selected = {'selected': 'none'}
 
 # Setup in mem DB for testing purposes
@@ -18,6 +20,38 @@ if not setup.wrong_schema(conn):
 
 
 # Methods
+
+def log_out():
+    print('-----Logged Out-----')
+    user_info['acc'] = None
+    user_info['char'] = None
+    user_info['inv'] = None
+
+
+# Working model for character creation
+def character_creation(name, currency):
+        # character_info = (cur_account.id, name, 5000)
+        character_info = {'acc_id': user_info['acc'].id, 'name': name, 'currency': currency}
+        database.add_character_row(conn, sql.sql_add_character_row(), character_info)
+
+
+def populate_combo():
+    temp = []
+    acc_id = user_info['acc'].id
+    characters = sql.execute_fetchall_sql(conn, sql.sql_all_characters(), acc_id)
+    for c in characters:
+        temp.append(c[0])
+    chars_combo['values'] = temp
+
+
+# def populate_combo1():
+#     chars_combo['values'] = ['1', '2', '3']
+
+
+def clear_entry(some_entry):
+    some_entry.delete(0, 'end')
+
+
 def populate_all_trees():
     populate_tree(shipyard_treeview, 'Shipyard')
     populate_tree(general_store_treeview, 'General Store')
@@ -156,15 +190,17 @@ password_label = ttk.Label(text='Password')
 
 # Entry
 
-password_entry = ttk.Entry()
-username_entry = ttk.Entry()
+login_page_password_entry = ttk.Entry()
+login_page_username_entry = ttk.Entry()
+signup_page_password_entry = ttk.Entry()
+signup_page_username_entry = ttk.Entry()
 name_entry = ttk.Entry()
 currency_entry = ttk.Entry()
 
 
 # Combo
-
-chars_combo = ttk.Combobox(values=['1', '2', '3'])
+chars_combo = ttk.Combobox(postcommand=populate_combo)
+# chars_combo = ttk.Combobox(values=['1', '2', '3'])
 
 
 # Treeviews
@@ -183,22 +219,28 @@ def log_in_page():
     clear()
     title_login_label.grid(column=0, row=0, sticky=W+E)
     username_label.grid(column=0, row=1)
-    username_entry.grid(column=0, row=2)
+    login_page_username_entry.grid(column=0, row=2)
     password_label.grid(column=0, row=3)
-    password_entry.grid(column=0, row=4)
+    login_page_password_entry.grid(column=0, row=4)
     login_page_login_button.grid(column=0, row=5)
     login_page_signup_button.grid(column=0, row=6)
+    clear_entry(login_page_username_entry)
+    clear_entry(login_page_password_entry)
+    login_page_username_entry.focus()
 
 
 def sign_up_page():
     clear()
     title_signup_label.grid(column=0, row=0, sticky=W + E)
     username_label.grid(column=0, row=1)
-    username_entry.grid(column=0, row=2)
+    signup_page_username_entry.grid(column=0, row=2)
     password_label.grid(column=0, row=3)
-    password_entry.grid(column=0, row=4)
+    signup_page_password_entry.grid(column=0, row=4)
     signup_page_signup_button.grid(column=0, row=5)
     signup_page_login_button.grid(column=0, row=6)
+    clear_entry(signup_page_username_entry)
+    clear_entry(signup_page_password_entry)
+    signup_page_username_entry.focus()
 
 
 def character_creation_page():
@@ -287,13 +329,26 @@ def dashboard():
 # Button functions (backend integration)
 
 def signup_page_signup_command():
-    account.user_creates_account(conn, username_entry.get(), password_entry.get())
+    account.user_creates_account(conn, signup_page_username_entry.get(), signup_page_password_entry.get())
     log_in_page()
 
 
 def login_page_login_command():
-    account.log_in(conn, username_entry.get(), password_entry.get())
+    account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
+    user_info['acc'] = account.load_account_object(conn, login_page_username_entry.get())
     character_creation_page()
+
+
+def create_character_command():
+    name = name_entry.get()
+    currency = currency_entry.get()
+    character_creation(name, currency)
+    character_selection_page()
+
+
+def logout_command():
+    log_out()
+    log_in_page()
 
 
 # Button
@@ -302,8 +357,8 @@ login_page_login_button = ttk.Button(text='Log-in', command=login_page_login_com
 login_page_signup_button = ttk.Button(text='Sign-up', command=sign_up_page)
 signup_page_login_button = ttk.Button(text='Log-in', command=log_in_page)
 signup_page_signup_button = ttk.Button(text='Sign-up', command=signup_page_signup_command)
-create_character_button = ttk.Button(text='Create', command=character_selection_page)
-logout_button = ttk.Button(text='Log-out', command=log_in_page)
+create_character_button = ttk.Button(text='Create', command=create_character_command)
+logout_button = ttk.Button(text='Log-out', command=logout_command)
 select_button = ttk.Button(text='Select', command=dashboard)
 delete_button = ttk.Button(text='Delete')
 sell = ttk.Button(text='Sell', command=lambda: sell_item_gui(selected['selected']))
