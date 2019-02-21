@@ -1,6 +1,4 @@
 import pyautogui
-import gui
-import time
 # pyautogui.PAUSE = 2
 pyautogui.FAILSAFE = True
 
