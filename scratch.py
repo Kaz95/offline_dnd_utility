@@ -5,6 +5,7 @@ import sql
 import account
 import setup
 import database
+import player
 
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
@@ -40,7 +41,7 @@ def populate_combo():
     acc_id = user_info['acc'].id
     characters = sql.execute_fetchall_sql(conn, sql.sql_all_characters(), acc_id)
     for c in characters:
-        temp.append(c[0])
+        temp.append(c[1])
     chars_combo['values'] = temp
 
 
@@ -261,6 +262,8 @@ def character_selection_page():
     chars_combo.grid(column=0, row=2)
     select_button.grid(column=0, row=3)
     delete_button.grid(column=0, row=4)
+    logout_button.grid(column=0, row=5, sticky=W+S)
+    character_selection_button.grid(column=0, row=5, sticky=E+S)
 
 
 def dashboard():
@@ -351,6 +354,26 @@ def logout_command():
     log_in_page()
 
 
+def delete_command():
+    temp = {}
+    char_selected = chars_combo.get()
+    acc_id = user_info['acc'].id
+    characters = sql.execute_fetchall_sql(conn, sql.sql_all_characters(), acc_id)
+    for c in characters:
+        temp[c[1]] = c[0]
+    char_id = temp[char_selected]
+    database.delete_character(conn, char_id)
+    clear_entry(chars_combo)
+    print('-----character deleted-----')
+    root.update()
+
+
+def select_command():
+    user_info['char'] = player.load_player_object(conn, chars_combo.get())
+    print(user_info)
+    dashboard()
+
+
 # Button
 
 login_page_login_button = ttk.Button(text='Log-in', command=login_page_login_command)
@@ -359,8 +382,9 @@ signup_page_login_button = ttk.Button(text='Log-in', command=log_in_page)
 signup_page_signup_button = ttk.Button(text='Sign-up', command=signup_page_signup_command)
 create_character_button = ttk.Button(text='Create', command=create_character_command)
 logout_button = ttk.Button(text='Log-out', command=logout_command)
-select_button = ttk.Button(text='Select', command=dashboard)
-delete_button = ttk.Button(text='Delete')
+character_selection_button = ttk.Button(text='Character selection', command=character_selection_page)
+select_button = ttk.Button(text='Select', command=select_command)
+delete_button = ttk.Button(text='Delete', command=delete_command)
 sell = ttk.Button(text='Sell', command=lambda: sell_item_gui(selected['selected']))
 dummy = ttk.Button(root, text='Test')
 buy = ttk.Button(text='Buy', command=lambda: buy_item_gui(selected['selected']))

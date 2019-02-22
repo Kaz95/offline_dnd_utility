@@ -81,7 +81,7 @@ class TestSQL(unittest.TestCase):
 
     def test_sql_all_characters(self):
         self.assertEqual(sql.sql_all_characters(),
-                         """SELECT name, currency FROM characters WHERE account_id = ?;""")
+                         """SELECT id, name, currency FROM characters WHERE account_id = ?;""")
 
     def test_sql_accounts_with_characters(self):
         self.assertEqual(sql.sql_accounts_with_characters(),

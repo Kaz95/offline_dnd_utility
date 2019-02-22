@@ -57,6 +57,13 @@ class Player:
             self.currency += value
 
 
+def load_player_object(conn, char_name):
+    with conn:
+        p1_info = sql.execute_fetchone_sql(conn, sql.sql_character_row(), char_name)
+        player = Player(p1_info[0], p1_info[1], p1_info[2], [])
+        return player
+
+
 if __name__ == '__main__':
     a = Player(1, 'kaz', 5000, [8])
     a.buy_sell('Dagger', 'buy')

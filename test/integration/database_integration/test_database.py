@@ -55,7 +55,7 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(sql.execute_fetchone_sql(self.conn, sql.sql_account_row(), self.account2[0]), (2, 'acc2', 'pass2'))
         self.assertEqual(sql.execute_fetchone_sql(self.conn, sql.sql_character_row(), self.player2[1]), (2, 'char2', 5000))
         self.assertEqual(sql.execute_fetchone_sql(self.conn, sql.sql_inventory_row(), self.inventory1[2]), (1, 'inv1'))
-        self.assertEqual(sql.execute_fetchall_sql(self.conn, sql.sql_all_characters(), self.player2[0]), [('char2', 5000), ('char3', 5000)])
+        self.assertEqual(sql.execute_fetchall_sql(self.conn, sql.sql_all_characters(), self.player2[0]), [(2, 'char2', 5000), (3, 'char3', 5000)])
         self.assertEqual(sql.execute_fetchall_sql(self.conn, sql.sql_accounts_with_characters()), [(1,), (2,)])
         self.assertEqual(sql.execute_fetchall_sql(self.conn, sql.sql_characters_with_inventories()), [(1,), (2,), (3,)])
         self.assertEqual(sql.execute_fetchall_sql(self.conn, sql.sql_characters_inventory_ids(), 1), [(1,)])

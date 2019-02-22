@@ -90,6 +90,22 @@ def count_rows(conn, some_sql, some_table):
     return count_tuple
 
 
+# Delete
+
+def delete_character_items(conn, char_id):
+    sql.execute_sql(conn, sql.sql_delete('items', 'character_id'), char_id)
+
+
+def delete_character_inventories(conn, char_id):
+    sql.execute_sql(conn, sql.sql_delete('inventories', 'character_id'), char_id)
+
+
+def delete_character(conn, char_id):
+    delete_character_items(conn, char_id)
+    delete_character_inventories(conn, char_id)
+    sql.execute_sql(conn, sql.sql_delete('characters', 'id'), char_id)
+
+
 if __name__ == '__main__':
     acc = ('username', 'password')
     inv = (1, 'inv name')

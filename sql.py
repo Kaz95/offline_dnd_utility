@@ -87,7 +87,7 @@ def sql_inventory_row():
 
 
 def sql_all_characters():
-    return """SELECT name, currency FROM characters WHERE account_id = ?;"""
+    return """SELECT id, name, currency FROM characters WHERE account_id = ?;"""
 
 
 def sql_accounts_with_characters():
