@@ -92,34 +92,38 @@ def count_rows(conn, some_sql, some_table):
 
 # Delete
 
-def delete_character_items(conn, char_id):
-    sql.execute_sql(conn, sql.sql_delete('items', 'character_id'), char_id)
+def delete_item(conn, item, inv_id):
+    sql.execute_sql(conn, sql.sql_delete_item(), item, inv_id)
+
+
+def delete_all_character_items(conn, char_id):
+    sql.execute_sql(conn, sql.sql_delete_all('items', 'character_id'), char_id)
 
 
 def delete_character_inventories(conn, char_id):
-    sql.execute_sql(conn, sql.sql_delete('inventories', 'character_id'), char_id)
+    sql.execute_sql(conn, sql.sql_delete_all('inventories', 'character_id'), char_id)
 
 
 def delete_character(conn, char_id):
-    delete_character_items(conn, char_id)
+    delete_all_character_items(conn, char_id)
     delete_character_inventories(conn, char_id)
-    sql.execute_sql(conn, sql.sql_delete('characters', 'id'), char_id)
+    sql.execute_sql(conn, sql.sql_delete_all('characters', 'id'), char_id)
 
 
-if __name__ == '__main__':
-    acc = ('username', 'password')
-    inv = (1, 'inv name')
-    char = (1, 'char name', 420)
-    item = (2, 2, 2, 'item name', 'api url', 1)
-    account1 = {'user': 'kaza', 'pass': 'tree'}
-    character1 = {'acc_id': 1, 'name': 'char name', 'currency': 5000}
-    inventory1 = {'acc_id': 1, 'char_id': 1, 'name': 'inv name'}
-    item1 = {'acc_id': 1, 'char_id': 1, 'inv_id': 1, 'item': 'item name', 'api': 'api url', 'quant': 1}
-    # con = create_connection(db)
+# if __name__ == '__main__':
+#     acc = ('username', 'password')
+#     inv = (1, 'inv name')
+#     char = (1, 'char name', 420)
+#     item = (2, 2, 2, 'item name', 'api url', 1)
+#     account1 = {'user': 'kaza', 'pass': 'tree'}
+#     character1 = {'acc_id': 1, 'name': 'char name', 'currency': 5000}
+#     inventory1 = {'acc_id': 1, 'char_id': 1, 'name': 'inv name'}
+#     item1 = {'acc_id': 1, 'char_id': 1, 'inv_id': 1, 'item': 'item name', 'api': 'api url', 'quant': 1}
+#     con = create_connection(db)
     # with con:
-        # add_account_row(con, account1)
-        # add_inventory_row(con, inv)
-        # add_character_row(con, char)
+        # add_account_row(con, sql.sql_add_account_row(), account1)
+        # add_inventory_row(con, sql.sql_add_inventory_row(), inventory1)
+        # add_character_row(con, sql.sql_add_character_row(), character1)
         # add_item_row(con, sql.sql_add_item_row(), item1)
 
         # modular queries
@@ -144,7 +148,28 @@ if __name__ == '__main__':
         # print('7', query_characters_with_inventories(con, sql.sql_characters_with_inventories()))
         # print(count_rows(con, 'items'))
 
-if __name__ == '__main__':
-    con = create_connection(db)
-    with con:
-        print(count_rows(con, sql.sql_count_rows(), 'items')[0])
+
+def item_in_inventory_add(conn, inv_id, item):
+    with conn:
+        items_in_inv = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
+        # print(items_in_inv)8
+        for i in items_in_inv:
+            if item in i:
+                int_quant = int(i[1])
+                int_quant += 1
+                sql.execute_sql(conn, sql.update_quantity(), int_quant, i[0], inv_id)
+                return True
+        return False
+
+
+def item_in_inventory_minus(conn, inv_id, item):
+    with conn:
+        items_in_inv = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
+        # print(items_in_inv)8
+        for i in items_in_inv:
+            if item in i:
+                int_quant = int(i[1])
+                int_quant -= 1
+                sql.execute_sql(conn, sql.update_quantity(), int_quant, i[0], inv_id)
+                return True
+        return False

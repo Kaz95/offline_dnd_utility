@@ -110,10 +110,22 @@ def sql_query_accounts_with_characters():
     return """SELECT DISTINCT account_id FROM characters;"""
 
 
+def sql_query_items_in_inventory():
+    return """SELECT item, quantity FROM items WHERE inventory_id = ?"""
+
+
+def sql_item_quantity():
+    return """SELECT quantity FROM items where item = ? AND inventory_id = ?"""
+
+
 # Delete
 
-def sql_delete(table, where):
+def sql_delete_all(table, where):
     return """DELETE FROM {} WHERE {} = ?""".format(table, where)
+
+
+def sql_delete_item():
+    return """DELETE FROM items WHERE item = ? AND inventory_id = ?"""
 
 
 # INSERT
@@ -145,3 +157,9 @@ def sql_add_store_item():
 
 def sql_count_rows():
     return """SELECT count(*) FROM {};"""
+
+
+# TODO: Test this
+# Update
+def update_quantity():
+    return """UPDATE items SET quantity = ? WHERE item = ? AND inventory_id = ?"""

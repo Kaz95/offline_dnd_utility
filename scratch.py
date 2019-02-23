@@ -6,21 +6,32 @@ import account
 import setup
 import database
 import player
+# TODO: Needs updating
 
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
-user_info = {'acc': None, 'char': None, 'inv': None}
-selected = {'selected': 'none'}
+user_info = {'acc': None, 'char': None, 'inv': 1}
+
+# selected = {'selected': 'none'}
+gen_selected = {'selected': 'none'}
+bs_selected = {'selected': 'none'}
+stable_selected = {'selected': 'none'}
+ship_selected = {'selected': 'none'}
+inv_selected = {'selected': 'none'}
+recent_selection = {'selected': 'None'}
 
 # Setup in mem DB for testing purposes
-conn = database.create_connection(mem)
+conn = database.create_connection(db)
 setup.create_schema(conn)
 if not setup.wrong_schema(conn):
     setup.stock_stores(conn)
 
 
 # Methods
+def new_selection(some_selection):
+    recent_selection['selected'] = some_selection
+
 
 def log_out():
     print('-----Logged Out-----')
@@ -63,46 +74,154 @@ def populate_all_trees():
 def shipyard_callback(event):
     # print(shipyard_treeview.selection())  # Gets tuple with id as first value
     # # print(treeview.set('I001', 'quantity'))
-    # # print(treeview.item('I001'))
+    # print(shipyard_treeview.item('I001'))
     # tup = shipyard_treeview.selection()
     # # Gets value of quantity for item selected.
     # # Quantity can be swapped for another column
     # print(shipyard_treeview.set(tup[0], 'quantity'))
     # print(shipyard_treeview.item(tup[0])['text'])    # Gets name of item selected
-    selected['selected'] = shipyard_treeview.selection()
+    ship_selected['selected'] = shipyard_treeview.selection()
+    new_selection(ship_selected['selected'])
 
 
 def general_store_callback(event):
-    selected['selected'] = general_store_treeview.selection()
+    gen_selected['selected'] = general_store_treeview.selection()
+    new_selection(gen_selected['selected'])
 
 
 def blacksmith_callback(event):
-    selected['selected'] = blacksmith_treeview.selection()
+    bs_selected['selected'] = blacksmith_treeview.selection()
+    new_selection(bs_selected['selected'])
 
 
 def stables_callback(event):
-    selected['selected'] = stables_treeview.selection()
+    stable_selected['selected'] = stables_treeview.selection()
+    new_selection(stable_selected['selected'])
 
 
 def inventory_callback(event):
-    selected['selected'] = inventory_treeview.selection()
+    try:
+        blacksmith_treeview.selection_toggle(bs_selected['selected'])
+        general_store_treeview.selection_toggle(gen_selected['selected'])
+        stables_treeview.selection_toggle(stable_selected['selected'])
+        shipyard_treeview.selection_toggle(ship_selected['selected'])
+    except TclError:
+        pass
+
+    inv_selected['selected'] = inventory_treeview.selection()
     print(inventory_treeview.selection())
+    print(inventory_treeview.item(inventory_treeview.selection(), 'text'))
+    new_selection(inv_selected['selected'])
+    print(recent_selection['selected'])
+
+
+def new_inventory_quantity(some_item):
+    inventory_treeview.set(some_item, 'quantity', 1)
+
+
+def add_one_inventory_quantity(some_item):
+    quantity = inventory_treeview.set(some_item, 'quantity')
+    # quantity = int(quantity)
+    quantity += 1
+    inventory_treeview.set(some_item, 'quantity', quantity)
+
+
+def minus_one_inventory_quantity(some_item):
+    quantity = inventory_treeview.set(some_item, 'quantity')
+    # quantity = int(quantity)
+    quantity -= 1
+    inventory_treeview.set(some_item, 'quantity', quantity)
+
+
+def inv_tree_dictionary(some_tup):
+    temp = {}
+    for i in some_tup:
+        temp[i] = inventory_treeview.item(i, 'text')
+    return temp
+
+
+def inv_tree_dictionary2(some_tup):
+    temp = {}
+    for i in some_tup:
+        temp[inventory_treeview.item(i, 'text')] = i
+    return temp
 
 
 def buy_item_gui(some_callback):
     dic = stores()
-    if some_callback[0] in dic['Ship']:
-        inventory_treeview.insert('', 'end', text=shipyard_treeview.item(some_callback[0])['text'])
-    elif some_callback[0] in dic['BS']:
-        inventory_treeview.insert('', 'end', text=blacksmith_treeview.item(some_callback[0])['text'])
-    elif some_callback[0] in dic['GS']:
-        inventory_treeview.insert('', 'end', text=general_store_treeview.item(some_callback[0])['text'])
-    elif some_callback[0] in dic['Stables']:
-        inventory_treeview.insert('', 'end', text=stables_treeview.item(some_callback[0])['text'])
+    inv_items = inventory_treeview.get_children()
+    if len(inv_items) != 0:
+        inv_tree_dict1 = inv_tree_dictionary(inv_items)
+        inv_tree_dict2 = inv_tree_dictionary2(inv_items)
+        if some_callback[0] in dic['Ship']:
+            item_id = shipyard_treeview.item(some_callback[0])
+            item_name = item_id['text']
+            for v in inv_tree_dict1.values():
+                if v == item_name:
+                    add_one_inventory_quantity(inv_tree_dict2[item_name])
+                    return None
+                elif inv_tree_dict2[v] in inv_items:
+                    continue
+
+            new_item = inventory_treeview.insert('', 'end', text=shipyard_treeview.item(some_callback[0])['text'])
+            new_inventory_quantity(new_item)
+        elif some_callback[0] in dic['BS']:
+            item_id = blacksmith_treeview.item(some_callback[0])
+            item_name = item_id['text']
+            for v in inv_tree_dict1.values():
+                if v == item_name:
+                    add_one_inventory_quantity(inv_tree_dict2[item_name])
+                    return None
+                elif inv_tree_dict2[v] in inv_items:
+                    continue
+
+            new_item = inventory_treeview.insert('', 'end', text=blacksmith_treeview.item(some_callback[0])['text'])
+            new_inventory_quantity(new_item)
+        elif some_callback[0] in dic['GS']:
+            item_id = general_store_treeview.item(some_callback[0])
+            item_name = item_id['text']
+            for v in inv_tree_dict1.values():
+                if v == item_name:
+                    add_one_inventory_quantity(inv_tree_dict2[item_name])
+                    return None
+                elif inv_tree_dict2[v] in inv_items:
+                    continue
+
+            new_item = inventory_treeview.insert('', 'end', text=general_store_treeview.item(some_callback[0])['text'])
+            new_inventory_quantity(new_item)
+        elif some_callback[0] in dic['Stables']:
+            item_id = stables_treeview.item(some_callback[0])
+            item_name = item_id['text']
+            for v in inv_tree_dict1.values():
+                if v == item_name:
+                    add_one_inventory_quantity(inv_tree_dict2[item_name])
+                    return None
+                elif inv_tree_dict2[v] in inv_items:
+                    continue
+
+            new_item = inventory_treeview.insert('', 'end', text=stables_treeview.item(some_callback[0])['text'])
+            new_inventory_quantity(new_item)
+    else:
+        if some_callback[0] in dic['Ship']:
+            new_item = inventory_treeview.insert('', 'end', text=shipyard_treeview.item(some_callback[0])['text'])
+            new_inventory_quantity(new_item)
+        elif some_callback[0] in dic['BS']:
+            new_item = inventory_treeview.insert('', 'end', text=blacksmith_treeview.item(some_callback[0])['text'])
+            new_inventory_quantity(new_item)
+        elif some_callback[0] in dic['GS']:
+            new_item = inventory_treeview.insert('', 'end', text=general_store_treeview.item(some_callback[0])['text'])
+            new_inventory_quantity(new_item)
+        elif some_callback[0] in dic['Stables']:
+            new_item = inventory_treeview.insert('', 'end', text=stables_treeview.item(some_callback[0])['text'])
+            new_inventory_quantity(new_item)
 
 
 def sell_item_gui(some_callback):
-    inventory_treeview.delete(some_callback)
+    quantity = inventory_treeview.set(some_callback, 'quantity')
+    if quantity > 1:
+        minus_one_inventory_quantity(some_callback)
+    else:
+        inventory_treeview.delete(some_callback)
 
 
 def print_button(some_callback):
@@ -120,6 +239,7 @@ def print_button(some_callback):
         print(inventory_treeview.item(tup[0]['text']))
 
 
+# TODO: Needs comments
 def populate_tree(some_tree, some_store):
     # conn = create_connection(db)
     with conn:
@@ -183,6 +303,7 @@ title_char_select_label = ttk.Label(text='Character Selection', width='48', styl
 
 # Label
 
+currency_display_label = ttk.Label(text='Currency Display')
 characters_label = ttk.Label(text='Characters')
 currency_label = ttk.Label(text='Currency')
 name_label = ttk.Label(text='Name')
@@ -211,6 +332,7 @@ general_store_treeview = ttk.Treeview(root)
 blacksmith_treeview = ttk.Treeview(root)
 stables_treeview = ttk.Treeview(root)
 inventory_treeview = ttk.Treeview(root)
+currency_treeview = ttk.Treeview(root)
 
 
 # Pages
@@ -267,10 +389,12 @@ def character_selection_page():
 
 
 def dashboard():
+    currency_dict = user_info['char'].convert_currency()
     clear()
 
     # Populate trees
     populate_all_trees()
+    currency_treeview.insert('', 'end', 'gold', text=currency_dict['gp'])
 
     # Binds
     shipyard_treeview.bind('<<TreeviewSelect>>', shipyard_callback)
@@ -284,7 +408,20 @@ def dashboard():
     blacksmith_treeview.grid(row=0, column=1)
     stables_treeview.grid(row=0, column=2)
     shipyard_treeview.grid(row=0, column=3)
-    inventory_treeview.grid(row=2, columnspan=4, sticky=W + E, pady=50)
+    inventory_treeview.grid(row=3, columnspan=4, sticky=W+E)
+    currency_treeview.grid(row=2, columnspan=4)
+
+    # Currency formatting
+
+    currency_treeview.config(columns=['silver', 'copper'], height=1)
+    currency_treeview.column('#0', width=55, anchor='center')
+    currency_treeview.column('silver', width=55, anchor='center')
+    currency_treeview.column('copper', width=55, anchor='center')
+    currency_treeview.heading('#0', text='Gold')
+    currency_treeview.heading('silver', text='Silver')
+    currency_treeview.heading('copper', text='Copper')
+    currency_treeview.set('gold', 'silver', currency_dict['sp'])
+    currency_treeview.set('gold', 'copper', currency_dict['cp'])
 
     # Gen Store formatting
     general_store_treeview.config(columns='quantity')
@@ -322,11 +459,14 @@ def dashboard():
     inventory_treeview.heading('#0', text='Item')
 
     # Buttons
-    sell.grid(row=3, columnspan=4, sticky=W+E)
-    dummy.grid(row=4, columnspan=4, sticky=W+E)
+    sell.grid(row=4, columnspan=4, sticky=N+W+E)
+    dummy.grid(row=5, columnspan=4, sticky=W+E)
     buy.grid(row=1, columnspan=4, sticky=W+E)
     screen_size()
     center([832, 630])
+
+    # Labels
+    # currency_display_label.grid(row=2, columnspan=4, sticky=N)
 
 
 # Button functions (backend integration)
@@ -374,6 +514,52 @@ def select_command():
     dashboard()
 
 
+def buy_command():
+    item = None
+    print(recent_selection['selected'])
+    buy_item_gui(recent_selection['selected'])
+    tup = recent_selection['selected']
+    dic = stores()
+    if tup[0] in dic['Ship']:
+        item = shipyard_treeview.item(tup[0])['text']
+    elif tup[0] in dic['BS']:
+        item = blacksmith_treeview.item(tup[0])['text']
+    elif tup[0] in dic['GS']:
+        item = general_store_treeview.item(tup[0])['text']
+    elif tup[0] in dic['Stables']:
+        item = stables_treeview.item(tup[0])['text']
+    if item is not None:
+        user_info['char'].buy_sell(item, 'buy')
+
+    currency_dict = user_info['char'].convert_currency()
+    currency_treeview.item('gold', text=currency_dict['gp'])
+    currency_treeview.set('gold', 'silver', currency_dict['sp'])
+    currency_treeview.set('gold', 'copper', currency_dict['cp'])
+    root.update()
+    # item_name = inventory_treeview.item(tup, 'text')
+    # user_dict = {'acc_id': user_info['acc'],
+    #              'char_id': user_info['char'],
+    #              'inv_id': user_info['inv'],
+    #              'item': item_name,
+    #              'api': None,
+    #              'quant': None}
+    if not database.item_in_inventory_add(conn, user_info['inv'], item):
+        user_info['char'].add_item(conn, item, user_info['acc'].id, user_info['inv'])
+
+
+def sell_command():
+    # print(recent_selection['selected'])
+    tup = inv_selected['selected']
+    item = inventory_treeview.item(tup, 'text')
+    user_info['char'].buy_sell(item, 'sell')
+    currency_dict = user_info['char'].convert_currency()
+    currency_treeview.item('gold', text=currency_dict['gp'])
+    currency_treeview.set('gold', 'silver', currency_dict['sp'])
+    currency_treeview.set('gold', 'copper', currency_dict['cp'])
+    sell_item_gui(inv_selected['selected'])
+    root.update()
+
+
 # Button
 
 login_page_login_button = ttk.Button(text='Log-in', command=login_page_login_command)
@@ -385,10 +571,10 @@ logout_button = ttk.Button(text='Log-out', command=logout_command)
 character_selection_button = ttk.Button(text='Character selection', command=character_selection_page)
 select_button = ttk.Button(text='Select', command=select_command)
 delete_button = ttk.Button(text='Delete', command=delete_command)
-sell = ttk.Button(text='Sell', command=lambda: sell_item_gui(selected['selected']))
+sell = ttk.Button(text='Sell', command=sell_command)
 dummy = ttk.Button(root, text='Test')
-buy = ttk.Button(text='Buy', command=lambda: buy_item_gui(selected['selected']))
-
+# buy = ttk.Button(text='Buy', command=lambda: buy_item_gui(selected['selected']))
+buy = ttk.Button(text='Buy', command=buy_command)
 log_in_page()
 center()
 root.mainloop()

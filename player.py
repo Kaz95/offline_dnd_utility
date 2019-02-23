@@ -56,6 +56,11 @@ class Player:
         elif action == 'sell':
             self.currency += value
 
+    # def display_currency(self):
+    #     cur_dict = self.convert_currency()
+    #     cur_string = '|G:' + str(cur_dict['gp']).rjust(4) + ' |S:' + str(cur_dict['sp']).rjust(4) + ' |C:' + str(cur_dict['cp']).rjust(4)
+    #     return cur_string
+
 
 def load_player_object(conn, char_name):
     with conn:
@@ -66,8 +71,4 @@ def load_player_object(conn, char_name):
 
 if __name__ == '__main__':
     a = Player(1, 'kaz', 5000, [8])
-    a.buy_sell('Dagger', 'buy')
-    print(a.currency)
-    a.buy_sell('Dagger', 'sell')
-    print(a.currency)
-    print(a.convert_currency())
+    # print(a.display_currency())

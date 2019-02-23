@@ -63,5 +63,5 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(sql.execute_fetchall_sql(self.conn, sql.sql_query_accounts_with_characters()), [(1,), (2,)])
 
     def test_delete(self):
-        sql.execute_sql(self.conn, sql.sql_delete('items', 'character_id'), 1)
+        sql.execute_sql(self.conn, sql.sql_delete_all('items', 'character_id'), 1)
         self.assertEqual(database.count_rows(self.conn, sql.sql_count_rows(), 'items'), (261,))

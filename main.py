@@ -140,7 +140,7 @@ if __name__ == '__main__':
 #     cur_character = None
 #     conn = database.create_connection(db)
 #     with conn:
-#         sql.execute_sql(conn, sql.sql_delete('items'), 2)
+#         sql.execute_sql(conn, sql.sql_delete_all('items'), 2)
 
 
 
