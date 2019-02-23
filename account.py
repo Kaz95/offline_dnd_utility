@@ -33,7 +33,7 @@ def load_account_archive(conn):
             Account.log_in_dic[i[0]] = i[1]
 
 
-# TODO: test
+# TODO: test...later
 # TODO: consider refactor for gui
 # Returns username if authenticated. Else loops back to login
 def log_in(conn, username, password):
