@@ -6,7 +6,8 @@ import account
 import setup
 import database
 import player
-# TODO: Needs updating
+# TODO: Update GUI.py once clean
+# TODO: Comment all of the things. Every block if it makes sense to do so.
 
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'

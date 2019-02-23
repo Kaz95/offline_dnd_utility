@@ -4,9 +4,14 @@ import sql
 #
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
+
+# TODO: Not sure if still want to do this. Figure it out
+
 # TODO: Write query functions similar to the add functions i have now.
 # TODO: This will allow a dictionary to be passed. Meaning my variables can be passed unordered
 # TODO: Refactor database integration tests when this is done.
+
+# TODO: Comment all of the things. Every block if it makes sense to do so.
 
 
 # Creates a connection to test.db
@@ -17,22 +22,6 @@ def create_connection(db_path):
     except Error as e:
         print(e)
     return None
-
-
-# Verifies store item count via sqlite count(*) method which returns row count for a given table.
-# Not currently used.
-# def wrong_item_count():
-#     store_item_count = 256
-#     con = create_connection(mem)
-#     with con:
-#         cursor = con.cursor()
-#         cursor.execute("SELECT count(*) FROM items;")
-#         cur_item_count = cursor.fetchone()
-#         cur_item_count = cur_item_count[0]
-#         if cur_item_count == store_item_count:
-#             return False
-#         else:
-#             return True
 
 
 # INSERT
@@ -64,6 +53,14 @@ def add_store_item(conn, some_sql, item_info):
     sql.execute_sql(conn, some_sql, item_info['item'], item_info['api'], item_info['store'])
 
 
+# SELECT
+
+def count_rows(conn, some_sql, some_table):
+    new_sql = some_sql.format(some_table)
+    count_tuple = sql.execute_fetchone_sql(conn, new_sql)
+    return count_tuple
+
+
 # TODO Reminder: Complex is better than complicated. Remember the shit block. Never forget.
 def query_accounts_with_characters(conn, some_sql):
     temp = []
@@ -80,14 +77,6 @@ def query_characters_with_inventories(conn,  some_sql):
     for tup in account_id_list:
         temp.append(tup[0])
     return temp
-
-
-# SELECT
-
-def count_rows(conn, some_sql, some_table):
-    new_sql = some_sql.format(some_table)
-    count_tuple = sql.execute_fetchone_sql(conn, new_sql)
-    return count_tuple
 
 
 # Delete
@@ -108,6 +97,34 @@ def delete_character(conn, char_id):
     delete_all_character_items(conn, char_id)
     delete_character_inventories(conn, char_id)
     sql.execute_sql(conn, sql.sql_delete_all('characters', 'id'), char_id)
+
+
+# Update
+
+def item_in_inventory_add(conn, inv_id, item):
+    with conn:
+        items_in_inv = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
+        # print(items_in_inv)8
+        for i in items_in_inv:
+            if item in i:
+                int_quant = int(i[1])
+                int_quant += 1
+                sql.execute_sql(conn, sql.update_quantity(), int_quant, i[0], inv_id)
+                return True
+        return False
+
+
+def item_in_inventory_minus(conn, inv_id, item):
+    with conn:
+        items_in_inv = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
+        # print(items_in_inv)8
+        for i in items_in_inv:
+            if item in i:
+                int_quant = int(i[1])
+                int_quant -= 1
+                sql.execute_sql(conn, sql.update_quantity(), int_quant, i[0], inv_id)
+                return True
+        return False
 
 
 # if __name__ == '__main__':
@@ -149,27 +166,17 @@ def delete_character(conn, char_id):
         # print(count_rows(con, 'items'))
 
 
-def item_in_inventory_add(conn, inv_id, item):
-    with conn:
-        items_in_inv = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
-        # print(items_in_inv)8
-        for i in items_in_inv:
-            if item in i:
-                int_quant = int(i[1])
-                int_quant += 1
-                sql.execute_sql(conn, sql.update_quantity(), int_quant, i[0], inv_id)
-                return True
-        return False
-
-
-def item_in_inventory_minus(conn, inv_id, item):
-    with conn:
-        items_in_inv = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
-        # print(items_in_inv)8
-        for i in items_in_inv:
-            if item in i:
-                int_quant = int(i[1])
-                int_quant -= 1
-                sql.execute_sql(conn, sql.update_quantity(), int_quant, i[0], inv_id)
-                return True
-        return False
+# Verifies store item count via sqlite count(*) method which returns row count for a given table.
+# Not currently used.
+# def wrong_item_count():
+#     store_item_count = 256
+#     con = create_connection(mem)
+#     with con:
+#         cursor = con.cursor()
+#         cursor.execute("SELECT count(*) FROM items;")
+#         cur_item_count = cursor.fetchone()
+#         cur_item_count = cur_item_count[0]
+#         if cur_item_count == store_item_count:
+#             return False
+#         else:
+#             return True

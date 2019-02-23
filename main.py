@@ -12,9 +12,9 @@ import account
 import player
 import database
 import setup
-# TODO: fix this shite
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
+# TODO: Deprecated. scan for anything of value and delete. RIP.
 
 
 # Used to flesh out log-in features

@@ -1,4 +1,6 @@
-import sqlite3  # required for a mock
+# required for a mock
+import sqlite3
+# TODO: Comment all of the things. Every block if it makes sense to do so.
 
 
 # Modular sqlite execute functions which are passed a connection and some sql
@@ -110,10 +112,12 @@ def sql_query_accounts_with_characters():
     return """SELECT DISTINCT account_id FROM characters;"""
 
 
+# TODO: test this
 def sql_query_items_in_inventory():
     return """SELECT item, quantity FROM items WHERE inventory_id = ?"""
 
 
+# TODO: test this
 def sql_item_quantity():
     return """SELECT quantity FROM items where item = ? AND inventory_id = ?"""
 
@@ -124,42 +128,48 @@ def sql_delete_all(table, where):
     return """DELETE FROM {} WHERE {} = ?""".format(table, where)
 
 
+# TODO: test this
 def sql_delete_item():
     return """DELETE FROM items WHERE item = ? AND inventory_id = ?"""
 
 
 # INSERT
-# TODO: test these
+# TODO: test this
 def sql_add_item_row():
     return """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
             VALUES(?,?,?,?,?,?)"""
 
 
+# TODO: test this
 def sql_add_account_row():
     return """INSERT INTO accounts (username, password)
             VALUES(?,?)"""
 
 
+# TODO: test this
 def sql_add_inventory_row():
     return """INSERT INTO inventories (account_id, character_id, name)
             VALUES(?,?,?)"""
 
 
+# TODO: test this
 def sql_add_character_row():
     return """INSERT INTO characters (account_id, name, currency)
             VALUES(?,?,?)"""
 
 
+# TODO: test this
 def sql_add_store_item():
     return """INSERT INTO items (item, api, store)
              VALUES(?,?,?)"""
 
 
+# TODO: test this
 def sql_count_rows():
     return """SELECT count(*) FROM {};"""
 
 
-# TODO: Test this
 # Update
+# TODO: Test this
 def update_quantity():
     return """UPDATE items SET quantity = ? WHERE item = ? AND inventory_id = ?"""

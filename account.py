@@ -2,6 +2,7 @@ import database
 import sql
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
+# TODO: Comment all of the things. Every block if it makes sense to do so.
 
 
 # Account class. Stores account_id(primary key of account table), username, and password.
@@ -33,6 +34,7 @@ def load_account_archive(conn):
 
 
 # TODO: test
+# TODO: consider refactor for gui
 # Returns username if authenticated. Else loops back to login
 def log_in(conn, username, password):
     load_account_archive(conn)  # Loads account info for authentication.

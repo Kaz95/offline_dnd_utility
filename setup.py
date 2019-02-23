@@ -2,11 +2,14 @@ import database
 import sql
 import stores
 import api
+
+# TODO: May be required for mock. Not sure atm.
 import sqlite3
 
 
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
+# TODO: Comment all of the things. Every block if it makes sense to do so.
 
 
 # TODO consider refactoring to a single .executemany()
