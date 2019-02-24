@@ -28,24 +28,24 @@ def create_connection(db_path):
 
 
 # Inserts given values into accounts table at given columns.
-def add_account_row(conn, some_sql, some_account):
-    sql.execute_sql(conn, some_sql, some_account['user'], some_account['pass'])
+def add_account_row(conn, some_sql, acc_info):
+    sql.execute_sql(conn, some_sql, acc_info['username'], acc_info['password'])
 
 
 # Inserts given values into accounts table at given columns.
-def add_inventory_row(conn, some_sql, some_inventory):
-    sql.execute_sql(conn, some_sql, some_inventory['acc_id'], some_inventory['char_id'], some_inventory['name'])
+def add_inventory_row(conn, some_sql, inv_info):
+    sql.execute_sql(conn, some_sql, inv_info['acc_id'], inv_info['char_id'], inv_info['name'])
 
 
 # Inserts given values into accounts table at given columns.
-def add_character_row(conn, some_sql, some_character):
-    sql.execute_sql(conn, some_sql, some_character['acc_id'], some_character['name'], some_character['currency'])
+def add_character_row(conn, some_sql, char_info):
+    sql.execute_sql(conn, some_sql, char_info['acc_id'], char_info['name'], char_info['currency'])
 
 
 # Inserts given values into accounts table at given columns.
-def add_item_row(conn, some_sql, some_item):
-    sql.execute_sql(conn, some_sql, some_item['acc_id'], some_item['char_id'], some_item['inv_id'], some_item['item'],
-                    some_item['api'], some_item['quant'])
+def add_item_row(conn, some_sql, item_info):
+    sql.execute_sql(conn, some_sql, item_info['acc_id'], item_info['char_id'], item_info['inv_id'], item_info['item'],
+                    item_info['api'], item_info['quantity'])
 
 
 # Used to populate store tables
@@ -64,17 +64,16 @@ def count_rows(conn, some_sql, some_table):
 # TODO Reminder: Complex is better than complicated. Remember the shit block. Never forget.
 def query_accounts_with_characters(conn, some_sql):
     temp = []
-    account_id_list = sql.execute_fetchall_sql(conn, some_sql)
-    for tup in account_id_list:
+    acc_id_list = sql.execute_fetchall_sql(conn, some_sql)
+    for tup in acc_id_list:
         temp.append(tup[0])
     return temp
 
 
 def query_characters_with_inventories(conn,  some_sql):
     temp = []
-    account_id_list = sql.execute_fetchall_sql(conn, some_sql)
-    print(account_id_list)
-    for tup in account_id_list:
+    acc_id_list = sql.execute_fetchall_sql(conn, some_sql)
+    for tup in acc_id_list:
         temp.append(tup[0])
     return temp
 
@@ -102,6 +101,7 @@ def delete_character(conn, char_id):
 
 # Update
 # TODO: Refactor to one function
+# TODO: Update to adhere to code style guide
 def item_in_inventory_add(conn, inv_id, item):
     with conn:
         # [('Club', '1'), ('Dagger', 1)]

@@ -19,7 +19,7 @@ class TestDatabaseUnitIntegration(unittest.TestCase):
 
     def test_add_account_row(self):
         with mock.patch('database.sqlite3') as mocksql:
-            some_account = {'user': 'kaza', 'pass': 'tree'}
+            some_account = {'username': 'kaza', 'password': 'tree'}
             conn = mocksql.connect()
             database.add_account_row(conn, sql.sql_add_account_row(), some_account)
             mocksql.connect().cursor().execute.assert_called_with(sql.sql_add_account_row(), ('kaza', 'tree'))
@@ -33,7 +33,7 @@ class TestDatabaseUnitIntegration(unittest.TestCase):
 
     def test_add_item_row(self):
         with mock.patch('database.sqlite3') as mocksql:
-            some_item = {'acc_id': 1, 'char_id': 1, 'inv_id': 1, 'item': 'item name', 'api': 'api url', 'quant': 1}
+            some_item = {'acc_id': 1, 'char_id': 1, 'inv_id': 1, 'item': 'item name', 'api': 'api url', 'quantity': 1}
             conn = mocksql.connect()
             database.add_item_row(conn, sql.sql_add_item_row(), some_item)
             mocksql.connect().cursor().execute.assert_called_with(sql.sql_add_item_row(), (1, 1, 1, 'item name',

@@ -9,7 +9,7 @@
 import sql
 import inventory
 import account
-import player
+import character
 import database
 import setup
 db = 'C:\\sqlite\\db\\test.db'
@@ -67,8 +67,8 @@ def character_selection(conn):
         char_name = input()
         current_character_info = list(sql.execute_fetchone_sql(conn, sql.sql_character_row(), char_name))
 
-        current_character = player.Player(current_character_info[0], current_character_info[1],
-                                          current_character_info[2], [])
+        current_character = character.Character(current_character_info[0], current_character_info[1],
+                                                current_character_info[2], [])
     return current_character
 
 

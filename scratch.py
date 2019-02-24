@@ -5,9 +5,12 @@ import sql
 import account
 import setup
 import database
-import player
-# TODO: Update GUI.py once clean
+import character
+# TODO: Hasn't been tested, refactored, or commented.
+
 # TODO: Comment all of the things. Every block if it makes sense to do so.
+
+# TODO: Update GUI.py once clean
 
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
@@ -510,7 +513,7 @@ def delete_command():
 
 
 def select_command():
-    user_info['char'] = player.load_player_object(conn, chars_combo.get())
+    user_info['char'] = character.load_character_object(conn, chars_combo.get())
     print(user_info)
     dashboard()
 

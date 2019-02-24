@@ -9,52 +9,47 @@ mem = ':memory:'
 class Account:
     # Used to hold account info in {'username':'password'} format. Populated by load_account_archive()
     # log_in() then compares against it.
-    log_in_dic = {}
+    login_dic = {}
 
-    # TODO refactor self.name to self.username
-    def __init__(self, acc_id, name, password):
+    def __init__(self, acc_id, username, password):
         self.id = acc_id
-        self.name = name
+        self.username = username
         self.password = password
 
 
 # Creates new account. Adds information to accounts table in database.
 def user_creates_account(conn, username, password):
     with conn:
-        account_info = {'user': username, 'pass': password}
-        database.add_account_row(conn, sql.sql_add_account_row(), account_info)
+        acc_info = {'username': username, 'password': password}
+        database.add_account_row(conn, sql.sql_add_account_row(), acc_info)
 
 
-# TODO: refactor variables
 # Loads all account username/password information and stores as key:value pairs in Account.log_in_dict.
 def load_account_archive(conn):
     with conn:
-        a = sql.execute_fetchall_sql(conn, sql.sql_username_password())
-        for i in a:
-            Account.log_in_dic[i[0]] = i[1]
+        list_of_username_password_tups = sql.execute_fetchall_sql(conn, sql.sql_username_password())
+        for tup in list_of_username_password_tups:
+            Account.login_dic[tup[0]] = tup[1]
 
 
-# TODO: consider refactor for gui. No need for recursion I think.
-# Returns username if authenticated. Else loops back to login
+# Returns username if authenticated.
 def log_in(conn, username, password):
     load_account_archive(conn)  # Loads account info for authentication.
-    if username in Account.log_in_dic and Account.log_in_dic[username] == password:
+    if username in Account.login_dic and Account.login_dic[username] == password:
         print('Welcome: ' + username)
         return username
-    else:
-        log_in(conn, username, password)
 
 
-# TODO: refactor to dictionary. Makes it easier to tell what im passing and order no longer maters
 # query ALL account information from accounts table based on username. Returns Account object based on query.
 def load_account_object(conn, username):
     with conn:
-        p1_info = sql.execute_fetchone_sql(conn, sql.sql_account_row(), username)
-        acc = Account(p1_info[0], p1_info[1], p1_info[2])
+        char_info_list = sql.execute_fetchone_sql(conn, sql.sql_account_row(), username)
+        char_info_dict = {'acc_id': char_info_list[0], 'username': char_info_list[1], 'password': char_info_list[2]}
+        acc = Account(char_info_dict['acc_id'], char_info_dict['username'], char_info_dict['password'])
         return acc
 
 
 if __name__ == '__main__':
     user_creates_account()
     load_account_archive()
-    print(Account.log_in_dic)
+    print(Account.login_dic)

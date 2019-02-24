@@ -29,10 +29,10 @@ def wrong_schema(conn):
     with conn:
         schema.sort()
         cur_tables = []
-        tables = sql.execute_fetchall_sql(conn, sql.sql_check_table_schema())
-        for t in tables:
-            for i in t:
-                cur_tables.append(i)
+        tables_tup_list = sql.execute_fetchall_sql(conn, sql.sql_check_table_schema())
+        for tup in tables_tup_list:
+            for index in tup:
+                cur_tables.append(index)
         cur_tables.sort()
         if cur_tables == schema:
             return False

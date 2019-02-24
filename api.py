@@ -46,11 +46,8 @@ def get_api_info(name, list_of_dicts):
 # Expects list of dictionaries
 # similar to [{'name': 'some_name', 'url': 'some_url'}, {'name': 'some_name', 'url': 'some_url'}]
 def get_item_url(name, list_of_dicts):
-    for i in list_of_dicts:  # For dictionary in list of dictionaries
-        # if i['name'] == name:
-        #     new = i['url']
-        #     return new
-        new_url = url_call(name, i)
+    for dic in list_of_dicts:  # For dictionary in list of dictionaries
+        new_url = url_call(name, dic)
         if new_url is not None:
             return new_url
 
@@ -68,11 +65,9 @@ def convert_price_info(price_dict):
 
 
 # Slices index number from api url
-def regex(api, yup):
-    reg = re.compile(r'(?<=' + re.escape(yup) + r')\d{1,3}')
-    temp_obj = reg.search(api)
-    # print(temp_obj)
-    # print(reg)
+def regex(url, api_category):
+    reg = re.compile(r'(?<=' + re.escape(api_category) + r')\d{1,3}')
+    temp_obj = reg.search(url)
     string = temp_obj.group()
     return string
 

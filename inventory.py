@@ -4,7 +4,7 @@
 
 
 class Inventory:
-    def __init__(self, inventory_id, name):
-        self.id = inventory_id
+    def __init__(self, inv_id, name):
+        self.id = inv_id
         self.name = name
 
