@@ -100,4 +100,50 @@ class TestSQL(unittest.TestCase):
                          """SELECT DISTINCT account_id FROM characters;""")
 
     def test_sql_delete(self):
-        self.assertEqual(sql.sql_delete_all('items', 'character_id'), """DELETE FROM items WHERE character_id = ?""")
+        self.assertEqual(sql.sql_delete_all('items', 'character_id'),
+                         """DELETE FROM items WHERE character_id = ?""")
+
+    def test_sql_query_items_in_inventory(self):
+        self.assertEqual(sql.sql_query_items_in_inventory(),
+                         """SELECT item, quantity FROM items WHERE inventory_id = ?""")
+
+    def test_sql_item_quantity(self):
+        self.assertEqual(sql.sql_item_quantity(),
+                         """SELECT quantity FROM items where item = ? AND inventory_id = ?""")
+
+    def test_sql_delete_item(self):
+        self.assertEqual(sql.sql_delete_item(),
+                         """DELETE FROM items WHERE item = ? AND inventory_id = ?""")
+
+    def test_sql_add_item_row(self):
+        self.assertEqual(sql.sql_add_item_row(),
+                         """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
+            VALUES(?,?,?,?,?,?)""")
+
+    def test_sql_add_account_row(self):
+        self.assertEqual(sql.sql_add_account_row(),
+                         """INSERT INTO accounts (username, password)
+            VALUES(?,?)""")
+
+    def test_sql_add_inventory_row(self):
+        self.assertEqual(sql.sql_add_inventory_row(),
+                         """INSERT INTO inventories (account_id, character_id, name)
+            VALUES(?,?,?)""")
+
+    def test_sql_add_character_row(self):
+        self.assertEqual(sql.sql_add_character_row(),
+                         """INSERT INTO characters (account_id, name, currency)
+            VALUES(?,?,?)""")
+
+    def test_sql_add_store_item(self):
+        self.assertEqual(sql.sql_add_store_item(),
+                         """INSERT INTO items (item, api, store)
+             VALUES(?,?,?)""")
+
+    def test_sql_count_rows(self):
+        self.assertEqual(sql.sql_count_rows(),
+                         """SELECT count(*) FROM {};""")
+
+    def test_update_quantity(self):
+        self.assertEqual(sql.update_quantity(),
+                         """UPDATE items SET quantity = ? WHERE item = ? AND inventory_id = ?""")

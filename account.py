@@ -25,6 +25,7 @@ def user_creates_account(conn, username, password):
         database.add_account_row(conn, sql.sql_add_account_row(), account_info)
 
 
+# TODO: refactor variables
 # Loads all account username/password information and stores as key:value pairs in Account.log_in_dict.
 def load_account_archive(conn):
     with conn:
@@ -33,8 +34,7 @@ def load_account_archive(conn):
             Account.log_in_dic[i[0]] = i[1]
 
 
-# TODO: test...later
-# TODO: consider refactor for gui
+# TODO: consider refactor for gui. No need for recursion I think.
 # Returns username if authenticated. Else loops back to login
 def log_in(conn, username, password):
     load_account_archive(conn)  # Loads account info for authentication.
@@ -45,11 +45,11 @@ def log_in(conn, username, password):
         log_in(conn, username, password)
 
 
-# TODO: test
+# TODO: refactor to dictionary. Makes it easier to tell what im passing and order no longer maters
 # query ALL account information from accounts table based on username. Returns Account object based on query.
 def load_account_object(conn, username):
     with conn:
-        p1_info = list(sql.execute_fetchone_sql(conn, sql.sql_account_row(), username))
+        p1_info = sql.execute_fetchone_sql(conn, sql.sql_account_row(), username)
         acc = Account(p1_info[0], p1_info[1], p1_info[2])
         return acc
 

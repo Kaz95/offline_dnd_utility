@@ -69,6 +69,39 @@ class TestDatabaseUnitIntegration(unittest.TestCase):
             mocksql.connect().cursor().execute.assert_called_with('SELECT count(*) FROM items;', ())
             self.assertEqual(count, (256,))
 
+    def test_delete_item(self):
+        with mock.patch('database.sqlite3') as mocksql:
+            conn = mocksql.connect()
+            database.delete_item(conn, 'Club', 1)
+            mocksql.connect().cursor().execute.assert_called_with(sql.sql_delete_item(), ('Club', 1))
+
+    def test_delete_all_character_items(self):
+        with mock.patch('database.sqlite3') as mocksql:
+            conn = mocksql.connect()
+            database.delete_all_character_items(conn, 1)
+            mocksql.connect().cursor().execute.assert_called_with(sql.sql_delete_all('items', 'character_id'), (1,))
+
+    def test_delete_character_inventories(self):
+        with mock.patch('database.sqlite3') as mocksql:
+            conn = mocksql.connect()
+            database.delete_character_inventories(conn, 1)
+            mocksql.connect().cursor().execute.assert_called_with(sql.sql_delete_all('inventories', 'character_id'),
+                                                                  (1,))
+
+    def test_item_in_inventory_add(self):
+        with mock.patch('database.sqlite3') as mocksql:
+            conn = mocksql.connect()
+            mocksql.connect().cursor().fetchall.return_value = [('Club', '1'), ('Dagger', '1')]
+            database.item_in_inventory_add(conn, 1, 'Dagger')
+            mocksql.connect().cursor().execute.assert_called_with(sql.update_quantity(), (2, 'Dagger', 1))
+
+    def test_item_in_inventory_minus(self):
+        with mock.patch('database.sqlite3') as mocksql:
+            conn = mocksql.connect()
+            mocksql.connect().cursor().fetchall.return_value = [('Club', '3'), ('Dagger', '2')]
+            database.item_in_inventory_minus(conn, 1, 'Club')
+            mocksql.connect().cursor().execute.assert_called_with(sql.update_quantity(), (2, 'Club', 1))
+
 
 if __name__ == '__main__':
     unittest.main()

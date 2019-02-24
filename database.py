@@ -80,17 +80,15 @@ def query_characters_with_inventories(conn,  some_sql):
 
 
 # Delete
-# TODO: test this
+
 def delete_item(conn, item, inv_id):
     sql.execute_sql(conn, sql.sql_delete_item(), item, inv_id)
 
 
-# TODO: test this
 def delete_all_character_items(conn, char_id):
     sql.execute_sql(conn, sql.sql_delete_all('items', 'character_id'), char_id)
 
 
-# TODO: test this
 def delete_character_inventories(conn, char_id):
     sql.execute_sql(conn, sql.sql_delete_all('inventories', 'character_id'), char_id)
 
@@ -103,9 +101,10 @@ def delete_character(conn, char_id):
 
 
 # Update
-# TODO: test this
+# TODO: Refactor to one function
 def item_in_inventory_add(conn, inv_id, item):
     with conn:
+        # [('Club', '1'), ('Dagger', 1)]
         items_in_inv = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
         # print(items_in_inv)8
         for i in items_in_inv:
@@ -117,7 +116,6 @@ def item_in_inventory_add(conn, inv_id, item):
         return False
 
 
-# TODO: test this
 def item_in_inventory_minus(conn, inv_id, item):
     with conn:
         items_in_inv = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)

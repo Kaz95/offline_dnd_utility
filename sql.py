@@ -112,12 +112,10 @@ def sql_query_accounts_with_characters():
     return """SELECT DISTINCT account_id FROM characters;"""
 
 
-# TODO: test this
 def sql_query_items_in_inventory():
     return """SELECT item, quantity FROM items WHERE inventory_id = ?"""
 
 
-# TODO: test this
 def sql_item_quantity():
     return """SELECT quantity FROM items where item = ? AND inventory_id = ?"""
 
@@ -128,7 +126,6 @@ def sql_delete_all(table, where):
     return """DELETE FROM {} WHERE {} = ?""".format(table, where)
 
 
-# TODO: test this
 def sql_delete_item():
     return """DELETE FROM items WHERE item = ? AND inventory_id = ?"""
 
