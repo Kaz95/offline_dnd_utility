@@ -136,42 +136,37 @@ def sql_delete_item():
 
 
 # INSERT
-# TODO: test this
+
 def sql_add_item_row():
     return """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
             VALUES(?,?,?,?,?,?)"""
 
 
-# TODO: test this
 def sql_add_account_row():
     return """INSERT INTO accounts (username, password)
             VALUES(?,?)"""
 
 
-# TODO: test this
 def sql_add_inventory_row():
     return """INSERT INTO inventories (account_id, character_id, name)
             VALUES(?,?,?)"""
 
 
-# TODO: test this
 def sql_add_character_row():
     return """INSERT INTO characters (account_id, name, currency)
             VALUES(?,?,?)"""
 
 
-# TODO: test this
 def sql_add_store_item():
     return """INSERT INTO items (item, api, store)
              VALUES(?,?,?)"""
 
 
-# TODO: test this
 def sql_count_rows():
     return """SELECT count(*) FROM {};"""
 
 
 # Update
-# TODO: Test this
+
 def update_quantity():
     return """UPDATE items SET quantity = ? WHERE item = ? AND inventory_id = ?"""

@@ -20,7 +20,7 @@ class Character:
         self.name = name
         self.inventories = inventories_list  # List of player inventory names in string format. Technically not used.
 
-    # Inventory management
+    # Adds an item item under character id. Can specify a specific inventory via inv_id
     def add_item(self, conn, item, acc_id, inv_id):
         url = api.get_item_url(item, Character.list_of_item_dicts)
 
@@ -39,6 +39,7 @@ class Character:
     def subtract_currency(self, amount):
         self.currency -= amount
 
+    # Converts character.currency value (in cp) into gp,sp,cp
     def convert_currency(self):
         amount_in_cp = self.currency
         g = int(amount_in_cp / 100)

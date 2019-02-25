@@ -34,7 +34,7 @@ def load_account_archive(conn):
 
 # Returns username if authenticated.
 def log_in(conn, username, password):
-    load_account_archive(conn)  # Loads account info for authentication.
+    load_account_archive(conn)  # Loads account info for authentication into Account.login_dic
     if username in Account.login_dic and Account.login_dic[username] == password:
         print('Welcome: ' + username)
         return username

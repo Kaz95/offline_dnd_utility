@@ -106,7 +106,7 @@ def item_in_inventory_add(conn, inv_id, item):
     with conn:
         # [('Club', '1'), ('Dagger', 1)]
         items_in_inv = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
-        # print(items_in_inv)8
+
         for i in items_in_inv:
             if item in i:
                 int_quant = int(i[1])
@@ -118,13 +118,13 @@ def item_in_inventory_add(conn, inv_id, item):
 
 def item_in_inventory_minus(conn, inv_id, item):
     with conn:
-        items_in_inv = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
-        # print(items_in_inv)8
-        for i in items_in_inv:
-            if item in i:
-                int_quant = int(i[1])
-                int_quant -= 1
-                sql.execute_sql(conn, sql.update_quantity(), int_quant, i[0], inv_id)
+        items_in_inv_list = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
+
+        for tup in items_in_inv_list:
+            if item in tup:
+                int_quantity = int(tup[1])
+                int_quantity -= 1
+                sql.execute_sql(conn, sql.update_quantity(), int_quantity, tup[0], inv_id)
                 return True
         return False
 
