@@ -25,7 +25,7 @@ ship_selected = {'selected': 'none'}
 inv_selected = {'selected': 'none'}
 recent_selection = {'selected': 'None'}
 
-# Setup in mem DB for testing purposes
+# Setup in mem DB for testing purposes.
 conn = database.create_connection(db)
 setup.create_schema(conn)
 if not setup.wrong_schema(conn):
@@ -34,10 +34,13 @@ if not setup.wrong_schema(conn):
 
 # General Functions
 
+# Generic function that is passed a tuple with a single value.
+# Value represents both the item_id (database) and the item id (tkinter gui).
 def new_selection(some_selection):
     recent_selection['selected'] = some_selection
 
 
+# Clears dictionaries storing account information objects.
 def log_out():
     print('-----Logged Out-----')
     user_info['acc'] = None
@@ -45,11 +48,15 @@ def log_out():
     user_info['inv'] = None
 
 
+# Adds character to DB based on current character information.
 def character_creation(name, currency):
         character_info_dict = {'acc_id': user_info['acc'].id, 'name': name, 'currency': currency}
         database.add_character_row(conn, sql.sql_add_character_row(), character_info_dict)
 
 
+# Query characters from DB based on current account id.
+# Slices name from tuples returned and appends to empty list. Sets combo values to list.
+# TODO: Check if you need a tuple works. This wont change and I believe best practices dictate a tuple in this case.
 def populate_combo():
     temp = []
     acc_id = user_info['acc'].id
@@ -59,10 +66,12 @@ def populate_combo():
     chars_combo['values'] = temp
 
 
+# Generic function that is passed a tkinter entry box and clears its current contents.
 def clear_entry(some_entry):
     some_entry.delete(0, 'end')
 
 
+# Populates the five treeview widgets that, makeup the dashboard page, with items.
 def populate_all_trees():
     populate_tree(shipyard_treeview, 'Shipyard')
     populate_tree(general_store_treeview, 'General Store')
@@ -70,7 +79,9 @@ def populate_all_trees():
     populate_tree(stables_treeview, 'Stables')
 
 
+# TODO: Solidify knowledge on callbacks. Can I replace with a generic function?
 # Callbacks
+# Functions that capture most recent selection per widget as well as most recent across all treeview widgets.
 
 def shipyard_callback(event):
     # print(shipyard_treeview.selection())  # Gets tuple with id as first value
@@ -81,6 +92,7 @@ def shipyard_callback(event):
     # # Quantity can be swapped for another column
     # print(shipyard_treeview.set(tup[0], 'quantity'))
     # print(shipyard_treeview.item(tup[0])['text'])    # Gets name of item selected
+    # print(shipyard_treeview.selection())
     ship_selected['selected'] = shipyard_treeview.selection()
     new_selection(ship_selected['selected'])
 
@@ -100,6 +112,7 @@ def stables_callback(event):
     new_selection(stable_selected['selected'])
 
 
+# The inventory callback function also attempts to deselect all previously selections in store widgets.
 def inventory_callback(event):
     try:
         blacksmith_treeview.selection_toggle(bs_selected['selected'])
@@ -116,22 +129,26 @@ def inventory_callback(event):
     print(recent_selection['selected'])
 
 
+# Sets quantity column of a given (gui)item to 1.
 def new_inventory_quantity(some_item):
     inventory_treeview.set(some_item, 'quantity', 1)
 
 
+# Adds 1 to a given (gui)item's quantity column value.
 def add_one_inventory_quantity(some_item):
     quantity = inventory_treeview.set(some_item, 'quantity')
     quantity += 1
     inventory_treeview.set(some_item, 'quantity', quantity)
 
 
+# Subtracts 1 to a given (gui)item's quantity column value.
 def minus_one_inventory_quantity(some_item):
     quantity = inventory_treeview.set(some_item, 'quantity')
     quantity -= 1
     inventory_treeview.set(some_item, 'quantity', quantity)
 
 
+# TODO: Figure this out again
 def inv_tree_dictionary(some_tup):
     temp = {}
     for thing in some_tup:
@@ -139,6 +156,7 @@ def inv_tree_dictionary(some_tup):
     return temp
 
 
+# TODO: Figure this out again
 def inv_tree_dictionary2(some_tup):
     temp = {}
     for thing in some_tup:
@@ -149,10 +167,13 @@ def inv_tree_dictionary2(some_tup):
 def buy_item_gui(some_callback):
     stores_dic = stores()
     inv_items_tuple = inventory_treeview.get_children()
+
     if len(inv_items_tuple) != 0:
+
         # TODO: Figure out which dictionary is which and refactor better names.
         inv_tree_dict1 = inv_tree_dictionary(inv_items_tuple)
         inv_tree_dict2 = inv_tree_dictionary2(inv_items_tuple)
+
         if some_callback[0] in stores_dic['Ship']:
             item_id = shipyard_treeview.item(some_callback[0])
             item_name = item_id['text']
@@ -165,6 +186,7 @@ def buy_item_gui(some_callback):
 
             new_item = inventory_treeview.insert('', 'end', text=shipyard_treeview.item(some_callback[0])['text'])
             new_inventory_quantity(new_item)
+
         elif some_callback[0] in stores_dic['BS']:
             item_id = blacksmith_treeview.item(some_callback[0])
             item_name = item_id['text']
@@ -177,6 +199,7 @@ def buy_item_gui(some_callback):
 
             new_item = inventory_treeview.insert('', 'end', text=blacksmith_treeview.item(some_callback[0])['text'])
             new_inventory_quantity(new_item)
+
         elif some_callback[0] in stores_dic['GS']:
             item_id = general_store_treeview.item(some_callback[0])
             item_name = item_id['text']
@@ -189,6 +212,7 @@ def buy_item_gui(some_callback):
 
             new_item = inventory_treeview.insert('', 'end', text=general_store_treeview.item(some_callback[0])['text'])
             new_inventory_quantity(new_item)
+
         elif some_callback[0] in stores_dic['Stables']:
             item_id = stables_treeview.item(some_callback[0])
             item_name = item_id['text']
@@ -201,6 +225,7 @@ def buy_item_gui(some_callback):
 
             new_item = inventory_treeview.insert('', 'end', text=stables_treeview.item(some_callback[0])['text'])
             new_inventory_quantity(new_item)
+
     else:
         if some_callback[0] in stores_dic['Ship']:
             new_item = inventory_treeview.insert('', 'end', text=shipyard_treeview.item(some_callback[0])['text'])

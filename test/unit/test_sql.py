@@ -147,3 +147,9 @@ class TestSQL(unittest.TestCase):
     def test_update_quantity(self):
         self.assertEqual(sql.update_quantity(),
                          """UPDATE items SET quantity = ? WHERE item = ? AND inventory_id = ?""")
+
+    def test_reminder(self):
+        # TODO: You were commenting scratch
+        # TODO: You left off on scratch.buy_item_gui()
+        # TODO: It's a shit show m8.
+        self.assertTrue(False)
