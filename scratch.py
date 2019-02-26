@@ -56,14 +56,13 @@ def character_creation(name, currency):
 
 # Query characters from DB based on current account id.
 # Slices name from tuples returned and appends to empty list. Sets combo values to list.
-# TODO: Check if you need a tuple works. This wont change and I believe best practices dictate a tuple in this case.
 def populate_combo():
-    temp = []
+    temp_combo_list = []
     acc_id = user_info['acc'].id
     characters_tuple = sql.execute_fetchall_sql(conn, sql.sql_all_characters(), acc_id)
     for thing in characters_tuple:
-        temp.append(thing[1])
-    chars_combo['values'] = temp
+        temp_combo_list.append(thing[1])
+    chars_combo['values'] = temp_combo_list
 
 
 # Generic function that is passed a tkinter entry box and clears its current contents.
@@ -83,6 +82,11 @@ def populate_all_trees():
 # Callbacks
 # Functions that capture most recent selection per widget as well as most recent across all treeview widgets.
 
+def generic_callback(event, some_dict, some_treeview):
+    some_dict['selected'] = some_treeview.selection()
+    new_selection(some_dict['selected'])
+
+
 def shipyard_callback(event):
     # print(shipyard_treeview.selection())  # Gets tuple with id as first value
     # # print(treeview.set('I001', 'quantity'))
@@ -93,23 +97,19 @@ def shipyard_callback(event):
     # print(shipyard_treeview.set(tup[0], 'quantity'))
     # print(shipyard_treeview.item(tup[0])['text'])    # Gets name of item selected
     # print(shipyard_treeview.selection())
-    ship_selected['selected'] = shipyard_treeview.selection()
-    new_selection(ship_selected['selected'])
+    generic_callback(event, ship_selected, shipyard_treeview)
 
 
 def general_store_callback(event):
-    gen_selected['selected'] = general_store_treeview.selection()
-    new_selection(gen_selected['selected'])
+    generic_callback(event, gen_selected, general_store_treeview)
 
 
 def blacksmith_callback(event):
-    bs_selected['selected'] = blacksmith_treeview.selection()
-    new_selection(bs_selected['selected'])
+    generic_callback(event, bs_selected, blacksmith_treeview)
 
 
 def stables_callback(event):
-    stable_selected['selected'] = stables_treeview.selection()
-    new_selection(stable_selected['selected'])
+    generic_callback(event, stable_selected, stables_treeview)
 
 
 # The inventory callback function also attempts to deselect all previously selections in store widgets.
@@ -122,10 +122,9 @@ def inventory_callback(event):
     except TclError:
         pass
 
-    inv_selected['selected'] = inventory_treeview.selection()
+    generic_callback(event, inv_selected, inventory_treeview)
     print(inventory_treeview.selection())
     print(inventory_treeview.item(inventory_treeview.selection(), 'text'))
-    new_selection(inv_selected['selected'])
     print(recent_selection['selected'])
 
 
@@ -148,7 +147,7 @@ def minus_one_inventory_quantity(some_item):
     inventory_treeview.set(some_item, 'quantity', quantity)
 
 
-# TODO: Figure this out again
+# {'I001': 'Net'}
 def inv_tree_dictionary(some_tup):
     temp = {}
     for thing in some_tup:
@@ -156,7 +155,7 @@ def inv_tree_dictionary(some_tup):
     return temp
 
 
-# TODO: Figure this out again
+# {'Net': 'I001'}
 def inv_tree_dictionary2(some_tup):
     temp = {}
     for thing in some_tup:
@@ -164,7 +163,26 @@ def inv_tree_dictionary2(some_tup):
     return temp
 
 
-# TODO: Make this DRY. Lots of repeats.
+def yup(some_treeview, some_callback, inv_tree_dict1, inv_tree_dict2, inv_items_tuple):
+    item_id = some_treeview.item(some_callback[0])
+    item_name = item_id['text']
+    for value in inv_tree_dict1.values():
+        if value == item_name:
+            add_one_inventory_quantity(inv_tree_dict2[item_name])
+            return None
+        elif inv_tree_dict2[value] in inv_items_tuple:
+            continue
+
+    new_item = inventory_treeview.insert('', 'end', text=some_treeview.item(some_callback[0])['text'])
+    new_inventory_quantity(new_item)
+
+
+def ok(some_treeview, some_callback):
+    new_item = inventory_treeview.insert('', 'end', text=some_treeview.item(some_callback[0])['text'])
+    new_inventory_quantity(new_item)
+
+
+# TODO: Make this  MORE DRY. Still lots of repeats.
 # Adds a new GUI item to inventory treeview if item name not already in.
 # If already in, adds one to the quantity column value of a given item.
 def buy_item_gui(some_callback):
@@ -178,70 +196,26 @@ def buy_item_gui(some_callback):
         inv_tree_dict2 = inv_tree_dictionary2(inv_items_tuple)
 
         if some_callback[0] in stores_dic['Ship']:
-            item_id = shipyard_treeview.item(some_callback[0])
-            item_name = item_id['text']
-            for value in inv_tree_dict1.values():
-                if value == item_name:
-                    add_one_inventory_quantity(inv_tree_dict2[item_name])
-                    return None
-                elif inv_tree_dict2[value] in inv_items_tuple:
-                    continue
-
-            new_item = inventory_treeview.insert('', 'end', text=shipyard_treeview.item(some_callback[0])['text'])
-            new_inventory_quantity(new_item)
+            yup(shipyard_treeview, some_callback, inv_tree_dict1, inv_tree_dict2, inv_items_tuple)
 
         elif some_callback[0] in stores_dic['BS']:
-            item_id = blacksmith_treeview.item(some_callback[0])
-            item_name = item_id['text']
-            for value in inv_tree_dict1.values():
-                if value == item_name:
-                    add_one_inventory_quantity(inv_tree_dict2[item_name])
-                    return None
-                elif inv_tree_dict2[value] in inv_items_tuple:
-                    continue
-
-            new_item = inventory_treeview.insert('', 'end', text=blacksmith_treeview.item(some_callback[0])['text'])
-            new_inventory_quantity(new_item)
+            yup(blacksmith_treeview, some_callback, inv_tree_dict1, inv_tree_dict2, inv_items_tuple)
 
         elif some_callback[0] in stores_dic['GS']:
-            item_id = general_store_treeview.item(some_callback[0])
-            item_name = item_id['text']
-            for value in inv_tree_dict1.values():
-                if value == item_name:
-                    add_one_inventory_quantity(inv_tree_dict2[item_name])
-                    return None
-                elif inv_tree_dict2[value] in inv_items_tuple:
-                    continue
-
-            new_item = inventory_treeview.insert('', 'end', text=general_store_treeview.item(some_callback[0])['text'])
-            new_inventory_quantity(new_item)
+            yup(general_store_treeview, some_callback, inv_tree_dict1, inv_tree_dict2, inv_items_tuple)
 
         elif some_callback[0] in stores_dic['Stables']:
-            item_id = stables_treeview.item(some_callback[0])
-            item_name = item_id['text']
-            for value in inv_tree_dict1.values():
-                if value == item_name:
-                    add_one_inventory_quantity(inv_tree_dict2[item_name])
-                    return None
-                elif inv_tree_dict2[value] in inv_items_tuple:
-                    continue
-
-            new_item = inventory_treeview.insert('', 'end', text=stables_treeview.item(some_callback[0])['text'])
-            new_inventory_quantity(new_item)
+            yup(stables_treeview, some_callback, inv_tree_dict1, inv_tree_dict2, inv_items_tuple)
 
     else:
         if some_callback[0] in stores_dic['Ship']:
-            new_item = inventory_treeview.insert('', 'end', text=shipyard_treeview.item(some_callback[0])['text'])
-            new_inventory_quantity(new_item)
+            ok(shipyard_treeview, some_callback)
         elif some_callback[0] in stores_dic['BS']:
-            new_item = inventory_treeview.insert('', 'end', text=blacksmith_treeview.item(some_callback[0])['text'])
-            new_inventory_quantity(new_item)
+            ok(blacksmith_treeview, some_callback)
         elif some_callback[0] in stores_dic['GS']:
-            new_item = inventory_treeview.insert('', 'end', text=general_store_treeview.item(some_callback[0])['text'])
-            new_inventory_quantity(new_item)
+            ok(general_store_treeview, some_callback)
         elif some_callback[0] in stores_dic['Stables']:
-            new_item = inventory_treeview.insert('', 'end', text=stables_treeview.item(some_callback[0])['text'])
-            new_inventory_quantity(new_item)
+            ok(stables_treeview, some_callback)
 
 
 # Subtracts one from a give  gui item's quantity column value if given item has a quantity greater than one.
