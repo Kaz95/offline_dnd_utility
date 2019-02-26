@@ -164,6 +164,9 @@ def inv_tree_dictionary2(some_tup):
     return temp
 
 
+# TODO: Make this DRY. Lots of repeats.
+# Adds a new GUI item to inventory treeview if item name not already in.
+# If already in, adds one to the quantity column value of a given item.
 def buy_item_gui(some_callback):
     stores_dic = stores()
     inv_items_tuple = inventory_treeview.get_children()
@@ -241,6 +244,8 @@ def buy_item_gui(some_callback):
             new_inventory_quantity(new_item)
 
 
+# Subtracts one from a give  gui item's quantity column value if given item has a quantity greater than one.
+# Delete gui item if quantity column value less than one
 def sell_item_gui(some_callback):
     quantity = inventory_treeview.set(some_callback, 'quantity')
     if quantity > 1:
@@ -264,16 +269,17 @@ def sell_item_gui(some_callback):
 #         print(inventory_treeview.item(tup[0]['text']))
 
 
-# TODO: Refactor to use modular sql execute.
+# TODO: Refactor to use modular sql execute and sql statement.
+# Query all items from a given store. Use values returned to populate store treeviews.
 def populate_tree(some_tree, some_store):
     # conn = create_connection(db)
     with conn:
         for number in range(database.count_rows(conn, sql.sql_count_rows(), 'items')[0]):
             temp_dict = {}
             number += 1
-            k = """SELECT id, item FROM items WHERE id = ? AND store = ?;"""
+            some_sql = """SELECT id, item FROM items WHERE id = ? AND store = ?;"""
             cur = conn.cursor()
-            cur.execute(k, [str(number), some_store])
+            cur.execute(some_sql, [str(number), some_store])
             o = cur.fetchone()
             try:
                 temp_dict['id'] = o[0]
@@ -285,11 +291,13 @@ def populate_tree(some_tree, some_store):
                 continue
 
 
+# clears (forgets) all widgets currently attached to root window.
 def clear():
     for widget in root.grid_slaves():
         widget.grid_forget()
 
 
+# Returns width and height of screen in pixels.
 def screen_size():
     root.update()
     width = root.winfo_width()
@@ -298,6 +306,7 @@ def screen_size():
     return {'w': width, 'h': height}
 
 
+# Centers root window. Dashboard required a different formula to center properly.
 # TODO: This is a quick and dirty solution
 def center(dash=None):
     cur_size = screen_size()
@@ -493,17 +502,21 @@ def dashboard_page():
 
 # Button commands (backend integration)
 
+# Creates account row based on entry boxes and adds to DB. Pushes to login page.
 def signup_page_signup_command():
     account.user_creates_account(conn, signup_page_username_entry.get(), signup_page_password_entry.get())
     log_in_page()
 
 
+# TODO: Needs to have logic to push to char create or char select depending. Also a button to override this behavior.
+# Authenticates information passed to entry boxes against DB. Pushes to character creation page
 def login_page_login_command():
     account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
     user_info['acc'] = account.load_account_object(conn, login_page_username_entry.get())
     character_creation_page()
 
 
+# Creates character row based on entry boxes and adds to DB. Pushes to character selection page.
 def create_character_command():
     name = name_entry.get()
     currency = currency_entry.get()
@@ -511,11 +524,13 @@ def create_character_command():
     character_selection_page()
 
 
+# Clears dictionary holding account information objects. Pushes to login page.
 def logout_command():
     log_out()
     log_in_page()
 
 
+# Deletes a character from the front(gui) and back(DB) end.
 def delete_command():
     temp = {}
     char_selected = chars_combo.get()
@@ -530,12 +545,15 @@ def delete_command():
     root.update()
 
 
+# Sets current character to a given character object, Character object is based on combobox value.
 def select_command():
     user_info['char'] = character.load_character_object(conn, chars_combo.get())
     print(user_info)
     dashboard_page()
 
 
+# TODO: Integrate currency back-end.
+# Buys item on front (gui) and back (DB) end. Updates currency based on item value.
 def buy_command():
     item = None
     print(recent_selection['selected'])
@@ -566,6 +584,8 @@ def buy_command():
         user_info['char'].add_item(conn, item, user_info['acc'].id, user_info['inv'])
 
 
+# TODO: Integrate back-end.
+# Sells item and updates currency on front-end.
 def sell_command():
     # print(recent_selection['selected'])
     tup = inv_selected['selected']
