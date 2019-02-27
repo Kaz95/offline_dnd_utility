@@ -59,10 +59,12 @@ class Character:
         if action == 'buy':
             if item_value > self.currency:
                 print('not enough currency')  # TODO remove later
+                return False
             else:
                 print('---item bought---')  # TODO remove later
                 self.currency -= item_value
                 self.update_currency(conn)
+                return True
         elif action == 'sell':
             print('---item sold---')  # TODO remove later
             self.currency += item_value

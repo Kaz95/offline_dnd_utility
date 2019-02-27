@@ -533,24 +533,23 @@ def select_command():
 # TODO: Integrate currency back-end.
 # Buys item on front (gui) and back (DB) end. Updates currency based on item value.
 def buy_command():
-    item = None
+    item_name = None
+    affordable = None
     print(recent_selection['selected'])
-
-    buy_item_gui(recent_selection['selected'])
 
     tup = recent_selection['selected']
     dic = stores()
 
     if tup[0] in dic['Ship']:
-        item = shipyard_treeview.item(tup[0])['text']
+        item_name = shipyard_treeview.item(tup[0])['text']
     elif tup[0] in dic['BS']:
-        item = blacksmith_treeview.item(tup[0])['text']
+        item_name = blacksmith_treeview.item(tup[0])['text']
     elif tup[0] in dic['GS']:
-        item = general_store_treeview.item(tup[0])['text']
+        item_name = general_store_treeview.item(tup[0])['text']
     elif tup[0] in dic['Stables']:
-        item = stables_treeview.item(tup[0])['text']
-    if item is not None:
-        user_info['char'].buy_sell(item, 'buy', conn)
+        item_name = stables_treeview.item(tup[0])['text']
+    if item_name is not None:
+        affordable = user_info['char'].buy_sell(item_name, 'buy', conn)
 
     currency_dict = user_info['char'].convert_currency()
     currency_treeview.item('gold', text=currency_dict['gp'])
@@ -558,8 +557,10 @@ def buy_command():
     currency_treeview.set('gold', 'copper', currency_dict['cp'])
     root.update()
 
-    if not database.item_in_inventory_add(conn, user_info['inv'], item):
-        user_info['char'].add_item(conn, item, user_info['acc'].id, user_info['inv'])
+    if affordable:
+        buy_item_gui(recent_selection['selected'])
+        if not database.item_in_inventory_add(conn, user_info['inv'], item_name):
+            user_info['char'].add_item(conn, item_name, user_info['acc'].id, user_info['inv'])
 
 
 # TODO: Integrate back-end.
