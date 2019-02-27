@@ -11,8 +11,6 @@ mem = ':memory:'
 # TODO: This will allow a dictionary to be passed. Meaning my variables can be passed unordered
 # TODO: Refactor database integration tests when this is done.
 
-# TODO: Comment all of the things. Every block if it makes sense to do so.
-
 
 # Creates a connection to test.db
 def create_connection(db_path):

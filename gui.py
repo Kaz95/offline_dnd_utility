@@ -7,11 +7,7 @@ import setup
 import database
 import character
 
-# TODO: Hasn't been tested, refactored, or commented.
-
-# TODO: Comment all of the things. Every block if it makes sense to do so.
-
-# TODO: Update GUI.py once clean
+# TODO: Hasn't been tested
 
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
@@ -37,10 +33,12 @@ if not setup.wrong_schema(conn):
 
 # Generic function that is passed a tuple with a single value.
 # Value represents both the item_id (database) and the item id (tkinter gui).
+# TODO: unit test with assertEqual
 def new_selection(some_selection):
     recent_selection['selected'] = some_selection
 
 
+# TODO: unit test with assertEqual.
 # Clears dictionaries storing account information objects.
 def log_out():
     print('-----Logged Out-----')
@@ -49,6 +47,7 @@ def log_out():
     user_info['inv'] = None
 
 
+# TODO: unit test with mock assert called with.
 # Adds character to DB based on current character information.
 def character_creation(name, currency):
     character_info_dict = {'acc_id': user_info['acc'].id, 'name': name, 'currency': currency}
@@ -57,6 +56,7 @@ def character_creation(name, currency):
 
 # Query characters from DB based on current account id.
 # Slices name from tuples returned and appends to empty list. Sets combo values to list.
+# TODO: unit test assertEqual temp_combo_list.
 def populate_combo():
     temp_combo_list = []
     acc_id = user_info['acc'].id

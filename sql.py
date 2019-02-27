@@ -3,9 +3,7 @@ import sqlite3
 # TODO: Consider removing sql from beginning of each function. It's redundant.
 
 # TODO: Refactor sql statements to adhere to new code style guide.
-# TODO: This will require manually refactoring.....a lot of test and manual regression testing...Be prepared.
-
-# TODO: Comment all of the things. Every block if it makes sense to do so.
+# TODO: This will require manually refactoring.....a lot of tests and manual regression testing...Be prepared.
 
 
 # Modular sqlite execute functions which are passed a connection and some sql

@@ -3,7 +3,6 @@ import requests
 import re
 # This module contains functions that interact with the API and those that rely on API sourced data
 # "http://www.dnd5eapi.co/api/"
-# TODO: Comment all of the things. Every block if it makes sense to do so.
 
 
 def call_api(url):

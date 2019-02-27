@@ -3,10 +3,8 @@ import database
 import sql
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
-# TODO: Comment all of the things. Every block if it makes sense to do so.
 
 
-# TODO: Consider refactor to player
 # Player Class. Holds player_id(Primary Key of characters table), character name, currency, and player inventories.
 class Character:
 

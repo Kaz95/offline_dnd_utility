@@ -6,11 +6,8 @@ import account
 import setup
 import database
 import character
-# TODO: Hasn't been tested, refactored, or commented.
 
-# TODO: Comment all of the things. Every block if it makes sense to do so.
-
-# TODO: Update GUI.py once clean
+# TODO: Hasn't been tested
 
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
