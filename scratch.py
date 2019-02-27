@@ -70,14 +70,6 @@ def clear_entry(some_entry):
     some_entry.delete(0, 'end')
 
 
-# Populates the five treeview widgets that, makeup the dashboard page, with items.
-def populate_all_trees():
-    populate_tree(shipyard_treeview, 'Shipyard')
-    populate_tree(general_store_treeview, 'General Store')
-    populate_tree(blacksmith_treeview, 'Blacksmith')
-    populate_tree(stables_treeview, 'Stables')
-
-
 # TODO: Solidify knowledge on callbacks. Can I replace with a generic function?
 # Callbacks
 # Functions that capture most recent selection per widget as well as most recent across all treeview widgets.
@@ -148,7 +140,7 @@ def minus_one_inventory_quantity(some_item):
 
 
 # {'I001': 'Net'}
-def inv_tree_dictionary(some_tup):
+def inv_tree_dictionary_names(some_tup):
     temp = {}
     for thing in some_tup:
         temp[thing] = inventory_treeview.item(thing, 'text')
@@ -156,66 +148,70 @@ def inv_tree_dictionary(some_tup):
 
 
 # {'Net': 'I001'}
-def inv_tree_dictionary2(some_tup):
+def inv_tree_dictionary_ids(some_tup):
     temp = {}
     for thing in some_tup:
         temp[inventory_treeview.item(thing, 'text')] = thing
     return temp
 
 
-def yup(some_treeview, some_callback, inv_tree_dict1, inv_tree_dict2, inv_items_tuple):
+# adds new top level item to inventory treeview.
+def new_tree_item(some_treeview, some_callback):
+    new_item = inventory_treeview.insert('', 'end', text=some_treeview.item(some_callback[0])['text'])
+    new_inventory_quantity(new_item)
+
+
+# Loops through inventory treeview item names.
+# Compares a given callbacks text value to each name.
+# If call back equals name, add one to quantity value.
+# Else, add new inventory treeview item.
+def try_add_one_gui_quantity(some_treeview, some_callback):
+    # TODO: Figure out which dictionary is which and refactor better names.
+    inv_items_tuple = inventory_treeview.get_children()
+
+    names_dictionary = inv_tree_dictionary_names(inv_items_tuple)
+    id_dictionary = inv_tree_dictionary_ids(inv_items_tuple)
     item_id = some_treeview.item(some_callback[0])
     item_name = item_id['text']
-    for value in inv_tree_dict1.values():
+
+    for value in names_dictionary.values():
         if value == item_name:
-            add_one_inventory_quantity(inv_tree_dict2[item_name])
-            return None
-        elif inv_tree_dict2[value] in inv_items_tuple:
+            add_one_inventory_quantity(id_dictionary[item_name])
+            return None     # Required to break out of function all together if match is found.
+        elif id_dictionary[value] in inv_items_tuple:   # If name in inventory treeview, but not match, continue.
             continue
 
-    new_item = inventory_treeview.insert('', 'end', text=some_treeview.item(some_callback[0])['text'])
-    new_inventory_quantity(new_item)
+    new_tree_item(some_treeview, some_callback)
 
 
-def ok(some_treeview, some_callback):
-    new_item = inventory_treeview.insert('', 'end', text=some_treeview.item(some_callback[0])['text'])
-    new_inventory_quantity(new_item)
-
-
-# TODO: Make this  MORE DRY. Still lots of repeats.
 # Adds a new GUI item to inventory treeview if item name not already in.
 # If already in, adds one to the quantity column value of a given item.
 def buy_item_gui(some_callback):
     stores_dic = stores()
-    inv_items_tuple = inventory_treeview.get_children()
 
-    if len(inv_items_tuple) != 0:
-
-        # TODO: Figure out which dictionary is which and refactor better names.
-        inv_tree_dict1 = inv_tree_dictionary(inv_items_tuple)
-        inv_tree_dict2 = inv_tree_dictionary2(inv_items_tuple)
+    if len(inventory_treeview.get_children()) != 0:
 
         if some_callback[0] in stores_dic['Ship']:
-            yup(shipyard_treeview, some_callback, inv_tree_dict1, inv_tree_dict2, inv_items_tuple)
+            try_add_one_gui_quantity(shipyard_treeview, some_callback)
 
         elif some_callback[0] in stores_dic['BS']:
-            yup(blacksmith_treeview, some_callback, inv_tree_dict1, inv_tree_dict2, inv_items_tuple)
+            try_add_one_gui_quantity(blacksmith_treeview, some_callback)
 
         elif some_callback[0] in stores_dic['GS']:
-            yup(general_store_treeview, some_callback, inv_tree_dict1, inv_tree_dict2, inv_items_tuple)
+            try_add_one_gui_quantity(general_store_treeview, some_callback)
 
         elif some_callback[0] in stores_dic['Stables']:
-            yup(stables_treeview, some_callback, inv_tree_dict1, inv_tree_dict2, inv_items_tuple)
+            try_add_one_gui_quantity(stables_treeview, some_callback)
 
     else:
         if some_callback[0] in stores_dic['Ship']:
-            ok(shipyard_treeview, some_callback)
+            new_tree_item(shipyard_treeview, some_callback)
         elif some_callback[0] in stores_dic['BS']:
-            ok(blacksmith_treeview, some_callback)
+            new_tree_item(blacksmith_treeview, some_callback)
         elif some_callback[0] in stores_dic['GS']:
-            ok(general_store_treeview, some_callback)
+            new_tree_item(general_store_treeview, some_callback)
         elif some_callback[0] in stores_dic['Stables']:
-            ok(stables_treeview, some_callback)
+            new_tree_item(stables_treeview, some_callback)
 
 
 # Subtracts one from a give  gui item's quantity column value if given item has a quantity greater than one.
@@ -243,26 +239,29 @@ def sell_item_gui(some_callback):
 #         print(inventory_treeview.item(tup[0]['text']))
 
 
-# TODO: Refactor to use modular sql execute and sql statement.
 # Query all items from a given store. Use values returned to populate store treeviews.
-def populate_tree(some_tree, some_store):
-    # conn = create_connection(db)
+def populate_tree(some_sql, some_tree, some_store):
     with conn:
         for number in range(database.count_rows(conn, sql.sql_count_rows(), 'items')[0]):
             temp_dict = {}
             number += 1
-            some_sql = """SELECT id, item FROM items WHERE id = ? AND store = ?;"""
-            cur = conn.cursor()
-            cur.execute(some_sql, [str(number), some_store])
-            o = cur.fetchone()
+            item_info_tuple = sql.execute_fetchone_sql(conn, some_sql, str(number), some_store)
             try:
-                temp_dict['id'] = o[0]
-                temp_dict['name'] = o[1]
+                temp_dict['id'] = item_info_tuple[0]
+                temp_dict['name'] = item_info_tuple[1]
                 some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'])
 
             # TODO: Consider better error handling. This is a silent pass. Not good.
             except TypeError:
                 continue
+
+
+# Populates the five treeview widgets that, makeup the dashboard page, with items.
+def populate_all_trees():
+    populate_tree(sql.sql_item_from_store(), shipyard_treeview, 'Shipyard')
+    populate_tree(sql.sql_item_from_store(), general_store_treeview, 'General Store')
+    populate_tree(sql.sql_item_from_store(), blacksmith_treeview, 'Blacksmith')
+    populate_tree(sql.sql_item_from_store(), stables_treeview, 'Stables')
 
 
 # clears (forgets) all widgets currently attached to root window.
@@ -348,6 +347,7 @@ currency_treeview = ttk.Treeview(root)
 
 def log_in_page():
     clear()
+
     title_login_label.grid(column=0, row=0, sticky=W+E)
     username_label.grid(column=0, row=1)
     login_page_username_entry.grid(column=0, row=2)
@@ -355,6 +355,7 @@ def log_in_page():
     login_page_password_entry.grid(column=0, row=4)
     login_page_login_button.grid(column=0, row=5)
     login_page_signup_button.grid(column=0, row=6)
+
     clear_entry(login_page_username_entry)
     clear_entry(login_page_password_entry)
     login_page_username_entry.focus()
@@ -362,6 +363,7 @@ def log_in_page():
 
 def sign_up_page():
     clear()
+
     title_signup_label.grid(column=0, row=0, sticky=W + E)
     username_label.grid(column=0, row=1)
     signup_page_username_entry.grid(column=0, row=2)
@@ -369,6 +371,7 @@ def sign_up_page():
     signup_page_password_entry.grid(column=0, row=4)
     signup_page_signup_button.grid(column=0, row=5)
     signup_page_login_button.grid(column=0, row=6)
+
     clear_entry(signup_page_username_entry)
     clear_entry(signup_page_password_entry)
     signup_page_username_entry.focus()
@@ -376,6 +379,7 @@ def sign_up_page():
 
 def character_creation_page():
     clear()
+
     title_char_creation__label.grid(column=0, row=0, sticky=W+E)
     name_label.grid(column=0, row=1)
     name_entry.grid(column=0, row=2)
@@ -387,13 +391,14 @@ def character_creation_page():
 
 def character_selection_page():
     clear()
+
     title_char_select_label.grid(column=0, row=0, sticky=W+E)
     characters_label.grid(column=0, row=1)
     chars_combo.grid(column=0, row=2)
     select_button.grid(column=0, row=3)
     delete_button.grid(column=0, row=4)
     logout_button.grid(column=0, row=5, sticky=W+S)
-    character_selection_button.grid(column=0, row=5, sticky=E+S)
+    character_creation_button.grid(column=0, row=5, sticky=E+S)
 
 
 def dashboard_page():
@@ -482,7 +487,7 @@ def signup_page_signup_command():
     log_in_page()
 
 
-# TODO: Needs to have logic to push to char create or char select depending. Also a button to override this behavior.
+# TODO: Needs to have logic to push to char create or char select depending.
 # Authenticates information passed to entry boxes against DB. Pushes to character creation page
 def login_page_login_command():
     account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
@@ -581,7 +586,7 @@ signup_page_login_button = ttk.Button(text='Log-in', command=log_in_page)
 signup_page_signup_button = ttk.Button(text='Sign-up', command=signup_page_signup_command)
 create_character_button = ttk.Button(text='Create', command=create_character_command)
 logout_button = ttk.Button(text='Log-out', command=logout_command)
-character_selection_button = ttk.Button(text='Character selection', command=character_selection_page)
+character_creation_button = ttk.Button(text='Character creation', command=character_creation_page)
 select_button = ttk.Button(text='Select', command=select_command)
 delete_button = ttk.Button(text='Delete', command=delete_command)
 sell = ttk.Button(text='Sell', command=sell_command)

@@ -260,8 +260,8 @@
 #     ka = """SELECT count(*) FROM {};""".format(some_table)
 #     cur = conn.cursor()
 #     cur.execute(ka)
-#     yup = cur.fetchone()
-#     return yup[0]
+#     try_add_one_gui_quantity = cur.fetchone()
+#     return try_add_one_gui_quantity[0]
 #
 #
 #

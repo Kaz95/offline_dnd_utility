@@ -125,6 +125,10 @@ def sql_item_quantity():
     return """SELECT quantity FROM items where item = ? AND inventory_id = ?"""
 
 
+def sql_item_from_store():
+    return """SELECT id, item FROM items WHERE id = ? AND store = ?;"""
+
+
 # Delete
 
 def sql_delete_all(table, where):
