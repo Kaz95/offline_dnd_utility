@@ -24,8 +24,10 @@ recent_selection = {'selected': 'None'}
 
 # Setup in mem DB for testing purposes.
 conn = database.create_connection(db)
-setup.create_schema(conn)
-if not setup.wrong_schema(conn):
+
+# TODO: This leaves a lot of room for errors to pass silently. Not good.
+if setup.wrong_schema(conn):
+    setup.create_schema(conn)
     setup.stock_stores(conn)
 
 
@@ -255,7 +257,7 @@ def populate_tree(some_sql, some_tree, some_store):
                 continue
 
 
-# Populates the five treeview widgets that, makeup the dashboard page, with items.
+# Populates the four treeview widgets that, makeup the dashboard page, with items.
 def populate_all_trees():
     populate_tree(sql.sql_item_from_store(), shipyard_treeview, 'Shipyard')
     populate_tree(sql.sql_item_from_store(), general_store_treeview, 'General Store')
