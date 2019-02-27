@@ -70,7 +70,6 @@ def clear_entry(some_entry):
     some_entry.delete(0, 'end')
 
 
-# TODO: Solidify knowledge on callbacks. Can I replace with a generic function?
 # Callbacks
 # Functions that capture most recent selection per widget as well as most recent across all treeview widgets.
 
@@ -166,7 +165,7 @@ def new_tree_item(some_treeview, some_callback):
 # If call back equals name, add one to quantity value.
 # Else, add new inventory treeview item.
 def try_add_one_gui_quantity(some_treeview, some_callback):
-    # TODO: Figure out which dictionary is which and refactor better names.
+
     inv_items_tuple = inventory_treeview.get_children()
 
     names_dictionary = inv_tree_dictionary_names(inv_items_tuple)
