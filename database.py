@@ -121,9 +121,10 @@ def item_in_inventory_minus(conn, inv_id, item):
         for tup in items_in_inv_list:
             if item in tup:
                 int_quantity = int(tup[1])
-                int_quantity -= 1
-                sql.execute_sql(conn, sql.update_quantity(), int_quantity, tup[0], inv_id)
-                return True
+                if int_quantity > 1:
+                    int_quantity -= 1
+                    sql.execute_sql(conn, sql.update_quantity(), int_quantity, tup[0], inv_id)
+                    return True
         return False
 
 

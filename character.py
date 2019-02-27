@@ -31,11 +31,14 @@ class Character:
 
         database.add_item_row(conn, sql.sql_add_item_row(), item_info)
 
-    def add_currency(self, amount):
-        self.currency += amount
+    def update_currency(self, conn):
+        sql.execute_sql(conn, sql.update_currency(), self.currency, self.id)
 
-    def subtract_currency(self, amount):
-        self.currency -= amount
+    # def add_currency(self, amount):
+    #     self.currency += amount
+    #
+    # def subtract_currency(self, amount):
+    #     self.currency -= amount
 
     # Converts character.currency value (in cp) into gp,sp,cp
     def convert_currency(self):
@@ -48,7 +51,7 @@ class Character:
 
     # Gets item price info and adds/subtracts it to/from currency based on [unit] key.
     # See convert_price_info() in api.py for more information on conversion.
-    def buy_sell(self, item, action=None):
+    def buy_sell(self, item, action=None, conn=None):
         url = api.get_item_url(item, Character.list_of_item_dicts)
         item_info = api.get_api_all(api.call_api(url))
         item_cost = api.get_nested_api_dict(item_info, 'cost')
@@ -59,8 +62,11 @@ class Character:
             else:
                 print('---item bought---')  # TODO remove later
                 self.currency -= item_value
+                self.update_currency(conn)
         elif action == 'sell':
+            print('---item sold---')  # TODO remove later
             self.currency += item_value
+            self.update_currency(conn)
 
 
 # Query character row. Return player object.

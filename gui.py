@@ -6,6 +6,7 @@ import account
 import setup
 import database
 import character
+import inventory
 
 # TODO: Hasn't been tested
 
@@ -549,7 +550,7 @@ def buy_command():
     elif tup[0] in dic['Stables']:
         item = stables_treeview.item(tup[0])['text']
     if item is not None:
-        user_info['char'].buy_sell(item, 'buy')
+        user_info['char'].buy_sell(item, 'buy', conn)
 
     currency_dict = user_info['char'].convert_currency()
     currency_treeview.item('gold', text=currency_dict['gp'])
@@ -567,13 +568,16 @@ def sell_command():
     # print(recent_selection['selected'])
     tup = inv_selected['selected']
     item = inventory_treeview.item(tup, 'text')
-    user_info['char'].buy_sell(item, 'sell')
+    user_info['char'].buy_sell(item, 'sell', conn)
     currency_dict = user_info['char'].convert_currency()
     currency_treeview.item('gold', text=currency_dict['gp'])
     currency_treeview.set('gold', 'silver', currency_dict['sp'])
     currency_treeview.set('gold', 'copper', currency_dict['cp'])
     sell_item_gui(inv_selected['selected'])
     root.update()
+
+    if not database.item_in_inventory_minus(conn, user_info['inv'], item):
+        database.delete_item(conn, item, user_info['inv'])
 
 
 # Buttons

@@ -127,6 +127,10 @@ def sql_item_from_store():
     return """SELECT id, item FROM items WHERE id = ? AND store = ?;"""
 
 
+def sql_character_currency():
+    return """SELECT currency FROM characters WHERE id = ?"""
+
+
 # Delete
 
 def sql_delete_all(table, where):
@@ -172,3 +176,7 @@ def sql_count_rows():
 
 def update_quantity():
     return """UPDATE items SET quantity = ? WHERE item = ? AND inventory_id = ?"""
+
+
+def update_currency():
+    return """UPDATE characters SET currency = ? WHERE id = ?"""
