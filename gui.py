@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import messagebox
 from tkinter import ttk
 from stores import stores
 import sql
@@ -126,7 +127,7 @@ def inventory_callback(event):
 def entry_is_alnum_callback(entry_input):
     if entry_input.isalnum():
         return True
-    elif entry_input is None:
+    elif entry_input is '':
         return True
     else:
         return False
@@ -135,7 +136,7 @@ def entry_is_alnum_callback(entry_input):
 def entry_is_alpha_callback(entry_input):
     if entry_input.isalpha():
         return True
-    elif entry_input is None:
+    elif entry_input is '':
         return True
     else:
         return False
@@ -144,10 +145,22 @@ def entry_is_alpha_callback(entry_input):
 def entry_is_digit_callback(entry_input):
     if entry_input.isdigit():
         return True
-    elif entry_input is None:
+    elif entry_input is '':
         return True
     else:
         return False
+
+
+def failed_validation_is_digit():
+    messagebox.showerror('Input Error', 'Input must contain only numbers.')
+
+
+def failed_validation_is_alpha():
+    messagebox.showerror('Input Error', 'Input must contain only letters.')
+
+
+def failed_validation_is_alnum():
+    messagebox.showerror('Input Error', 'Input must be alphanumeric.')
 
 
 # Sets quantity column of a given (gui)item to 1.
@@ -334,6 +347,9 @@ root = Tk()
 is_alnum = root.register(entry_is_alnum_callback)
 is_digit = root.register(entry_is_digit_callback)
 is_alpha = root.register(entry_is_alpha_callback)
+failed_is_digit = root.register(failed_validation_is_digit)
+failed_is_alnum = root.register(failed_validation_is_alnum)
+failed_is_alpha = root.register(failed_validation_is_alpha)
 
 # Title labels
 
@@ -355,12 +371,12 @@ password_label = ttk.Label(text='Password')
 
 # Entries
 
-login_page_password_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'))
-login_page_username_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'))
-signup_page_password_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'))
-signup_page_username_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'))
-name_entry = ttk.Entry(validate='key', validatecommand=(is_alpha, '%P'))
-currency_entry = ttk.Entry(validate='key', validatecommand=(is_digit, '%P'))
+login_page_password_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'), invalidcommand=failed_is_alnum)
+login_page_username_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'), invalidcommand=failed_is_alnum)
+signup_page_password_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'), invalidcommand=failed_is_alnum)
+signup_page_username_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'), invalidcommand=failed_is_alnum)
+name_entry = ttk.Entry(validate='key', validatecommand=(is_alpha, '%P'), invalidcommand=failed_is_alpha)
+currency_entry = ttk.Entry(validate='key', validatecommand=(is_digit, '%P'), invalidcommand=failed_is_digit)
 
 # Combos
 chars_combo = ttk.Combobox(postcommand=populate_combo)
