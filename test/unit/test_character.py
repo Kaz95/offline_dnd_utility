@@ -36,14 +36,20 @@ class TestPlayerClassIntegration(unittest.TestCase):
                                                                    'http://www.dnd5eapi.co/api/equipment/1', 1))
 
     def test_buy_sell_buy(self):
-        fake_player = character.Character(1, 'kaz', 5000, [])
-        fake_player.buy_sell('Club', 'buy')
-        self.assertEqual(fake_player.currency, 4990)
+        with mock.patch('database.sqlite3') as mocksql:
+            conn = mocksql.connect()
+            fake_player = character.Character(1, 'kaz', 5000, [])
+            fake_player.buy_sell('Club', 'buy', conn)
+            self.assertEqual(fake_player.currency, 4990)
+            mocksql.connect().cursor().execute.assert_called_with(sql.update_currency(), (4990, 1))
 
     def test_buy_sell_sell(self):
-        fake_player = character.Character(1, 'kaz', 5000, [])
-        fake_player.buy_sell('Club', 'sell')
-        self.assertEqual(fake_player.currency, 5010)
+        with mock.patch('database.sqlite3') as mocksql:
+            conn = mocksql.connect()
+            fake_player = character.Character(1, 'kaz', 5000, [])
+            fake_player.buy_sell('Club', 'sell', conn)
+            self.assertEqual(fake_player.currency, 5010)
+            mocksql.connect().cursor().execute.assert_called_with(sql.update_currency(), (5010, 1))
 
     def test_convert_currency(self):
         fake_player = character.Character(1, 'kaz', 4374, [])

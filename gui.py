@@ -535,10 +535,10 @@ def select_command():
 def buy_command():
     item_name = None
     affordable = None
-    print(recent_selection['selected'])
-
-    tup = recent_selection['selected']
     dic = stores()
+
+    print(recent_selection['selected'])
+    tup = recent_selection['selected']
 
     if tup[0] in dic['Ship']:
         item_name = shipyard_treeview.item(tup[0])['text']
@@ -555,6 +555,7 @@ def buy_command():
     currency_treeview.item('gold', text=currency_dict['gp'])
     currency_treeview.set('gold', 'silver', currency_dict['sp'])
     currency_treeview.set('gold', 'copper', currency_dict['cp'])
+
     root.update()
 
     if affordable:
@@ -569,12 +570,16 @@ def sell_command():
     # print(recent_selection['selected'])
     tup = inv_selected['selected']
     item = inventory_treeview.item(tup, 'text')
+
     user_info['char'].buy_sell(item, 'sell', conn)
+
     currency_dict = user_info['char'].convert_currency()
     currency_treeview.item('gold', text=currency_dict['gp'])
     currency_treeview.set('gold', 'silver', currency_dict['sp'])
     currency_treeview.set('gold', 'copper', currency_dict['cp'])
+
     sell_item_gui(inv_selected['selected'])
+
     root.update()
 
     if not database.item_in_inventory_minus(conn, user_info['inv'], item):
