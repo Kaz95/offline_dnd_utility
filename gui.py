@@ -123,6 +123,33 @@ def inventory_callback(event):
     print(recent_selection['selected'])
 
 
+def entry_is_alnum_callback(entry_input):
+    if entry_input.isalnum():
+        return True
+    elif entry_input is None:
+        return True
+    else:
+        return False
+
+
+def entry_is_alpha_callback(entry_input):
+    if entry_input.isalpha():
+        return True
+    elif entry_input is None:
+        return True
+    else:
+        return False
+
+
+def entry_is_digit_callback(entry_input):
+    if entry_input.isdigit():
+        return True
+    elif entry_input is None:
+        return True
+    else:
+        return False
+
+
 # Sets quantity column of a given (gui)item to 1.
 def new_inventory_quantity(some_item):
     inventory_treeview.set(some_item, 'quantity', 1)
@@ -302,6 +329,12 @@ def center(dash=None):
 
 root = Tk()
 
+# Entry callback functions registration
+
+is_alnum = root.register(entry_is_alnum_callback)
+is_digit = root.register(entry_is_digit_callback)
+is_alpha = root.register(entry_is_alpha_callback)
+
 # Title labels
 
 big_label = ttk.Style()
@@ -320,14 +353,14 @@ name_label = ttk.Label(text='Name')
 username_label = ttk.Label(text='Username')
 password_label = ttk.Label(text='Password')
 
-# Entrys
+# Entries
 
-login_page_password_entry = ttk.Entry()
-login_page_username_entry = ttk.Entry()
-signup_page_password_entry = ttk.Entry()
-signup_page_username_entry = ttk.Entry()
-name_entry = ttk.Entry()
-currency_entry = ttk.Entry()
+login_page_password_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'))
+login_page_username_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'))
+signup_page_password_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'))
+signup_page_username_entry = ttk.Entry(validate='key', validatecommand=(is_alnum, '%P'))
+name_entry = ttk.Entry(validate='key', validatecommand=(is_alpha, '%P'))
+currency_entry = ttk.Entry(validate='key', validatecommand=(is_digit, '%P'))
 
 # Combos
 chars_combo = ttk.Combobox(postcommand=populate_combo)
