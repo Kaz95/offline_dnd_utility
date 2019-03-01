@@ -26,6 +26,15 @@ def username_taken(username):
             return False
 
 
+def account_has_characters(conn, acc_id):
+    account_id_tups_list = sql.execute_fetchall_sql(conn, sql.sql_accounts_with_characters())
+    for tup in account_id_tups_list:
+        if acc_id in tup:
+            return True
+        else:
+            return False
+
+
 # Creates new account. Adds information to accounts table in database.
 def user_creates_account(conn, username, password):
     load_account_archive(conn)

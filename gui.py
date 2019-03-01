@@ -522,7 +522,10 @@ def login_page_login_command():
     # account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
     user_info['acc'] = account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
     if user_info['acc'] is not None:
-        character_creation_page()
+        if account.account_has_characters(conn, user_info['acc'].id):
+            character_selection_page()
+        else:
+            character_creation_page()
 
 
 # Creates character row based on entry boxes and adds to DB. Pushes to character selection page.
