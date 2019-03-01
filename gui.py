@@ -7,7 +7,7 @@ import account
 import setup
 import database
 import character
-import inventory
+import error_box
 
 # TODO: Hasn't been tested
 
@@ -151,16 +151,7 @@ def entry_is_digit_callback(entry_input):
         return False
 
 
-def failed_validation_is_digit():
-    messagebox.showerror('Input Error', 'Input must contain only numbers.')
 
-
-def failed_validation_is_alpha():
-    messagebox.showerror('Input Error', 'Input must contain only letters.')
-
-
-def failed_validation_is_alnum():
-    messagebox.showerror('Input Error', 'Input must be alphanumeric.')
 
 
 # Sets quantity column of a given (gui)item to 1.
@@ -347,9 +338,9 @@ root = Tk()
 is_alnum = root.register(entry_is_alnum_callback)
 is_digit = root.register(entry_is_digit_callback)
 is_alpha = root.register(entry_is_alpha_callback)
-failed_is_digit = root.register(failed_validation_is_digit)
-failed_is_alnum = root.register(failed_validation_is_alnum)
-failed_is_alpha = root.register(failed_validation_is_alpha)
+failed_is_digit = root.register(error_box.failed_validation_is_digit)
+failed_is_alnum = root.register(error_box.failed_validation_is_alnum)
+failed_is_alpha = root.register(error_box.failed_validation_is_alpha)
 
 # Title labels
 
