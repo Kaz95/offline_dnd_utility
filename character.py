@@ -1,6 +1,8 @@
 import api
 import database
 import sql
+import error_box
+
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
@@ -71,8 +73,29 @@ class Character:
             self.update_currency(conn)
 
 
+def character_name_taken(conn, name):
+    character_names_tups = sql.execute_fetchall_sql(conn, sql.sql_all_character_names())
+    for tup in character_names_tups:
+        if name in tup:
+            return True
+    return False
+
+
+# TODO: unit test with mock assert called with.
+# Adds character to DB based on current character information.
+def character_creation(conn, acc_id, name, currency):
+    if character_name_taken(conn, name):
+        error_box.character_name_taken()
+        return False
+    else:
+        character_info_dict = {'acc_id': acc_id, 'name': name, 'currency': currency}
+        database.add_character_row(conn, sql.sql_add_character_row(), character_info_dict)
+        return True
+
+
 # Query character row. Return player object.
 def load_character_object(conn, char_name):
+
     with conn:
         char_info_list = sql.execute_fetchone_sql(conn, sql.sql_character_row(), char_name)
         char_info_dict = {'char_id': char_info_list[0], 'name': char_info_list[1], 'currency': char_info_list[2]}

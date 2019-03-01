@@ -1,5 +1,7 @@
 import database
 import sql
+import error_box
+
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
@@ -16,15 +18,30 @@ class Account:
         self.password = password
 
 
+def username_taken(username):
+    for key in Account.login_dic.keys():
+        if key == username:
+            return True
+        else:
+            return False
+
+
 # Creates new account. Adds information to accounts table in database.
 def user_creates_account(conn, username, password):
-    with conn:
-        acc_info = {'username': username, 'password': password}
-        database.add_account_row(conn, sql.sql_add_account_row(), acc_info)
+    load_account_archive(conn)
+    if username_taken(username):
+        error_box.username_taken()
+        return False
+    else:
+        with conn:
+            acc_info = {'username': username, 'password': password}
+            database.add_account_row(conn, sql.sql_add_account_row(), acc_info)
+            return True
 
 
 # Loads all account username/password information and stores as key:value pairs in Account.log_in_dict.
 def load_account_archive(conn):
+    Account.login_dic = {}
     with conn:
         list_of_username_password_tups = sql.execute_fetchall_sql(conn, sql.sql_username_password())
         for tup in list_of_username_password_tups:
@@ -34,9 +51,17 @@ def load_account_archive(conn):
 # Returns username if authenticated.
 def log_in(conn, username, password):
     load_account_archive(conn)  # Loads account info for authentication into Account.login_dic
-    if username in Account.login_dic and Account.login_dic[username] == password:
+
+    if username not in Account.login_dic:
+        error_box.wrong_username()
+        return None
+    elif username in Account.login_dic and Account.login_dic[username] != password:
+        error_box.wrong_password()
+        return None
+    elif username in Account.login_dic and Account.login_dic[username] == password:
         print('Welcome: ' + username)
-        return username
+        acc = load_account_object(conn, username)
+        return acc
 
 
 # query ALL account information from accounts table based on username. Returns Account object based on query.

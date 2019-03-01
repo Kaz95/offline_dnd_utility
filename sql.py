@@ -131,6 +131,10 @@ def sql_character_currency():
     return """SELECT currency FROM characters WHERE id = ?"""
 
 
+def sql_all_character_names():
+    return """SELECT name FROM characters;"""
+
+
 # Delete
 
 def sql_delete_all(table, where):

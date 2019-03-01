@@ -51,13 +51,6 @@ def log_out():
     user_info['inv'] = None
 
 
-# TODO: unit test with mock assert called with.
-# Adds character to DB based on current character information.
-def character_creation(name, currency):
-    character_info_dict = {'acc_id': user_info['acc'].id, 'name': name, 'currency': currency}
-    database.add_character_row(conn, sql.sql_add_character_row(), character_info_dict)
-
-
 # Query characters from DB based on current account id.
 # Slices name from tuples returned and appends to empty list. Sets combo values to list.
 # TODO: unit test assertEqual temp_combo_list.
@@ -149,9 +142,6 @@ def entry_is_digit_callback(entry_input):
         return True
     else:
         return False
-
-
-
 
 
 # Sets quantity column of a given (gui)item to 1.
@@ -522,24 +512,25 @@ def dashboard_page():
 
 # Creates account row based on entry boxes and adds to DB. Pushes to login page.
 def signup_page_signup_command():
-    account.user_creates_account(conn, signup_page_username_entry.get(), signup_page_password_entry.get())
-    log_in_page()
+    if account.user_creates_account(conn, signup_page_username_entry.get(), signup_page_password_entry.get()):
+        log_in_page()
 
 
 # TODO: Needs to have logic to push to char create or char select depending.
 # Authenticates information passed to entry boxes against DB. Pushes to character creation page
 def login_page_login_command():
-    account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
-    user_info['acc'] = account.load_account_object(conn, login_page_username_entry.get())
-    character_creation_page()
+    # account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
+    user_info['acc'] = account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
+    if user_info['acc'] is not None:
+        character_creation_page()
 
 
 # Creates character row based on entry boxes and adds to DB. Pushes to character selection page.
 def create_character_command():
     name = name_entry.get()
     currency = currency_entry.get()
-    character_creation(name, currency)
-    character_selection_page()
+    if character.character_creation(conn, user_info['acc'].id, name, currency):
+        character_selection_page()
 
 
 # Clears dictionary holding account information objects. Pushes to login page.

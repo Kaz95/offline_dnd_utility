@@ -19,7 +19,7 @@ def wrong_username():
 
 
 def wrong_password():
-    messagebox.showerror(('Log-in Failed', 'Incorrect password'))
+    messagebox.showerror('Log-in Failed', 'Incorrect password')
 
 
 def username_taken():
