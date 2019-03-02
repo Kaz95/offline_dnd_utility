@@ -28,12 +28,13 @@ class TestPlayerClassIntegration(unittest.TestCase):
 
     def test_add_item(self):
         with mock.patch('database.sqlite3') as mocksql:
+            mocksql.connect().cursor().fetchone.return_value = (0,)
             fake_player = character.Character(1, 'kaz', 5000, [])
             conn = mocksql.connect()
             fake_player.add_item(conn, 'Club', 1, 1)
             mocksql.connect().cursor().execute.assert_called_with(sql.sql_add_item_row(),
                                                                   (1, 1, 1, 'Club',
-                                                                   'http://www.dnd5eapi.co/api/equipment/1', 1))
+                                                                   0, 0,  1))
 
     def test_buy_sell_buy(self):
         with mock.patch('database.sqlite3') as mocksql:
