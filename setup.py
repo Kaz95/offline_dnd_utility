@@ -2,6 +2,7 @@ import database
 import sql
 import stores
 import api
+import character
 
 # TODO: May be required for mock. Not sure atm.
 import sqlite3
@@ -52,6 +53,10 @@ def stock_stores(conn):
                     temp['item'] = v    # add value with key 'item'
                 else:
                     temp['api'] = v     # add value with key 'api'
+
+                item_value = api.get_item_value(temp['item'], character.Character.list_of_item_dicts)
+                temp['currency'] = item_value
+
                 if v[0:37] == url:  # if one of those values beings with a url like string
                     num = api.regex(v, 'equipment/')    # slices number off url and captures as variable
 

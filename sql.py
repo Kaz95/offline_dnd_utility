@@ -63,6 +63,7 @@ def sql_items_table():
                inventory_id integer,
                item text,
                api varchar,
+               unit_value,
                quantity integer,
                store text,
                FOREIGN KEY (account_id) REFERENCES accounts (id),
@@ -168,8 +169,8 @@ def sql_add_character_row():
 
 
 def sql_add_store_item():
-    return """INSERT INTO items (item, api, store)
-             VALUES(?,?,?)"""
+    return """INSERT INTO items (item, api, unit_value, store)
+             VALUES(?,?,?,?)"""
 
 
 def sql_count_rows():

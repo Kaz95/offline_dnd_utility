@@ -57,6 +57,7 @@ class TestSQL(unittest.TestCase):
                inventory_id integer,
                item text,
                api varchar,
+               unit_value,
                quantity integer,
                store text,
                FOREIGN KEY (account_id) REFERENCES accounts (id),
@@ -137,8 +138,8 @@ class TestSQL(unittest.TestCase):
 
     def test_sql_add_store_item(self):
         self.assertEqual(sql.sql_add_store_item(),
-                         """INSERT INTO items (item, api, store)
-             VALUES(?,?,?)""")
+                         """INSERT INTO items (item, api, unit_value, store)
+             VALUES(?,?,?,?)""")
 
     def test_sql_count_rows(self):
         self.assertEqual(sql.sql_count_rows(),

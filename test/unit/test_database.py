@@ -48,11 +48,11 @@ class TestDatabaseUnitIntegration(unittest.TestCase):
 
     def test_add_store_item(self):
         with mock.patch('database.sqlite3') as mocksql:
-            some_item = {'item': 'club', 'api': 'some api', 'store': 'bs'}
+            some_item = {'item': 'club', 'api': 'some api', 'store': 'bs', 'currency': 1}
             conn = mocksql.connect()
             database.add_store_item(conn, sql.sql_add_store_item(), some_item)
             mocksql.connect().cursor().execute.assert_called_with(sql.sql_add_store_item(),
-                                                                  ('club', 'some api', 'bs'))
+                                                                  ('club', 'some api', 1, 'bs'))
 
     def test_query_accounts_with_characters(self):
         with mock.patch('database.sqlite3') as mocksql:

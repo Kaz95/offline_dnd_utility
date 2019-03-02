@@ -48,7 +48,7 @@ def add_item_row(conn, some_sql, item_info):
 
 # Used to populate store tables
 def add_store_item(conn, some_sql, item_info):
-    sql.execute_sql(conn, some_sql, item_info['item'], item_info['api'], item_info['store'])
+    sql.execute_sql(conn, some_sql, item_info['item'], item_info['api'], item_info['currency'], item_info['store'])
 
 
 # SELECT
