@@ -1,6 +1,7 @@
 import json
 import requests
 import re
+
 # This module contains functions that interact with the API and those that rely on API sourced data
 # "http://www.dnd5eapi.co/api/"
 
@@ -51,6 +52,14 @@ def get_item_url(name, list_of_dicts):
             return new_url
 
 
+def get_item_value(item, some_dict):
+    url = get_item_url(item, some_dict)
+    item_info = get_api_all(call_api(url))
+    item_cost = get_nested_api_dict(item_info, 'cost')
+    item_value = convert_price_info(item_cost)
+    return item_value
+
+
 # Takes input as {'quantity': 'x', 'unit': 'y'}
 def convert_price_info(price_dict):
     if price_dict['unit'] == 'gp':
@@ -80,9 +89,9 @@ if __name__ == '__main__':
     # pprint.pprint(get_api_results(make_api_url('Equipment'), 'results'))
     # print(get_api_cost(get_api_all(get_item_url('Club', get_api_results(make_api_url('Equipment'))))))
     # print(get_api_all(get_item_url('Acid Arrow', get_api_dictionary('spells'))))
-    list_of_dics = get_nested_api_dict(get_api_all(call_api(make_api_url('equipment'))), 'results')
-    item_api_url = get_item_url('Club', list_of_dics)
-    item_info = get_api_all(call_api(item_api_url))
-    item_cost = get_nested_api_dict(item_info, 'cost')
-    print(item_cost)
+    # list_of_dics = get_nested_api_dict(get_api_all(call_api(make_api_url('equipment'))), 'results')
+    # item_api_url = get_item_url('Club', list_of_dics)
+    # item_info = get_api_all(call_api(item_api_url))
+    # item_cost = get_nested_api_dict(item_info, 'cost')
+    # print(item_cost)
 

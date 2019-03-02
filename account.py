@@ -28,11 +28,12 @@ def username_taken(username):
 
 def account_has_characters(conn, acc_id):
     account_id_tups_list = sql.execute_fetchall_sql(conn, sql.sql_accounts_with_characters())
+    print(account_id_tups_list)
     for tup in account_id_tups_list:
         if acc_id in tup:
             return True
-        else:
-            return False
+
+    return False
 
 
 # Creates new account. Adds information to accounts table in database.

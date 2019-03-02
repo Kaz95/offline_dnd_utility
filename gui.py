@@ -1,5 +1,4 @@
 from tkinter import *
-from tkinter import messagebox
 from tkinter import ttk
 from stores import stores
 import sql
@@ -8,6 +7,7 @@ import setup
 import database
 import character
 import error_box
+import api
 
 # TODO: Hasn't been tested
 
@@ -34,6 +34,28 @@ if setup.wrong_schema(conn):
 
 
 # General Functions
+def treeview_select_value(some_treeview):
+    item = some_treeview.selection()
+    item_name = some_treeview.item(item[0])['text']
+    item_value = api.get_item_value(item_name, character.Character.list_of_item_dicts)
+    return item_value
+
+
+def change_button_background(color):
+    buy.config(activebackground=color)
+
+
+def toggle_affordable_color(item_value):
+    if item_value >= user_info['char'].currency:
+        change_button_background('red')
+    elif item_value < user_info['char'].currency:
+        change_button_background('green')
+
+
+def check_value_and_toggle(some_treeview):
+    item_value = treeview_select_value(some_treeview)
+    toggle_affordable_color(item_value)
+
 
 # Generic function that is passed a tuple with a single value.
 # Value represents both the item_id (database) and the item id (tkinter gui).
@@ -71,7 +93,7 @@ def clear_entry(some_entry):
 # Callbacks
 # Functions that capture most recent selection per widget as well as most recent across all treeview widgets.
 
-def generic_callback(event, some_dict, some_treeview):
+def generic_selection_callback(event, some_dict, some_treeview):
     some_dict['selected'] = some_treeview.selection()
     new_selection(some_dict['selected'])
 
@@ -84,21 +106,25 @@ def shipyard_callback(event):
     # # Gets value of quantity for item selected.
     # # Quantity can be swapped for another column
     # print(shipyard_treeview.set(tup[0], 'quantity'))
-    # print(shipyard_treeview.item(tup[0])['text'])    # Gets name of item selected
+    # print(shipyard_treeview.item(tup[0])['text'])   # Gets name of item selected
     # print(shipyard_treeview.selection())
-    generic_callback(event, ship_selected, shipyard_treeview)
+    check_value_and_toggle(shipyard_treeview)
+    generic_selection_callback(event, ship_selected, shipyard_treeview)
 
 
 def general_store_callback(event):
-    generic_callback(event, gen_selected, general_store_treeview)
+    check_value_and_toggle(general_store_treeview)
+    generic_selection_callback(event, gen_selected, general_store_treeview)
 
 
 def blacksmith_callback(event):
-    generic_callback(event, bs_selected, blacksmith_treeview)
+    check_value_and_toggle(blacksmith_treeview)
+    generic_selection_callback(event, bs_selected, blacksmith_treeview)
 
 
 def stables_callback(event):
-    generic_callback(event, stable_selected, stables_treeview)
+    check_value_and_toggle(stables_treeview)
+    generic_selection_callback(event, stable_selected, stables_treeview)
 
 
 # The inventory callback function also attempts to deselect all previously selections in store widgets.
@@ -111,7 +137,7 @@ def inventory_callback(event):
     except TclError:
         pass
 
-    generic_callback(event, inv_selected, inventory_treeview)
+    generic_selection_callback(event, inv_selected, inventory_treeview)
     print(inventory_treeview.selection())
     print(inventory_treeview.item(inventory_treeview.selection(), 'text'))
     print(recent_selection['selected'])
@@ -502,7 +528,7 @@ def dashboard_page():
 
     # Buttons
     sell.grid(row=4, columnspan=4, sticky=N + W + E)
-    dummy.grid(row=5, columnspan=4, sticky=W + E)
+    # dummy.grid(row=5, columnspan=4, sticky=W + E)
     buy.grid(row=1, columnspan=4, sticky=W + E)
     screen_size()
     center([832, 630])
@@ -622,19 +648,19 @@ def sell_command():
 
 # Buttons
 
-login_page_login_button = ttk.Button(text='Log-in', command=login_page_login_command)
-login_page_signup_button = ttk.Button(text='Sign-up', command=sign_up_page)
-signup_page_login_button = ttk.Button(text='Log-in', command=log_in_page)
-signup_page_signup_button = ttk.Button(text='Sign-up', command=signup_page_signup_command)
-create_character_button = ttk.Button(text='Create', command=create_character_command)
-logout_button = ttk.Button(text='Log-out', command=logout_command)
-character_creation_button = ttk.Button(text='Character creation', command=character_creation_page)
-select_button = ttk.Button(text='Select', command=select_command)
-delete_button = ttk.Button(text='Delete', command=delete_command)
-sell = ttk.Button(text='Sell', command=sell_command)
-dummy = ttk.Button(root, text='Test')
+login_page_login_button = Button(text='Log-in', bg='gray', command=login_page_login_command)
+login_page_signup_button = Button(text='Sign-up', bg='gray', command=sign_up_page)
+signup_page_login_button = Button(text='Log-in', bg='gray', command=log_in_page)
+signup_page_signup_button = Button(text='Sign-up', bg='gray', command=signup_page_signup_command)
+create_character_button = Button(text='Create', bg='gray', command=create_character_command)
+logout_button = Button(text='Log-out', bg='gray', command=logout_command)
+character_creation_button = Button(text='Character creation', bg='gray', command=character_creation_page)
+select_button = Button(text='Select', bg='gray', command=select_command)
+delete_button = Button(text='Delete', bg='gray', command=delete_command)
+sell = Button(text='Sell', bg='gray', activebackground='green', command=sell_command)
+dummy = Button(root, text='Test', bg='gray')
 # buy = ttk.Button(text='Buy', command=lambda: buy_item_gui(selected['selected']))
-buy = ttk.Button(text='Buy', command=buy_command)
+buy = Button(text='Buy', bg='gray', command=buy_command)
 log_in_page()
 center()
 root.mainloop()
