@@ -20,15 +20,19 @@ class Character:
         self.name = name
         self.inventories = inventories_list  # List of player inventory names in string format. Technically not used.
 
+    # TODO: This makes more sense as an inventory method. Change it once multiple inventories.
     # Adds an item item under character id. Can specify a specific inventory via inv_id
     def add_item(self, conn, item, acc_id, inv_id):
-        url = api.get_item_url(item, Character.list_of_item_dicts)
+        url = sql.execute_fetchone_sql(conn, sql.sql_store_item_url(), item)
+        # url = api.get_item_url(item, Character.list_of_item_dicts)
+        item_value = sql.execute_fetchone_sql(conn, sql.sql_store_item_value(), item)
 
         item_info = {'acc_id': acc_id,
                      'char_id': self.id,
                      'inv_id': inv_id,
                      'item': item,
-                     'api': url,
+                     'api': url[0],
+                     'value': item_value[0],
                      'quantity': 1}
 
         database.add_item_row(conn, sql.sql_add_item_row(), item_info)

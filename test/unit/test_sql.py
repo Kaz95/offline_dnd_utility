@@ -118,8 +118,8 @@ class TestSQL(unittest.TestCase):
 
     def test_sql_add_item_row(self):
         self.assertEqual(sql.sql_add_item_row(),
-                         """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
-            VALUES(?,?,?,?,?,?)""")
+                         """INSERT INTO items (account_id, character_id, inventory_id, item, api, unit_value, quantity)
+            VALUES(?,?,?,?,?,?,?)""")
 
     def test_sql_add_account_row(self):
         self.assertEqual(sql.sql_add_account_row(),

@@ -37,8 +37,9 @@ if setup.wrong_schema(conn):
 def treeview_select_value(some_treeview):
     item = some_treeview.selection()
     item_name = some_treeview.item(item[0])['text']
-    item_value = api.get_item_value(item_name, character.Character.list_of_item_dicts)
-    return item_value
+    item_value = sql.execute_fetchone_sql(conn, sql.sql_store_item_value(), item_name)
+    # item_value = api.get_item_value(item_name, character.Character.list_of_item_dicts)    # Deppricated API call
+    return item_value[0]
 
 
 def change_button_background(color):
@@ -129,13 +130,14 @@ def stables_callback(event):
 
 # The inventory callback function also attempts to deselect all previously selections in store widgets.
 def inventory_callback(event):
-    try:
-        blacksmith_treeview.selection_toggle(bs_selected['selected'])
-        general_store_treeview.selection_toggle(gen_selected['selected'])
-        stables_treeview.selection_toggle(stable_selected['selected'])
-        shipyard_treeview.selection_toggle(ship_selected['selected'])
-    except TclError:
-        pass
+    # TODO: This is bugged. Toggle select causes unwanted behavior. Find a way to check if toggeled on.
+    # try:
+    #     blacksmith_treeview.selection_toggle(bs_selected['selected'])
+    #     general_store_treeview.selection_toggle(gen_selected['selected'])
+    #     stables_treeview.selection_toggle(stable_selected['selected'])
+    #     shipyard_treeview.selection_toggle(ship_selected['selected'])
+    # except TclError:
+    #     pass
 
     generic_selection_callback(event, inv_selected, inventory_treeview)
     print(inventory_treeview.selection())

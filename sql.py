@@ -136,6 +136,14 @@ def sql_all_character_names():
     return """SELECT name FROM characters;"""
 
 
+def sql_store_item_value():
+    return """SELECT unit_value FROM items WHERE item = ? AND quantity IS NULL;"""
+
+
+def sql_store_item_url():
+    return """SELECT api FROM items WHERE item = ? AND quantity IS NULL;"""
+
+
 # Delete
 
 def sql_delete_all(table, where):
@@ -149,8 +157,8 @@ def sql_delete_item():
 # INSERT
 
 def sql_add_item_row():
-    return """INSERT INTO items (account_id, character_id, inventory_id, item, api, quantity)
-            VALUES(?,?,?,?,?,?)"""
+    return """INSERT INTO items (account_id, character_id, inventory_id, item, api, unit_value, quantity)
+            VALUES(?,?,?,?,?,?,?)"""
 
 
 def sql_add_account_row():
@@ -185,3 +193,4 @@ def update_quantity():
 
 def update_currency():
     return """UPDATE characters SET currency = ? WHERE id = ?"""
+

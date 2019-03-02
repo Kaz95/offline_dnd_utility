@@ -43,7 +43,7 @@ def add_character_row(conn, some_sql, char_info):
 # Inserts given values into accounts table at given columns.
 def add_item_row(conn, some_sql, item_info):
     sql.execute_sql(conn, some_sql, item_info['acc_id'], item_info['char_id'], item_info['inv_id'], item_info['item'],
-                    item_info['api'], item_info['quantity'])
+                    item_info['api'], item_info['value'], item_info['quantity'])
 
 
 # Used to populate store tables
@@ -128,6 +128,11 @@ def item_in_inventory_minus(conn, inv_id, item):
         return False
 
 
+if __name__ == '__main__':
+    conn = create_connection(db)
+    with conn:
+        k = sql.execute_fetchone_sql(conn, sql.sql_store_item_value(), 'Club')
+        print(k)
 # if __name__ == '__main__':
 #     acc = ('username', 'password')
 #     inv = (1, 'inv name')

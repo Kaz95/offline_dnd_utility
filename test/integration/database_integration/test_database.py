@@ -7,6 +7,7 @@ db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
 
+# TODO: Works fine with mem DB, not fine with test DB.
 class TestDatabase(unittest.TestCase):
 
     def setUp(self):
