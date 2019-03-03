@@ -142,20 +142,24 @@ def shipyard_callback(event):
     generic_selection_callback(event, ship_selected, shipyard_treeview)
     check_value_and_toggle()
 
+
 def general_store_callback(event):
     # check_value_and_toggle()
     generic_selection_callback(event, gen_selected, general_store_treeview)
     check_value_and_toggle()
+
 
 def blacksmith_callback(event):
     # check_value_and_toggle()
     generic_selection_callback(event, bs_selected, blacksmith_treeview)
     check_value_and_toggle()
 
+
 def stables_callback(event):
     # check_value_and_toggle()
     generic_selection_callback(event, stable_selected, stables_treeview)
     check_value_and_toggle()
+
 
 # The inventory callback function also attempts to deselect all previously selections in store widgets.
 def inventory_callback(event):
@@ -492,8 +496,11 @@ def dashboard_page():
     clear()
 
     # Populate trees
-    populate_all_trees()
-    currency_treeview.insert('', 'end', 'gold', text=currency_dict['gp'])
+    try:
+        populate_all_trees()
+        currency_treeview.insert('', 'end', 'gold', text=currency_dict['gp'])
+    except TclError:
+        pass
 
     # Binds
     shipyard_treeview.bind('<<TreeviewSelect>>', shipyard_callback)
@@ -558,11 +565,13 @@ def dashboard_page():
     inventory_treeview.heading('#0', text='Item')
 
     # Buttons
-    sell.grid(row=4, columnspan=4, sticky=N + W + E)
-    # dummy.grid(row=5, columnspan=4, sticky=W + E)
     buy.grid(row=1, columnspan=4, sticky=W + E)
+    sell.grid(row=4, columnspan=4, sticky=N + W + E)
+    logout_button.grid(row=5, column=0, pady=50, sticky=S + W)
+    dashboard_page_character_select_button.grid(row=5, column=3, pady=50, sticky=S + E)
     screen_size()
     center([832, 630])
+    # center()
 
 
 # Button commands (backend integration)
@@ -597,6 +606,7 @@ def create_character_command():
 def logout_command():
     log_out()
     log_in_page()
+    center()
 
 
 # Deletes a character from the front(gui) and back(DB) end.
@@ -624,7 +634,7 @@ def select_command():
 # TODO: Integrate currency back-end.
 # Buys item on front (gui) and back (DB) end. Updates currency based on item value.
 def buy_command():
-    check_value_and_toggle()
+
     item_name = None
     affordable = None
     dic = stores()
@@ -655,6 +665,8 @@ def buy_command():
         if not database.item_in_inventory_add(conn, user_info['inv'], item_name):
             user_info['char'].add_item(conn, item_name, user_info['acc'].id, user_info['inv'])
 
+    check_value_and_toggle()
+
 
 # TODO: Integrate back-end.
 # Sells item and updates currency on front-end.
@@ -678,6 +690,10 @@ def sell_command():
         database.delete_item(conn, item, user_info['inv'])
 
 
+def char_select_command():
+    character_selection_page()
+
+
 # Buttons
 
 login_page_login_button = Button(text='Log-in', bg='gray', command=login_page_login_command)
@@ -688,6 +704,7 @@ create_character_button = Button(text='Create', bg='gray', command=create_charac
 logout_button = Button(text='Log-out', bg='gray', command=logout_command)
 character_creation_button = Button(text='Character creation', bg='gray', command=character_creation_page)
 select_button = Button(text='Select', bg='gray', command=select_command)
+dashboard_page_character_select_button = Button(text='Character Selection', bg='gray', command=char_select_command)
 delete_button = Button(text='Delete', bg='gray', command=delete_command)
 sell = Button(text='Sell', bg='gray', activebackground='green', command=sell_command)
 dummy = Button(root, text='Test', bg='gray')
