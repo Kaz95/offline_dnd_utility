@@ -34,12 +34,41 @@ if setup.wrong_schema(conn):
 
 
 # General Functions
-def treeview_select_value(some_treeview):
-    item = some_treeview.selection()
-    item_name = some_treeview.item(item[0])['text']
+def recent_select_value():
+    # item = some_treeview.selection()
+    item = recent_selection['selected']
+    item_name = None
+    try:
+        item_name = general_store_treeview.item(item[0])['text']
+    except TclError:
+        pass
+
+    try:
+        item_name = blacksmith_treeview.item(item[0])['text']
+    except TclError:
+        pass
+
+    try:
+        item_name = stables_treeview.item(item[0])['text']
+    except TclError:
+        pass
+
+    try:
+        item_name = shipyard_treeview.item(item[0])['text']
+    except TclError:
+        pass
+
     item_value = sql.execute_fetchone_sql(conn, sql.sql_store_item_value(), item_name)
-    # item_value = api.get_item_value(item_name, character.Character.list_of_item_dicts)    # Deppricated API call
+    # item_value = api.get_item_value(item_name, character.Character.list_of_item_dicts)    # Depricated API call
     return item_value[0]
+
+
+# def treeview_select_value(some_treeview):
+#     item = some_treeview.selection()
+#     item_name = some_treeview.item(item[0])['text']
+#     item_value = sql.execute_fetchone_sql(conn, sql.sql_store_item_value(), item_name)
+#     # item_value = api.get_item_value(item_name, character.Character.list_of_item_dicts)    # Deppricated API call
+#     return item_value[0]
 
 
 def change_button_background(color):
@@ -53,8 +82,8 @@ def toggle_affordable_color(item_value):
         change_button_background('green')
 
 
-def check_value_and_toggle(some_treeview):
-    item_value = treeview_select_value(some_treeview)
+def check_value_and_toggle():
+    item_value = recent_select_value()
     toggle_affordable_color(item_value)
 
 
@@ -109,24 +138,24 @@ def shipyard_callback(event):
     # print(shipyard_treeview.set(tup[0], 'quantity'))
     # print(shipyard_treeview.item(tup[0])['text'])   # Gets name of item selected
     # print(shipyard_treeview.selection())
-    check_value_and_toggle(shipyard_treeview)
+    # check_value_and_toggle()
     generic_selection_callback(event, ship_selected, shipyard_treeview)
-
+    check_value_and_toggle()
 
 def general_store_callback(event):
-    check_value_and_toggle(general_store_treeview)
+    # check_value_and_toggle()
     generic_selection_callback(event, gen_selected, general_store_treeview)
-
+    check_value_and_toggle()
 
 def blacksmith_callback(event):
-    check_value_and_toggle(blacksmith_treeview)
+    # check_value_and_toggle()
     generic_selection_callback(event, bs_selected, blacksmith_treeview)
-
+    check_value_and_toggle()
 
 def stables_callback(event):
-    check_value_and_toggle(stables_treeview)
+    # check_value_and_toggle()
     generic_selection_callback(event, stable_selected, stables_treeview)
-
+    check_value_and_toggle()
 
 # The inventory callback function also attempts to deselect all previously selections in store widgets.
 def inventory_callback(event):
@@ -595,6 +624,7 @@ def select_command():
 # TODO: Integrate currency back-end.
 # Buys item on front (gui) and back (DB) end. Updates currency based on item value.
 def buy_command():
+    check_value_and_toggle()
     item_name = None
     affordable = None
     dic = stores()
