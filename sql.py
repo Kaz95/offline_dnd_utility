@@ -125,7 +125,7 @@ def sql_item_quantity():
 
 
 def sql_item_from_store():
-    return """SELECT id, item FROM items WHERE id = ? AND store = ?;"""
+    return """SELECT id, item, unit_value FROM items WHERE id = ? AND store = ?;"""
 
 
 def sql_character_currency():

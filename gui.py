@@ -339,7 +339,9 @@ def populate_tree(some_sql, some_tree, some_store):
             try:
                 temp_dict['id'] = item_info_tuple[0]
                 temp_dict['name'] = item_info_tuple[1]
+                temp_dict['value'] = item_info_tuple[2]
                 some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'])
+                some_tree.set(temp_dict['id'], 'price', temp_dict['value'])
 
             # TODO: Consider better error handling. This is a silent pass. Not good.
             except TypeError:
@@ -348,9 +350,9 @@ def populate_tree(some_sql, some_tree, some_store):
 
 # Populates the four treeview widgets that, makeup the dashboard page, with items.
 def populate_all_trees():
+    populate_tree(sql.sql_item_from_store(), blacksmith_treeview, 'Blacksmith')
     populate_tree(sql.sql_item_from_store(), shipyard_treeview, 'Shipyard')
     populate_tree(sql.sql_item_from_store(), general_store_treeview, 'General Store')
-    populate_tree(sql.sql_item_from_store(), blacksmith_treeview, 'Blacksmith')
     populate_tree(sql.sql_item_from_store(), stables_treeview, 'Stables')
 
 
@@ -497,15 +499,41 @@ def character_selection_page():
     character_creation_button.grid(column=0, row=5, sticky=E + S)
 
 
+# TODO: This is not DRY.
 def dashboard_page():
     currency_dict = user_info['char'].convert_currency()
     clear()
 
+    def format_store(some_treeview):
+        some_treeview.config(columns='price')
+        some_treeview.column('price', width=55, anchor='center')
+        some_treeview.column('#0', width=150)
+        some_treeview.heading('price', text='Price')
+        some_treeview.heading('#0', text='Item')
+
+    # Gen Store formatting
+    format_store(general_store_treeview)
+
+    # Blacksmith formatting
+    format_store(blacksmith_treeview)
+
+    # Stables formatting
+    format_store(stables_treeview)
+
+    # Shipyard formatting
+    format_store(shipyard_treeview)
+
     # Populate trees
     try:
         populate_all_trees()
-        currency_treeview.insert('', 'end', 'gold', text=currency_dict['gp'])
     except TclError:
+        pass
+
+    try:
+        currency_treeview.insert('', 'end', 'gold', text=currency_dict['gp'])
+
+    except TclError:
+        print('tcl error')
         update_currency_treeview(currency_dict)
 
     # Binds
@@ -534,34 +562,6 @@ def dashboard_page():
     currency_treeview.heading('copper', text='Copper')
     currency_treeview.set('gold', 'silver', currency_dict['sp'])
     currency_treeview.set('gold', 'copper', currency_dict['cp'])
-
-    # Gen Store formatting
-    general_store_treeview.config(columns='quantity')
-    general_store_treeview.column('quantity', width=55, anchor='center')
-    general_store_treeview.column('#0', width=150)
-    general_store_treeview.heading('quantity', text='Quantity')
-    general_store_treeview.heading('#0', text='Item')
-
-    # Blacksmith formatting
-    blacksmith_treeview.config(columns='quantity')
-    blacksmith_treeview.column('quantity', width=55, anchor='center')
-    blacksmith_treeview.column('#0', width=150)
-    blacksmith_treeview.heading('quantity', text='Quantity')
-    blacksmith_treeview.heading('#0', text='Item')
-
-    # Stables formatting
-    stables_treeview.config(columns='quantity')
-    stables_treeview.column('quantity', width=55, anchor='center')
-    stables_treeview.column('#0', width=150)
-    stables_treeview.heading('quantity', text='Quantity')
-    stables_treeview.heading('#0', text='Item')
-
-    # Shipyard formatting
-    shipyard_treeview.config(columns='quantity')
-    shipyard_treeview.column('quantity', width=55, anchor='center')
-    shipyard_treeview.heading('quantity', text='Quantity')
-    shipyard_treeview.column('#0', width=150)
-    shipyard_treeview.heading('#0', text='Item')
 
     # Inventory formatting
     inventory_treeview.config(columns='quantity')
@@ -714,6 +714,7 @@ sell = Button(text='Sell', bg='gray', activebackground='green', command=sell_com
 dummy = Button(root, text='Test', bg='gray')
 # buy = ttk.Button(text='Buy', command=lambda: buy_item_gui(selected['selected']))
 buy = Button(text='Buy', bg='gray', command=buy_command)
+# buy = Button(text='Buy', bg='gray', command=yup)
 log_in_page()
 center()
 root.mainloop()
