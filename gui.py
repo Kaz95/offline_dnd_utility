@@ -210,6 +210,12 @@ def new_inventory_quantity(some_item):
     inventory_treeview.set(some_item, 'quantity', 1)
 
 
+def update_currency_treeview(some_dict):
+    currency_treeview.item('gold',  text=some_dict['gp'])
+    currency_treeview.set('gold', 'silver', some_dict['sp'])
+    currency_treeview.set('gold', 'copper', some_dict['cp'])
+
+
 # Adds 1 to a given (gui)item's quantity column value.
 def add_one_inventory_quantity(some_item):
     quantity = inventory_treeview.set(some_item, 'quantity')
@@ -500,7 +506,7 @@ def dashboard_page():
         populate_all_trees()
         currency_treeview.insert('', 'end', 'gold', text=currency_dict['gp'])
     except TclError:
-        pass
+        update_currency_treeview(currency_dict)
 
     # Binds
     shipyard_treeview.bind('<<TreeviewSelect>>', shipyard_callback)
