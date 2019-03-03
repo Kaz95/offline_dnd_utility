@@ -588,7 +588,6 @@ def signup_page_signup_command():
         log_in_page()
 
 
-# TODO: Needs to have logic to push to char create or char select depending.
 # Authenticates information passed to entry boxes against DB. Pushes to character creation page
 def login_page_login_command():
     # account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
@@ -637,7 +636,6 @@ def select_command():
     dashboard_page()
 
 
-# TODO: Integrate currency back-end.
 # Buys item on front (gui) and back (DB) end. Updates currency based on item value.
 def buy_command():
 
@@ -674,7 +672,6 @@ def buy_command():
     check_value_and_toggle()
 
 
-# TODO: Integrate back-end.
 # Sells item and updates currency on front-end.
 def sell_command():
     # print(recent_selection['selected'])
