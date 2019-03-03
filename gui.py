@@ -575,8 +575,9 @@ def dashboard_page():
     sell.grid(row=4, columnspan=4, sticky=N + W + E)
     logout_button.grid(row=5, column=0, pady=50, sticky=S + W)
     dashboard_page_character_select_button.grid(row=5, column=3, pady=50, sticky=S + E)
-    screen_size()
-    center([832, 630])
+    cur_size = screen_size()
+    if cur_size['h'] != 630:
+        center([832, 630])
     # center()
 
 
