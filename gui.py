@@ -34,6 +34,14 @@ if setup.wrong_schema(conn):
 
 
 # General Functions
+def convert_currency(currency):
+    g = int(currency / 100)
+    s = int(round((((currency / 100) - g) * 10), 2))
+    c = int(round((((((currency / 100) - g) * 10) - s) * 10), 2))
+    converted_dict = {'gp': g, 'sp': s, 'cp': c}
+    return converted_dict
+
+
 def recent_select_value():
     # item = some_treeview.selection()
     item = recent_selection['selected']
@@ -328,6 +336,13 @@ def sell_item_gui(some_callback):
 #     else:
 #         print(inventory_treeview.item(tup[0]['text']))
 
+def img_test():
+    img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
+    gold_pic = blacksmith_treeview.item(1, image=img)
+    gold_pic.image = img
+    print(blacksmith_treeview.item(1,)), ['image']
+    root.update()
+
 
 # Query all items from a given store. Use values returned to populate store treeviews.
 def populate_tree(some_sql, some_tree, some_store):
@@ -340,8 +355,9 @@ def populate_tree(some_sql, some_tree, some_store):
                 temp_dict['id'] = item_info_tuple[0]
                 temp_dict['name'] = item_info_tuple[1]
                 temp_dict['value'] = item_info_tuple[2]
+                converted_value = convert_currency(temp_dict['value'])
                 some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'])
-                some_tree.set(temp_dict['id'], 'price', temp_dict['value'])
+                some_tree.set(temp_dict['id'], 'price', (converted_value['gp'], 'g', converted_value['sp'], 's', converted_value['cp'], 'c'))
 
             # TODO: Consider better error handling. This is a silent pass. Not good.
             except TypeError:
@@ -506,7 +522,7 @@ def dashboard_page():
 
     def format_store(some_treeview):
         some_treeview.config(columns='price')
-        some_treeview.column('price', width=55, anchor='center')
+        some_treeview.column('price', width=85, anchor='center')
         some_treeview.column('#0', width=150)
         some_treeview.heading('price', text='Price')
         some_treeview.heading('#0', text='Item')
@@ -577,7 +593,7 @@ def dashboard_page():
     dashboard_page_character_select_button.grid(row=5, column=3, pady=50, sticky=S + E)
     cur_size = screen_size()
     if cur_size['h'] != 630:
-        center([832, 630])
+        center([953, 630])
     # center()
 
 
@@ -713,8 +729,8 @@ delete_button = Button(text='Delete', bg='gray', command=delete_command)
 sell = Button(text='Sell', bg='gray', activebackground='green', command=sell_command)
 dummy = Button(root, text='Test', bg='gray')
 # buy = ttk.Button(text='Buy', command=lambda: buy_item_gui(selected['selected']))
-buy = Button(text='Buy', bg='gray', command=buy_command)
-# buy = Button(text='Buy', bg='gray', command=yup)
+# buy = Button(text='Buy', bg='gray', command=buy_command)
+buy = Button(text='Buy', bg='gray', command=img_test)
 log_in_page()
 center()
 root.mainloop()
