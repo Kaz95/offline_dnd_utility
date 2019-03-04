@@ -356,7 +356,7 @@ def populate_tree(some_sql, some_tree, some_store):
                 temp_dict['name'] = item_info_tuple[1]
                 temp_dict['value'] = item_info_tuple[2]
                 converted_value = convert_currency(temp_dict['value'])
-                some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'])
+                some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'], tags='gold')
                 some_tree.set(temp_dict['id'], 'price', (converted_value['gp'], 'g', converted_value['sp'], 's', converted_value['cp'], 'c'))
 
             # TODO: Consider better error handling. This is a silent pass. Not good.
@@ -515,12 +515,16 @@ def character_selection_page():
     character_creation_button.grid(column=0, row=5, sticky=E + S)
 
 
+img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
+
+
 # TODO: This is not DRY.
 def dashboard_page():
     currency_dict = user_info['char'].convert_currency()
     clear()
 
     def format_store(some_treeview):
+        some_treeview.tag_configure('gold', image=img)
         some_treeview.config(columns='price')
         some_treeview.column('price', width=85, anchor='center')
         some_treeview.column('#0', width=150)
