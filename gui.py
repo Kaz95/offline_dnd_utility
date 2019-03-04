@@ -336,12 +336,18 @@ def sell_item_gui(some_callback):
 #     else:
 #         print(inventory_treeview.item(tup[0]['text']))
 
-def img_test():
-    img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
-    gold_pic = blacksmith_treeview.item(1, image=img)
-    gold_pic.image = img
-    print(blacksmith_treeview.item(1,)), ['image']
-    root.update()
+# def img_test():
+#     img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
+#     gold_pic = blacksmith_treeview.item(1, image=img)
+#     gold_pic.image = img
+#     print(blacksmith_treeview.item(1,)), ['image']
+#     root.update()
+
+
+def inspecto_gadget(converted_value):
+    for key, value in converted_value.items():
+        if value != 0:
+            return key
 
 
 # Query all items from a given store. Use values returned to populate store treeviews.
@@ -356,8 +362,17 @@ def populate_tree(some_sql, some_tree, some_store):
                 temp_dict['name'] = item_info_tuple[1]
                 temp_dict['value'] = item_info_tuple[2]
                 converted_value = convert_currency(temp_dict['value'])
-                some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'], tags='gold')
-                some_tree.set(temp_dict['id'], 'price', (converted_value['gp'], 'g', converted_value['sp'], 's', converted_value['cp'], 'c'))
+                cur_type = inspecto_gadget(converted_value)
+                some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'])
+
+                if cur_type == 'gp':
+                    some_tree.item(temp_dict['id'], tags='gold')
+                elif cur_type == 'sp':
+                    some_tree.item(temp_dict['id'], tags='silver')
+                elif cur_type == 'cp':
+                    some_tree.item(temp_dict['id'], tags='copper')
+
+                some_tree.set(temp_dict['id'], 'price', converted_value[cur_type])
 
             # TODO: Consider better error handling. This is a silent pass. Not good.
             except TypeError:
@@ -515,7 +530,9 @@ def character_selection_page():
     character_creation_button.grid(column=0, row=5, sticky=E + S)
 
 
-img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
+gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
+silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
+copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
 
 
 # TODO: This is not DRY.
@@ -524,7 +541,9 @@ def dashboard_page():
     clear()
 
     def format_store(some_treeview):
-        some_treeview.tag_configure('gold', image=img)
+        some_treeview.tag_configure('gold', image=gold_img)
+        some_treeview.tag_configure('silver', image=silver_img)
+        some_treeview.tag_configure('copper', image=copper_img)
         some_treeview.config(columns='price')
         some_treeview.column('price', width=85, anchor='center')
         some_treeview.column('#0', width=150)
@@ -733,8 +752,8 @@ delete_button = Button(text='Delete', bg='gray', command=delete_command)
 sell = Button(text='Sell', bg='gray', activebackground='green', command=sell_command)
 dummy = Button(root, text='Test', bg='gray')
 # buy = ttk.Button(text='Buy', command=lambda: buy_item_gui(selected['selected']))
-# buy = Button(text='Buy', bg='gray', command=buy_command)
-buy = Button(text='Buy', bg='gray', command=img_test)
+buy = Button(text='Buy', bg='gray', command=buy_command)
+# buy = Button(text='Buy', bg='gray', command=img_test)
 log_in_page()
 center()
 root.mainloop()
