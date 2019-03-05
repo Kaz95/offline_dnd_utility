@@ -15,6 +15,7 @@ db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
 user_info = {'acc': None, 'char': None, 'inv': 1}
+inv_cache = {}
 
 # selected = {'selected': 'none'}
 gen_selected = {'selected': 'none'}
@@ -343,6 +344,13 @@ def sell_item_gui(some_callback):
 #     print(blacksmith_treeview.item(1,)), ['image']
 #     root.update()
 
+def cache_inv():
+    inv_cache[user_info['char'].id] = inventory_treeview.get_children()
+
+
+def detach_inv():
+    inventory_treeview.detach(*inv_cache[user_info['char'].id])
+
 
 def inspecto_gadget(converted_value):
     for key, value in converted_value.items():
@@ -377,6 +385,17 @@ def populate_tree(some_sql, some_tree, some_store):
             # TODO: Consider better error handling. This is a silent pass. Not good.
             except TypeError:
                 continue
+
+
+def populate_inventory_treeview_db(db_char_items):
+    for i in db_char_items:
+        item_id = inventory_treeview.insert('', 'end', text=i[0])
+        inventory_treeview.set(item_id, 'quantity', i[1])
+
+
+def populate_inventory_treeview_cache(tree_items_tup):
+    for i in tree_items_tup:
+        inventory_treeview.reattach(i, '', len(tree_items_tup))
 
 
 # Populates the four treeview widgets that, makeup the dashboard page, with items.
@@ -575,6 +594,16 @@ def dashboard_page():
         print('tcl error')
         update_currency_treeview(currency_dict)
 
+    char_items = sql.execute_fetchall_sql(conn, sql.sql_all_character_items(), user_info['char'].id)
+
+    if user_info['char'].id in inv_cache.keys():
+        populate_inventory_treeview_cache(inv_cache[user_info['char'].id])
+    elif len(char_items) > 0:
+        populate_inventory_treeview_db(char_items)
+
+
+
+
     # Binds
     shipyard_treeview.bind('<<TreeviewSelect>>', shipyard_callback)
     blacksmith_treeview.bind('<<TreeviewSelect>>', blacksmith_callback)
@@ -649,6 +678,8 @@ def create_character_command():
 
 # Clears dictionary holding account information objects. Pushes to login page.
 def logout_command():
+    cache_inv()
+    detach_inv()
     log_out()
     log_in_page()
     center()
@@ -747,13 +778,14 @@ create_character_button = Button(text='Create', bg='gray', command=create_charac
 logout_button = Button(text='Log-out', bg='gray', command=logout_command)
 character_creation_button = Button(text='Character creation', bg='gray', command=character_creation_page)
 select_button = Button(text='Select', bg='gray', command=select_command)
-dashboard_page_character_select_button = Button(text='Character Selection', bg='gray', command=char_select_command)
+dashboard_page_character_select_button = Button(text='Character Selection', bg='gray', command=ok)
 delete_button = Button(text='Delete', bg='gray', command=delete_command)
 sell = Button(text='Sell', bg='gray', activebackground='green', command=sell_command)
 dummy = Button(root, text='Test', bg='gray')
-# buy = ttk.Button(text='Buy', command=lambda: buy_item_gui(selected['selected']))
 buy = Button(text='Buy', bg='gray', command=buy_command)
+# buy = ttk.Button(text='Buy', command=lambda: buy_item_gui(selected['selected']))
 # buy = Button(text='Buy', bg='gray', command=img_test)
+# sell = Button(text='Sell', bg='gray', activebackground='green', command=pog_cmd)
 log_in_page()
 center()
 root.mainloop()

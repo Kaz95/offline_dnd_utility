@@ -136,6 +136,10 @@ def sql_all_character_names():
     return """SELECT name FROM characters;"""
 
 
+def sql_all_character_items():
+    return """SELECT item, quantity FROM items WHERE character_id = ?;"""
+
+
 def sql_store_item_value():
     return """SELECT unit_value FROM items WHERE item = ? AND quantity IS NULL;"""
 
