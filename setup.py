@@ -3,6 +3,7 @@ import sql
 import stores
 import api
 import character
+import  time
 
 # TODO: May be required for mock. Not sure atm.
 import sqlite3
@@ -39,13 +40,23 @@ def wrong_schema(conn):
             return True
 
 
-def stock_stores(conn):
+def update(some_bar, count):
+    some_bar['value'] = count
+    # print(some_bar['value'])
+    time.sleep(.05)
+    some_bar.update_idletasks()
+
+
+def stock_stores(conn, some_bar, count, window):
+    global max_count
     store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
     with conn:
         url = api.make_api_url('equipment')
         response = api.call_api(url)
         response_dict = api.get_api_all(response)
         usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
+        max_count = api.get_nested_api_dict(response_dict, 'count')
+        print(count)
         for dic in usable_dict:
             temp = {}
             for k, v in dic.items():
@@ -75,6 +86,10 @@ def stock_stores(conn):
 
             # adds an item to a store table based on information stored in dictionary
             database.add_store_item(conn, sql.sql_add_store_item(), temp)
+            count += 1
+            print(count)
+            window.after(10, update(some_bar, count))
+        # print(count)
 
 
 if __name__ == '__main__':

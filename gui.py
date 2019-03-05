@@ -7,7 +7,9 @@ import setup
 import database
 import character
 import error_box
+import time
 import api
+import threading
 
 # TODO: Hasn't been tested
 
@@ -29,9 +31,12 @@ recent_selection = {'selected': 'None'}
 conn = database.create_connection(db)
 
 # TODO: This leaves a lot of room for errors to pass silently. Not good.
-if setup.wrong_schema(conn):
-    setup.create_schema(conn)
-    setup.stock_stores(conn)
+# TODO: This and a dummy bar = prototype install page
+# if setup.wrong_schema(conn):
+#     setup.create_schema(conn)
+#     setup.stock_stores(conn)
+# # else:
+# #     log_in_page()
 
 
 # General Functions
@@ -398,6 +403,15 @@ def populate_inventory_treeview_cache(tree_items_tup):
         inventory_treeview.reattach(i, '', len(tree_items_tup))
 
 
+def populate_inventory():
+    char_items = sql.execute_fetchall_sql(conn, sql.sql_all_character_items(), user_info['char'].id)
+
+    if user_info['char'].id in inv_cache.keys():
+        populate_inventory_treeview_cache(inv_cache[user_info['char'].id])
+    elif len(char_items) > 0:
+        populate_inventory_treeview_db(char_items)
+
+
 # Populates the four treeview widgets that, makeup the dashboard page, with items.
 def populate_all_trees():
     populate_tree(sql.sql_item_from_store(), blacksmith_treeview, 'Blacksmith')
@@ -429,8 +443,11 @@ def center(dash=None):
     hs = root.winfo_screenheight()
     x = (ws / 2) - (cur_size['w'] / 2)
     y = (hs / 2) - (cur_size['h'] / 2)
-    if dash is not None:
+    if dash == [953, 630]:
         y -= 250
+        root.geometry('%dx%d+%d+%d' % (dash[0], dash[1], x, y))
+        root.update()
+    elif dash == [820, 178]:
         root.geometry('%dx%d+%d+%d' % (dash[0], dash[1], x, y))
         root.update()
     else:
@@ -459,6 +476,7 @@ title_login_label = ttk.Label(text='Log-In', width='48', style='big.TLabel', anc
 title_signup_label = ttk.Label(text='Sign-up', width='48', style='big.TLabel', anchor='center')
 title_char_creation__label = ttk.Label(text='Character Creation', width='48', style='big.TLabel', anchor='center')
 title_char_select_label = ttk.Label(text='Character Selection', width='48', style='big.TLabel', anchor='center')
+title_install_label = ttk.Label(text='Installing....', width='48', style='big.TLabel', anchor='center')
 
 # Labels
 
@@ -468,6 +486,10 @@ currency_label = ttk.Label(text='Currency')
 name_label = ttk.Label(text='Name')
 username_label = ttk.Label(text='Username')
 password_label = ttk.Label(text='Password')
+
+# Progressbars
+
+install_bar = ttk.Progressbar(root, orient=HORIZONTAL, length=200, mode='determinate')
 
 # Entries
 
@@ -492,6 +514,58 @@ currency_treeview = ttk.Treeview(root)
 
 
 # Pages
+count = 0
+max_count = 256
+
+
+def start():
+    def real_start():
+        con = database.create_connection(db)
+        install_bar['value'] = 0
+        install_bar['maximum'] = 256
+        # update()
+        if setup.wrong_schema(con):
+            setup.create_schema(con)
+            setup.stock_stores(con, install_bar, count, root)
+        elif not setup.wrong_schema(con):
+            log_in_page()
+
+        if count >= max_count:
+            log_in_page()
+
+    threading.Thread(target=real_start).start()
+
+# def update():
+#     global count
+#     global max_count
+#     count += 500
+    # install_bar['value'] = count
+    # if count < max_count:
+    #     root.after(100, update)
+    # elif count >= max_count:
+    #     log_in_page()
+
+
+def install_page():
+
+    clear()
+
+    title_install_label.grid(column=0, row=0, sticky=W + E)
+    install_bar.grid(column=0, row=1)
+    install.grid(column=0, row=2)
+
+
+    # log_in_page()
+
+    # TODO: This and a dummy bar = prototype install page
+    # if setup.wrong_schema(conn):
+    #     setup.create_schema(conn)
+    #     setup.stock_stores(conn, install_bar)
+    #     if count >= max_count:
+    #         log_in_page()
+    # else:
+    #     log_in_page()
+
 
 def log_in_page():
     clear()
@@ -507,6 +581,8 @@ def log_in_page():
     clear_entry(login_page_username_entry)
     clear_entry(login_page_password_entry)
     login_page_username_entry.focus()
+
+    center([820, 178])
 
 
 def sign_up_page():
@@ -556,6 +632,7 @@ copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copp
 
 # TODO: This is not DRY.
 def dashboard_page():
+
     currency_dict = user_info['char'].convert_currency()
     clear()
 
@@ -594,15 +671,7 @@ def dashboard_page():
         print('tcl error')
         update_currency_treeview(currency_dict)
 
-    char_items = sql.execute_fetchall_sql(conn, sql.sql_all_character_items(), user_info['char'].id)
-
-    if user_info['char'].id in inv_cache.keys():
-        populate_inventory_treeview_cache(inv_cache[user_info['char'].id])
-    elif len(char_items) > 0:
-        populate_inventory_treeview_db(char_items)
-
-
-
+    populate_inventory()
 
     # Binds
     shipyard_treeview.bind('<<TreeviewSelect>>', shipyard_callback)
@@ -765,6 +834,8 @@ def sell_command():
 
 
 def char_select_command():
+    cache_inv()
+    detach_inv()
     character_selection_page()
 
 
@@ -778,14 +849,16 @@ create_character_button = Button(text='Create', bg='gray', command=create_charac
 logout_button = Button(text='Log-out', bg='gray', command=logout_command)
 character_creation_button = Button(text='Character creation', bg='gray', command=character_creation_page)
 select_button = Button(text='Select', bg='gray', command=select_command)
-dashboard_page_character_select_button = Button(text='Character Selection', bg='gray', command=ok)
+dashboard_page_character_select_button = Button(text='Character Selection', bg='gray', command=char_select_command)
 delete_button = Button(text='Delete', bg='gray', command=delete_command)
 sell = Button(text='Sell', bg='gray', activebackground='green', command=sell_command)
 dummy = Button(root, text='Test', bg='gray')
 buy = Button(text='Buy', bg='gray', command=buy_command)
+install = Button(text='install', bg='gray', command=start)
 # buy = ttk.Button(text='Buy', command=lambda: buy_item_gui(selected['selected']))
 # buy = Button(text='Buy', bg='gray', command=img_test)
 # sell = Button(text='Sell', bg='gray', activebackground='green', command=pog_cmd)
-log_in_page()
+install_page()
 center()
 root.mainloop()
+
