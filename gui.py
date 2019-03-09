@@ -738,11 +738,16 @@ def create_character_command():
 
 # Clears dictionary holding account information objects. Pushes to login page.
 def logout_command():
-    cache_inv()
-    detach_inv()
-    log_out()
-    log_in_page()
-    center()
+    if not user_info['char']:
+        log_out()
+        log_in_page()
+        center()
+    else:
+        cache_inv()
+        detach_inv()
+        log_out()
+        log_in_page()
+        center()
 
 
 # Deletes a character from the front(gui) and back(DB) end.

@@ -5,6 +5,7 @@ import setup
 # import os
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
+# TODO: This is not working whatsoever, will update once bugs are fixed and reviewing code.
 
 
 # TODO: Works fine with mem DB, not fine with test DB.
