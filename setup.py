@@ -3,7 +3,9 @@ import sql
 import stores
 import api
 import character
-import  time
+import time
+import threading
+
 
 # TODO: May be required for mock. Not sure atm.
 import sqlite3
@@ -48,6 +50,7 @@ def update(some_bar, count):
 
 
 def stock_stores(conn, some_bar, count, window):
+    t = time.time()
     global max_count
     store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
     with conn:
@@ -90,11 +93,49 @@ def stock_stores(conn, some_bar, count, window):
             print(count)
             window.after(10, update(some_bar, count))
         # print(count)
+        print('done in: ', time.time() - t)
+        print('Done with everything.')
+
+
+def fake_api():
+    global fake_items
+    global done
+    for i in range(256):
+        fake_item = {'item': 'item', 'api': 'api', 'currency': i + 1, 'store': 'store'}
+        fake_items.append(fake_item)
+        time.sleep(.2)
+        # print(fake_items)
+    done = True
+
+
+def add_but_check():
+    global fake_items
+    global done
+    print('============')
+    conn = database.create_connection(db)
+    while True:
+        print(fake_items)
+        if len(fake_items) != 0:
+            # print('============')
+            database.add_store_item(conn, sql.sql_add_store_item(), fake_items[0])
+            fake_items.pop(0)
+            # print(fake_items)
+        if done:
+            break
 
 
 if __name__ == '__main__':
-    con = database.create_connection(db)
-    create_schema(con)
-    if wrong_schema(con):
-        print('Wrong schema')
-    stock_stores(con)
+    fake_items = []
+    done = False
+    # conn = database.create_connection(db)
+    # create_schema(conn)
+    t = time.time()
+    t1 = threading.Thread(target=fake_api)
+    t2 = threading.Thread(target=add_but_check)
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join()
+
+    print('done in: ', time.time() - t)
+    print('Done with everything.')

@@ -520,18 +520,19 @@ max_count = 256
 
 def start():
     def real_start():
-        con = database.create_connection(db)
-        install_bar['value'] = 0
-        install_bar['maximum'] = 256
-        # update()
-        if setup.wrong_schema(con):
-            setup.create_schema(con)
-            setup.stock_stores(con, install_bar, count, root)
-        elif not setup.wrong_schema(con):
-            log_in_page()
-
-        if count >= max_count:
-            log_in_page()
+        while True:
+            con = database.create_connection(db)
+            install_bar['value'] = 0
+            install_bar['maximum'] = 256
+            # update()
+            if setup.wrong_schema(con):
+                setup.create_schema(con)
+                setup.stock_stores(con, install_bar, count, root)
+            elif not setup.wrong_schema(con):
+                log_in_page()
+                break
+            # if count >= max_count:
+            #     log_in_page()
 
     threading.Thread(target=real_start).start()
 
@@ -549,22 +550,12 @@ def start():
 def install_page():
 
     clear()
-
-    title_install_label.grid(column=0, row=0, sticky=W + E)
-    install_bar.grid(column=0, row=1)
-    install.grid(column=0, row=2)
-
-
-    # log_in_page()
-
-    # TODO: This and a dummy bar = prototype install page
-    # if setup.wrong_schema(conn):
-    #     setup.create_schema(conn)
-    #     setup.stock_stores(conn, install_bar)
-    #     if count >= max_count:
-    #         log_in_page()
-    # else:
-    #     log_in_page()
+    if setup.wrong_schema(conn):
+        title_install_label.grid(column=0, row=0, sticky=W + E)
+        install_bar.grid(column=0, row=1)
+        install.grid(column=0, row=2)
+    else:
+        log_in_page()
 
 
 def log_in_page():
