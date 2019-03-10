@@ -353,6 +353,11 @@ def cache_inv():
     inv_cache[user_info['char'].id] = inventory_treeview.get_children()
 
 
+def clear_cache(char_id):
+    print(f'-----{char_id} cache deleted-----')
+    del inv_cache[char_id]
+
+
 def detach_inv():
     inventory_treeview.detach(*inv_cache[user_info['char'].id])
 
@@ -760,6 +765,7 @@ def delete_command():
         temp[tup[1]] = tup[0]
     char_id = temp[char_selected]
     database.delete_character(conn, char_id)
+    clear_cache(char_id)
     clear_entry(chars_combo)
     print('-----character deleted-----')
     root.update()
