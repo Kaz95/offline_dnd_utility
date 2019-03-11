@@ -42,6 +42,7 @@ def wrong_schema(conn):
             return True
 
 
+# Updates value of progress bar.
 def update(some_bar, count):
     some_bar['value'] = count
     # print(some_bar['value'])
@@ -49,6 +50,7 @@ def update(some_bar, count):
     some_bar.update_idletasks()
 
 
+# Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
 def stock_stores(conn, some_bar, count, window):
     t = time.time()
     global max_count
@@ -97,45 +99,45 @@ def stock_stores(conn, some_bar, count, window):
         print('Done with everything.')
 
 
-def fake_api():
-    global fake_items
-    global done
-    for i in range(256):
-        fake_item = {'item': 'item', 'api': 'api', 'currency': i + 1, 'store': 'store'}
-        fake_items.append(fake_item)
-        time.sleep(.2)
-        # print(fake_items)
-    done = True
+# def fake_api():
+#     global fake_items
+#     global done
+#     for i in range(256):
+#         fake_item = {'item': 'item', 'api': 'api', 'currency': i + 1, 'store': 'store'}
+#         fake_items.append(fake_item)
+#         time.sleep(.2)
+#         print(fake_items)
+    # done = True
 
 
-def add_but_check():
-    global fake_items
-    global done
-    print('============')
-    conn = database.create_connection(db)
-    while True:
-        print(fake_items)
-        if len(fake_items) != 0:
-            # print('============')
-            database.add_store_item(conn, sql.sql_add_store_item(), fake_items[0])
-            fake_items.pop(0)
+# def add_but_check():
+#     global fake_items
+#     global done
+#     print('============')
+#     conn = database.create_connection(db)
+#     while True:
+#         print(fake_items)
+#         if len(fake_items) != 0:
+#             print('============')
+            # database.add_store_item(conn, sql.sql_add_store_item(), fake_items[0])
+            # fake_items.pop(0)
             # print(fake_items)
-        if done:
-            break
+        # if done:
+        #     break
 
 
-if __name__ == '__main__':
-    fake_items = []
-    done = False
-    # conn = database.create_connection(db)
-    # create_schema(conn)
-    t = time.time()
-    t1 = threading.Thread(target=fake_api)
-    t2 = threading.Thread(target=add_but_check)
-    t1.start()
-    t2.start()
-    t1.join()
-    t2.join()
+# if __name__ == '__main__':
+#     fake_items = []
+#     done = False
+#     conn = database.create_connection(db)
+#     create_schema(conn)
+    # t = time.time()
+    # t1 = threading.Thread(target=fake_api)
+    # t2 = threading.Thread(target=add_but_check)
+    # t1.start()
+    # t2.start()
+    # t1.join()
+    # t2.join()
 
-    print('done in: ', time.time() - t)
-    print('Done with everything.')
+    # print('done in: ', time.time() - t)
+    # print('Done with everything.')

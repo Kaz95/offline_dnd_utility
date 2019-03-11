@@ -37,14 +37,9 @@ class Character:
 
         database.add_item_row(conn, sql.sql_add_item_row(), item_info)
 
+    # Updates currency column in DB based on character ID and currency.
     def update_currency(self, conn):
         sql.execute_sql(conn, sql.update_currency(), self.currency, self.id)
-
-    # def add_currency(self, amount):
-    #     self.currency += amount
-    #
-    # def subtract_currency(self, amount):
-    #     self.currency -= amount
 
     # Converts character.currency value (in cp) into gp,sp,cp
     def convert_currency(self):
@@ -57,6 +52,8 @@ class Character:
 
     # Gets item price info and adds/subtracts it to/from currency based on [unit] key.
     # See convert_price_info() in api.py for more information on conversion.
+    # Also updates currency in DB via self.update_currency
+    # Returns True if item is affordable. Else returns False.
     def buy_sell(self, item, action=None, conn=None):
         url = api.get_item_url(item, Character.list_of_item_dicts)
         item_info = api.get_api_all(api.call_api(url))
@@ -77,6 +74,7 @@ class Character:
             self.update_currency(conn)
 
 
+# Query all character names. Return True if name in query. Else return False.
 def character_name_taken(conn, name):
     character_names_tups = sql.execute_fetchall_sql(conn, sql.sql_all_character_names())
     for tup in character_names_tups:
@@ -99,7 +97,6 @@ def character_creation(conn, acc_id, name, currency):
 
 # Query character row. Return player object.
 def load_character_object(conn, char_name):
-
     with conn:
         char_info_list = sql.execute_fetchone_sql(conn, sql.sql_character_row(), char_name)
         char_info_dict = {'char_id': char_info_list[0], 'name': char_info_list[1], 'currency': char_info_list[2]}
@@ -107,6 +104,6 @@ def load_character_object(conn, char_name):
         return character
 
 
-if __name__ == '__main__':
-    a = Character(1, 'kaz', 5000, [8])
+# if __name__ == '__main__':
+#     a = Character(1, 'kaz', 5000, [8])
     # print(a.display_currency())

@@ -6,6 +6,7 @@ import re
 # "http://www.dnd5eapi.co/api/"
 
 
+# Calls (api) url and returns JSON text object.
 def call_api(url):
     response = requests.get(url)
     response.raise_for_status()
@@ -52,6 +53,7 @@ def get_item_url(name, list_of_dicts):
             return new_url
 
 
+# TODO: Test this
 def get_item_value(item, some_dict):
     url = get_item_url(item, some_dict)
     item_info = get_api_all(call_api(url))
@@ -80,11 +82,11 @@ def regex(url, api_category):
     return string
 
 
-if __name__ == '__main__':
-    # Examples of fake json objects
-    a = '{"results": [{"name": 1, "url": 1},{"name": 2, "url": 2}]}'
-    b = '{"results": 1}'
-    c = {'name': 1, 'url': 2}
+# if __name__ == '__main__':
+#     Examples of fake json objects
+    # a = '{"results": [{"name": 1, "url": 1},{"name": 2, "url": 2}]}'
+    # b = '{"results": 1}'
+    # c = {'name': 1, 'url': 2}
     # print(get_api_all(make_api_url('equipment')))
     # pprint.pprint(get_api_results(make_api_url('Equipment'), 'results'))
     # print(get_api_cost(get_api_all(get_item_url('Club', get_api_results(make_api_url('Equipment'))))))

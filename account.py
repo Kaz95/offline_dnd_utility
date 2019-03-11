@@ -18,6 +18,7 @@ class Account:
         self.password = password
 
 
+# Checks if username is taken. Return True/False respectively.
 def username_taken(username):
     for key in Account.login_dic.keys():
         if key == username:
@@ -26,6 +27,7 @@ def username_taken(username):
             return False
 
 
+# Query a list of account IDs with character. Check if current account(ID) exists in that list. Returns True/False.
 def account_has_characters(conn, acc_id):
     account_id_tups_list = sql.execute_fetchall_sql(conn, sql.sql_accounts_with_characters())
     print(account_id_tups_list)
@@ -83,7 +85,7 @@ def load_account_object(conn, username):
         return acc
 
 
-if __name__ == '__main__':
-    user_creates_account()
-    load_account_archive()
-    print(Account.login_dic)
+# if __name__ == '__main__':
+#     user_creates_account()
+#     load_account_archive()
+#     print(Account.login_dic)

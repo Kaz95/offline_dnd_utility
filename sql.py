@@ -71,6 +71,7 @@ def sql_items_table():
                FOREIGN KEY (inventory_id) REFERENCES inventories (id));"""
 
 
+# Query all table names. Used to check if tables have been created during install.
 def sql_check_table_schema():
     return "SELECT name FROM sqlite_master WHERE type='table';"
 
@@ -149,7 +150,7 @@ def sql_store_item_url():
 
 
 # Delete
-
+# TODO: This could be refactored to always use character_id as where. Only table changes in current use.
 def sql_delete_all(table, where):
     return """DELETE FROM {} WHERE {} = ?""".format(table, where)
 

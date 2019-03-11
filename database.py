@@ -23,6 +23,7 @@ def create_connection(db_path):
 
 
 # INSERT
+# These functions all assume acc_info is passed as a dictionary with known keys.
 
 
 # Inserts given values into accounts table at given columns.
@@ -52,7 +53,7 @@ def add_store_item(conn, some_sql, item_info):
 
 
 # SELECT
-
+# TODO: Consider refactoring to return first index of tuple. Would have to check usage upstream.
 def count_rows(conn, some_sql, some_table):
     new_sql = some_sql.format(some_table)
     count_tuple = sql.execute_fetchone_sql(conn, new_sql)
@@ -60,6 +61,7 @@ def count_rows(conn, some_sql, some_table):
 
 
 # TODO Reminder: Complex is better than complicated. Remember the shit block. Never forget.
+# Returns a list of integers representing account IDs.
 def query_accounts_with_characters(conn, some_sql):
     temp = []
     acc_id_list = sql.execute_fetchall_sql(conn, some_sql)
@@ -68,6 +70,7 @@ def query_accounts_with_characters(conn, some_sql):
     return temp
 
 
+# Returns a list of integers representing character IDs.
 def query_characters_with_inventories(conn,  some_sql):
     temp = []
     acc_id_list = sql.execute_fetchall_sql(conn, some_sql)
@@ -78,19 +81,23 @@ def query_characters_with_inventories(conn,  some_sql):
 
 # Delete
 
+# Deletes a single item based on inventory ID.
 def delete_item(conn, item, inv_id):
     sql.execute_sql(conn, sql.sql_delete_item(), item, inv_id)
 
 
+# Deletes all items based on character ID.
 def delete_all_character_items(conn, char_id):
     sql.execute_sql(conn, sql.sql_delete_all('items', 'character_id'), char_id)
 
 
+# Deletes all character inventories based on character ID.
 def delete_character_inventories(conn, char_id):
     sql.execute_sql(conn, sql.sql_delete_all('inventories', 'character_id'), char_id)
 
 
 # TODO: test this
+# Deletes all information pertaining to a given character ID from DB.
 def delete_character(conn, char_id):
     delete_all_character_items(conn, char_id)
     delete_character_inventories(conn, char_id)
@@ -98,8 +105,11 @@ def delete_character(conn, char_id):
 
 
 # Update
-# TODO: Refactor to one function
-# TODO: Update to adhere to code style guide
+# TODO: Refactor to one function.
+# TODO: Update to adhere to code style guide.
+# TODO: Change names to something that actually makes sense.
+
+# Checks if item is in inventory. If it is, adds one to DB quantity column and returns True. Else returns False.
 def item_in_inventory_add(conn, inv_id, item):
     with conn:
         # [('Club', '1'), ('Dagger', 1)]
@@ -114,6 +124,7 @@ def item_in_inventory_add(conn, inv_id, item):
         return False
 
 
+# Checks if item is in inventory. If it is, subtracts one from DB quantity column and returns True. Else returns False.
 def item_in_inventory_minus(conn, inv_id, item):
     with conn:
         items_in_inv_list = sql.execute_fetchall_sql(conn, sql.sql_query_items_in_inventory(), inv_id)
@@ -128,11 +139,6 @@ def item_in_inventory_minus(conn, inv_id, item):
         return False
 
 
-if __name__ == '__main__':
-    conn = create_connection(db)
-    with conn:
-        k = sql.execute_fetchone_sql(conn, sql.sql_store_item_value(), 'Club')
-        print(k)
 # if __name__ == '__main__':
 #     acc = ('username', 'password')
 #     inv = (1, 'inv name')
