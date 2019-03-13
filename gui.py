@@ -7,19 +7,24 @@ import setup
 import database
 import character
 import error_box
-import time
-import api
 import threading
 
-# TODO: Hasn't been tested
+# TODO: Hasn't been tested.
+# TODO: Refactor GUI to OOP.
 
+# DB paths used for testing.
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
+# Dictionary used to store account and character objects, representing the current user information.
 user_info = {'acc': None, 'char': None, 'inv': 1}
+
+# Empty Dictionary that is used to store cached inventory treeview items for later use.
+# TODO: Verify structure stored in cache and provide comment example.
 inv_cache = {}
 
-# selected = {'selected': 'none'}
+# Dictionaries used to capture treeview selection events. Value will be a treeview item.
+# TODO: Verify if item is stored as tuple or string and provide comment example
 gen_selected = {'selected': 'none'}
 bs_selected = {'selected': 'none'}
 stable_selected = {'selected': 'none'}
@@ -27,19 +32,14 @@ ship_selected = {'selected': 'none'}
 inv_selected = {'selected': 'none'}
 recent_selection = {'selected': 'None'}
 
-# Setup in mem DB for testing purposes.
+# Creates initial connection to test.db. Connection is then passed when necessary and used as context manager.
 conn = database.create_connection(db)
-
-# TODO: This leaves a lot of room for errors to pass silently. Not good.
-# TODO: This and a dummy bar = prototype install page
-# if setup.wrong_schema(conn):
-#     setup.create_schema(conn)
-#     setup.stock_stores(conn)
-# # else:
-# #     log_in_page()
 
 
 # General Functions
+
+# TODO: This is a copy of a function from character.py. Consider removing the other one.
+# TODO: There is probably a more efficient way to write this.
 def convert_currency(currency):
     g = int(currency / 100)
     s = int(round((((currency / 100) - g) * 10), 2))
@@ -48,8 +48,11 @@ def convert_currency(currency):
     return converted_dict
 
 
+# Gets recently selected treeview item as tuple.
+# Tries to get name of item in each treeview. It will only work with one of them presumably.
+# Query DB for item value based on name of item.
+# Return Item value as integer.
 def recent_select_value():
-    # item = some_treeview.selection()
     item = recent_selection['selected']
     item_name = None
     try:
@@ -85,10 +88,13 @@ def recent_select_value():
 #     return item_value[0]
 
 
+# Changes activebackground color of buy button to a given color.
 def change_button_background(color):
     buy.config(activebackground=color)
 
 
+# Changes buy button activebackground color -
+# based on if a character object's currency value is greater than a given item value.
 def toggle_affordable_color(item_value):
     if item_value >= user_info['char'].currency:
         change_button_background('red')
@@ -96,6 +102,7 @@ def toggle_affordable_color(item_value):
         change_button_background('green')
 
 
+# Gets item value of recent treeview selection and toggles button activebackground color based on that value.
 def check_value_and_toggle():
     item_value = recent_select_value()
     toggle_affordable_color(item_value)
@@ -192,6 +199,9 @@ def inventory_callback(event):
     print(recent_selection['selected'])
 
 
+# Checks if given entry input is alphanumeric.
+# Return True if is alnum or empty string.
+# Else return false.
 def entry_is_alnum_callback(entry_input):
     if entry_input.isalnum():
         return True
@@ -201,6 +211,9 @@ def entry_is_alnum_callback(entry_input):
         return False
 
 
+# Checks if given entry input is alphabetical.
+# Return True if is alpha or empty string.
+# Else return false.
 def entry_is_alpha_callback(entry_input):
     if entry_input.isalpha():
         return True
@@ -210,6 +223,9 @@ def entry_is_alpha_callback(entry_input):
         return False
 
 
+# Checks if given entry input is digit.
+# Return True if is digit or empty string.
+# Else return false.
 def entry_is_digit_callback(entry_input):
     if entry_input.isdigit():
         return True
@@ -224,6 +240,7 @@ def new_inventory_quantity(some_item):
     inventory_treeview.set(some_item, 'quantity', 1)
 
 
+# Updates currency treeview based on a (presumably updated) currency dictionary.
 def update_currency_treeview(some_dict):
     currency_treeview.item('gold',  text=some_dict['gp'])
     currency_treeview.set('gold', 'silver', some_dict['sp'])
