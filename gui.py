@@ -366,19 +366,25 @@ def sell_item_gui(some_callback):
 #     print(blacksmith_treeview.item(1,)), ['image']
 #     root.update()
 
+# Sets current user character ID to key with all current items in inventory treeview as value.
 def cache_inv():
     inv_cache[user_info['char'].id] = inventory_treeview.get_children()
 
 
+# Deletes a list of inventory treeview items from 'cache' based on a given character ID.
 def clear_cache(char_id):
     print(f'-----{char_id} cache deleted-----')
     del inv_cache[char_id]
 
 
+# Detaches all treeview items present in a list of treeview items.
+# Items list is retrieved from inventory cache dictionary.
+# Notes, detach does not permanently delete the item. It merely removes it from view.
 def detach_inv():
     inventory_treeview.detach(*inv_cache[user_info['char'].id])
 
 
+# Searches a currency dictionary and returns key with value not equal to zero.
 def inspecto_gadget(converted_value):
     for key, value in converted_value.items():
         if value != 0:
@@ -414,17 +420,21 @@ def populate_tree(some_sql, some_tree, some_store):
                 continue
 
 
+# Populates inventory treeview from a list of DB item tuples.
 def populate_inventory_treeview_db(db_char_items):
     for i in db_char_items:
         item_id = inventory_treeview.insert('', 'end', text=i[0])
         inventory_treeview.set(item_id, 'quantity', i[1])
 
 
+# Reattach items to inventory treeview from inventory cache dictionary.
 def populate_inventory_treeview_cache(tree_items_tup):
     for i in tree_items_tup:
         inventory_treeview.reattach(i, '', len(tree_items_tup))
 
 
+# Checks if current character ID has inventory in cache dictionary.
+# Reattaches if it does, else, populates via DB.
 def populate_inventory():
     char_items = sql.execute_fetchall_sql(conn, sql.sql_all_character_items(), user_info['char'].id)
 
@@ -457,7 +467,7 @@ def screen_size():
     return {'w': width, 'h': height}
 
 
-# Centers root window. Dashboard required a different formula to center properly.
+# Centers root window. Dashboard and install required a different formula to center properly.
 # TODO: This is a quick and dirty solution
 def center(dash=None):
     cur_size = screen_size()
@@ -540,6 +550,7 @@ count = 0
 max_count = 256
 
 
+# Starts instillation process in a separate thread from main.
 def start():
     def real_start():
         while True:
@@ -638,6 +649,7 @@ def character_selection_page():
     character_creation_button.grid(column=0, row=5, sticky=E + S)
 
 
+# Currency icon images.
 gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
 silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
 copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
