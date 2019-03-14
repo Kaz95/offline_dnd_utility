@@ -5,15 +5,15 @@ import api
 class TestAPI(unittest.TestCase):
 
     def setUp(self):
-        self.list_of_dics = api.get_nested_api_dict(api.get_api_all(api.call_api(api.make_api_url('equipment'))),
+        self.list_of_dics = api.get_nested_api_dict(api.get_api_all(api.call_api(api.construct_api_url('equipment'))),
                                                     'results')
 
     def test_main_dictionaries(self):
-        equip_count = api.get_nested_api_dict(api.get_api_all(api.call_api(api.make_api_url('equipment'))), 'count')
-        spells_count = api.get_nested_api_dict(api.get_api_all(api.call_api(api.make_api_url('spells'))), 'count')
-        classes_count = api.get_nested_api_dict(api.get_api_all(api.call_api(api.make_api_url('classes'))), 'count')
-        features_count = api.get_nested_api_dict(api.get_api_all(api.call_api(api.make_api_url('features'))), 'count')
-        monsters_count = api.get_nested_api_dict(api.get_api_all(api.call_api(api.make_api_url('monsters'))), 'count')
+        equip_count = api.get_nested_api_dict(api.get_api_all(api.call_api(api.construct_api_url('equipment'))), 'count')
+        spells_count = api.get_nested_api_dict(api.get_api_all(api.call_api(api.construct_api_url('spells'))), 'count')
+        classes_count = api.get_nested_api_dict(api.get_api_all(api.call_api(api.construct_api_url('classes'))), 'count')
+        features_count = api.get_nested_api_dict(api.get_api_all(api.call_api(api.construct_api_url('features'))), 'count')
+        monsters_count = api.get_nested_api_dict(api.get_api_all(api.call_api(api.construct_api_url('monsters'))), 'count')
         self.assertEqual(equip_count, 256)
         self.assertEqual(spells_count, 319)
         self.assertEqual(classes_count, 12)

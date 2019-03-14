@@ -4,7 +4,6 @@ import stores
 import api
 import character
 import time
-import threading
 
 
 # TODO: May be required for mock. Not sure atm.
@@ -19,10 +18,10 @@ mem = ':memory:'
 # Four sqlite statements which create the database schema.
 def create_schema(conn):
     with conn:
-        sql.execute_sql(conn, sql.sql_accounts_table())
-        sql.execute_sql(conn, sql.sql_characters_table())
-        sql.execute_sql(conn, sql.sql_inventories_table())
-        sql.execute_sql(conn, sql.sql_items_table())
+        sql.execute_sql(conn, sql.create_accounts_table())
+        sql.execute_sql(conn, sql.create_characters_table())
+        sql.execute_sql(conn, sql.create_inventories_table())
+        sql.execute_sql(conn, sql.create_items_table())
 
 
 # Verifies database setup correctly
@@ -32,7 +31,7 @@ def wrong_schema(conn):
     with conn:
         schema.sort()
         cur_tables = []
-        tables_tup_list = sql.execute_fetchall_sql(conn, sql.sql_check_table_schema())
+        tables_tup_list = sql.execute_fetchall_sql(conn, sql.check_table_schema())
         for tup in tables_tup_list:
             for index in tup:
                 cur_tables.append(index)
@@ -44,22 +43,20 @@ def wrong_schema(conn):
 
 
 # Updates value of progress bar.
-# TODO: Refactor: Name
-def update(some_bar, count):
+def update_progressbar(some_bar, count):
     some_bar['value'] = count
     # print(some_bar['value'])
     time.sleep(.05)
     some_bar.update_idletasks()
 
 
-# TODO: Refactor: Variable Names
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
 def stock_stores(conn, some_bar, count, window):
-    t = time.time()
+    time_to_install = time.time()
     global max_count
     store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
     with conn:
-        url = api.make_api_url('equipment')
+        url = api.construct_api_url('equipment')
         response = api.call_api(url)
         response_dict = api.get_api_all(response)
         usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
@@ -67,17 +64,17 @@ def stock_stores(conn, some_bar, count, window):
         print(count)
         for dic in usable_dict:
             temp = {}
-            for k, v in dic.items():
+            for key, value in dic.items():
                 if not temp:    # If temp dictionary is empty
-                    temp['item'] = v    # add value with key 'item'
+                    temp['item'] = value    # add value with key 'item'
                 else:
-                    temp['api'] = v     # add value with key 'api'
+                    temp['api'] = value     # add value with key 'api'
 
                 item_value = api.get_item_value(temp['item'], character.Character.list_of_item_dicts)
                 temp['currency'] = item_value
 
-                if v[0:37] == url:  # if one of those values beings with a url like string
-                    num = api.regex(v, 'equipment/')    # slices number off url and captures as variable
+                if value[0:37] == url:  # if one of those values beings with a url like string
+                    num = api.regex(value, 'equipment/')    # slices number off url and captures as variable
 
                     # This logic compares the captured number to the numbers in the dict imported earlier
                     # Then it adds a 'store':'some_store' key:value to the temp dictionary
@@ -93,12 +90,12 @@ def stock_stores(conn, some_bar, count, window):
                         temp['store'] = 'No Store'
 
             # adds an item to a store table based on information stored in dictionary
-            database.add_store_item(conn, sql.sql_add_store_item(), temp)
+            database.add_store_item(conn, sql.add_store_item(), temp)
             count += 1
             print(count)
-            window.after(10, update(some_bar, count))
+            window.after(10, update_progressbar(some_bar, count))
         # print(count)
-        print('done in: ', time.time() - t)
+        print('done in: ', time.time() - time_to_install)
         print('Done with everything.')
 
 
@@ -122,7 +119,7 @@ def stock_stores(conn, some_bar, count, window):
 #         print(fake_items)
 #         if len(fake_items) != 0:
 #             print('============')
-            # database.add_store_item(conn, sql.sql_add_store_item(), fake_items[0])
+            # database.add_store_item(conn, sql.add_store_item(), fake_items[0])
             # fake_items.pop(0)
             # print(fake_items)
         # if done:

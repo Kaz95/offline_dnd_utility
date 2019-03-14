@@ -1,6 +1,6 @@
 import unittest
 import mock
-from api import call_api, get_api_all, make_api_url, get_nested_api_dict, url_call, get_api_info, get_item_url
+from api import call_api, get_api_all, construct_api_url, get_nested_api_dict, check_for_url, get_api_info, get_item_url
 from api import convert_price_info, regex
 
 
@@ -28,7 +28,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(get_api_all(some_api_call), {"results": 1})
 
     def test_make_api_url(self):
-        self.assertEqual(make_api_url('equipment'), 'http://www.dnd5eapi.co/api/equipment/')
+        self.assertEqual(construct_api_url('equipment'), 'http://www.dnd5eapi.co/api/equipment/')
 
     def test_get_api_results(self):
         some_dict_results = {'results': 1}
@@ -38,7 +38,7 @@ class TestApi(unittest.TestCase):
 
     def test_url_call(self):
         some_dict = {'name': 1, 'url': 2}
-        self.assertEqual(url_call(1, some_dict), 2)
+        self.assertEqual(check_for_url(1, some_dict), 2)
 
     def test_get_api_info(self):
         list_of_dicts = [{'name': 1, 'url': 1}, {'name': 2, 'url': 2}]

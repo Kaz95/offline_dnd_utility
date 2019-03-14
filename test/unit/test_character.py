@@ -31,8 +31,8 @@ class TestPlayerClassIntegration(unittest.TestCase):
             mocksql.connect().cursor().fetchone.return_value = (0,)
             fake_player = character.Character(1, 'kaz', 5000, [])
             conn = mocksql.connect()
-            fake_player.add_item(conn, 'Club', 1, 1)
-            mocksql.connect().cursor().execute.assert_called_with(sql.sql_add_item_row(),
+            fake_player.add_item_db(conn, 'Club', 1, 1)
+            mocksql.connect().cursor().execute.assert_called_with(sql.add_item_row(),
                                                                   (1, 1, 1, 'Club',
                                                                    0, 0,  1))
 

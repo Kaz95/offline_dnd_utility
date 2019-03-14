@@ -1,11 +1,8 @@
 # required for a mock
 import sqlite3
-# TODO: Consider removing sql from beginning of each function. It's redundant.
+
 # TODO: Consider creating common naming scheme among all statements.
 # TODO: Consider what could be more DRY.
-
-# TODO: Refactor sql statements to adhere to new code style guide.
-# TODO: This will require manually refactoring.....a lot of tests and manual regression testing...Be prepared.
 
 
 # Modular sqlite execute functions which are passed a connection and some sql
@@ -31,14 +28,14 @@ def execute_fetchall_sql(con, sql_statement, *args):
 
 
 # CREATE TABLE
-def sql_accounts_table():
+def create_accounts_table():
     return """CREATE TABLE IF NOT EXISTS accounts (
                id integer PRIMARY KEY,
                username varchar NOT NULL,
                password varchar NOT NULL);"""
 
 
-def sql_characters_table():
+def create_characters_table():
     return """CREATE TABLE IF NOT EXISTS characters (
                id integer PRIMARY KEY,
                account_id integer,
@@ -47,7 +44,7 @@ def sql_characters_table():
                FOREIGN KEY (account_id) REFERENCES accounts (id));"""
 
 
-def sql_inventories_table():
+def create_inventories_table():
     return """CREATE TABLE IF NOT EXISTS inventories (
                id integer PRIMARY KEY,
                account_id integer,
@@ -57,7 +54,7 @@ def sql_inventories_table():
                FOREIGN KEY (character_id) REFERENCES characters(id));"""
 
 
-def sql_items_table():
+def create_items_table():
     return """CREATE TABLE IF NOT EXISTS items (
                id integer PRIMARY KEY,
                account_id,
@@ -75,128 +72,124 @@ def sql_items_table():
 
 # Query all table names. Used to check if tables have been created during install.
 # TODO: Test
-def sql_check_table_schema():
+def check_table_schema():
     return "SELECT name FROM sqlite_master WHERE type='table';"
 
 
 # QUERY
-def sql_username_password():
+def query_username_password():
     return """SELECT username, password FROM accounts;"""
 
 
-def sql_account_row():
+def query_account_row():
     return """SELECT id, username, password FROM accounts WHERE username = ?;"""
 
 
-def sql_character_row():
+def query_character_row():
     return """SELECT id, name, currency FROM characters WHERE name = ?;"""
 
 
-def sql_inventory_row():
+def query_inventory_row():
     return """SELECT id, name FROM inventories WHERE name = ?;"""
 
 
-def sql_all_characters():
+def query_all_characters():
     return """SELECT id, name, currency FROM characters WHERE account_id = ?;"""
 
 
-def sql_accounts_with_characters():
+def query_accounts_with_characters():
     return """SELECT DISTINCT account_id FROM characters;"""
 
 
-def sql_characters_with_inventories():
+def query_characters_with_inventories():
     return """SELECT DISTINCT character_id FROM inventories;"""
 
 
 # TODO: Test
-def sql_characters_inventory_ids():
+def query_characters_inventory_ids():
     return """SELECT id FROM inventories WHERE character_id = ?;"""
 
 
-def sql_all_inventory_names():
+def query_all_inventory_names():
     return """SELECT name FROM inventories WHERE character_id = ?;"""
 
 
-def sql_query_accounts_with_characters():
-    return """SELECT DISTINCT account_id FROM characters;"""
-
-
-def sql_query_items_in_inventory():
+def query_items_in_inventory():
     return """SELECT item, quantity FROM items WHERE inventory_id = ?"""
 
 
-def sql_item_quantity():
+def query_item_quantity():
     return """SELECT quantity FROM items where item = ? AND inventory_id = ?"""
 
 
 # TODO: Test
-def sql_item_from_store():
+def query_item_from_store():
     return """SELECT id, item, unit_value FROM items WHERE id = ? AND store = ?;"""
 
 
 # TODO: Test
-def sql_character_currency():
+def query_character_currency():
     return """SELECT currency FROM characters WHERE id = ?"""
 
 
 # TODO: Test
-def sql_all_character_names():
+def query_all_character_names():
     return """SELECT name FROM characters;"""
 
 
 # TODO: Test
-def sql_all_character_items():
+def query_all_character_items():
     return """SELECT item, quantity FROM items WHERE character_id = ?;"""
 
 
 # TODO: Test
-def sql_store_item_value():
+def query_store_item_value():
     return """SELECT unit_value FROM items WHERE item = ? AND quantity IS NULL;"""
 
 
 # TODO: Test
-def sql_store_item_url():
+def query_store_item_url():
     return """SELECT api FROM items WHERE item = ? AND quantity IS NULL;"""
 
 
 # Delete
 # TODO: This could be refactored to always use character_id as WHERE. Only table changes in current use.
-def sql_delete_all(table, where):
+def delete_all(table, where):
     return """DELETE FROM {} WHERE {} = ?""".format(table, where)
 
 
-def sql_delete_item():
+def delete_item():
     return """DELETE FROM items WHERE item = ? AND inventory_id = ?"""
 
 
 # INSERT
 
-def sql_add_item_row():
+def add_item_row():
     return """INSERT INTO items (account_id, character_id, inventory_id, item, api, unit_value, quantity)
             VALUES(?,?,?,?,?,?,?)"""
 
 
-def sql_add_account_row():
+def add_account_row():
     return """INSERT INTO accounts (username, password)
             VALUES(?,?)"""
 
 
-def sql_add_inventory_row():
+def add_inventory_row():
     return """INSERT INTO inventories (account_id, character_id, name)
             VALUES(?,?,?)"""
 
 
-def sql_add_character_row():
+def add_character_row():
     return """INSERT INTO characters (account_id, name, currency)
             VALUES(?,?,?)"""
 
 
-def sql_add_store_item():
+def add_store_item():
     return """INSERT INTO items (item, api, unit_value, store)
              VALUES(?,?,?,?)"""
 
 
-def sql_count_rows():
+def count_table_rows():
     return """SELECT count(*) FROM {};"""
 
 

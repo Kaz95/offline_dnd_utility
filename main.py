@@ -49,23 +49,23 @@ def main_menu(conn):
     #     name = input()
     #     character_info = (cur_account.id, name, 5000)
         # character_info = {'acc_id': cur_account.id, 'name': name, 'currency': 5000}
-        # database.add_character_row(conn, sql.sql_add_character_row(), character_info)
+        # database.add_character_row(conn, sql.add_character_row(), character_info)
 
 
 # Working model for character creation
 def character_creation(conn, name, currency):
         # character_info = (cur_account.id, name, 5000)
         character_info = {'acc_id': cur_account.id, 'name': name, 'currency': currency}
-        database.add_character_row(conn, sql.sql_add_character_row(), character_info)
+        database.add_character_row(conn, sql.add_character_row(), character_info)
 
 
 def character_selection(conn):
     # conn = database.create_connection(db)
     with conn:
         print('choose a character')
-        print(list(sql.execute_fetchall_sql(conn, sql.sql_all_characters(), cur_account.id)))
+        print(list(sql.execute_fetchall_sql(conn, sql.query_all_characters(), cur_account.id)))
         char_name = input()
-        current_character_info = list(sql.execute_fetchone_sql(conn, sql.sql_character_row(), char_name))
+        current_character_info = list(sql.execute_fetchone_sql(conn, sql.query_character_row(), char_name))
 
         current_character = character.Character(current_character_info[0], current_character_info[1],
                                                 current_character_info[2], [])
@@ -77,16 +77,16 @@ def create_backpack(conn):
     with conn:
         # backpack_info = (cur_account.id, cur_character.id, cur_character.name)
         backpack_info = {'acc_id': cur_account.id, 'char_id': cur_character.id, 'name': cur_character.name}
-        database.add_inventory_row(conn, sql.sql_add_inventory_row(), backpack_info)
+        database.add_inventory_row(conn, sql.add_inventory_row(), backpack_info)
 
 
 def inventory_selection(conn):
     # conn = database.create_connection(db)
     with conn:
         print('choose inventory')
-        print(list(sql.execute_fetchall_sql(conn, sql.sql_all_inventory_names(), cur_character.id)))
+        print(list(sql.execute_fetchall_sql(conn, sql.query_all_inventory_names(), cur_character.id)))
         inv_name = input()
-        current_character_info = list(sql.execute_fetchone_sql(conn, sql.sql_inventory_row(), inv_name))
+        current_character_info = list(sql.execute_fetchone_sql(conn, sql.query_inventory_row(), inv_name))
         current_inventory = inventory.Inventory(current_character_info[0], current_character_info[1])
     return current_inventory
 
@@ -96,7 +96,7 @@ def fresh_installation(conn):
     setup.stock_stores(conn)
 
 
-# def add_item(self, item, conn):
+# def add_item_db(self, item, conn):
 #     url = api.get_item_url(item, Player.list_of_dics)   # TODO NOT DRY
 #     item_info = (self.inventories[0], item, url, 1)
 #     database.add_item_row(conn, item_info)
@@ -117,7 +117,7 @@ if __name__ == '__main__':
             # account object fields populated via main menu. Set to cur acc.
             cur_account = account.load_account_object(main_menu(conn))
             # If current account has characters
-            if cur_account.id in database.query_accounts_with_characters(conn, sql.sql_accounts_with_characters()):
+            if cur_account.id in database.query_accounts_with_characters(conn, sql.query_accounts_with_characters()):
                 cur_character = character_selection(conn)
             else:
                 character_creation(conn)
@@ -128,7 +128,7 @@ if __name__ == '__main__':
             print(cur_inventory.name)
             cur_character.inventories.append(cur_inventory.id)
             cur_character.buy_sell('Club', 'buy')
-            cur_character.add_item('Club', conn, cur_account.id, cur_inventory.id)
+            cur_character.add_item_db('Club', conn, cur_account.id, cur_inventory.id)
             print('go again?')
             a = input()
             if a != '':
@@ -140,7 +140,7 @@ if __name__ == '__main__':
 #     cur_character = None
 #     conn = database.create_connection(db)
 #     with conn:
-#         sql.execute_sql(conn, sql.sql_delete_all('items'), 2)
+#         sql.execute_sql(conn, sql.delete_all('items'), 2)
 
 
 

@@ -12,7 +12,7 @@ class Character:
 
     # TODO: unit_integration_test: FIXTURE REQUIRED
     # [{'name': 'some name', 'url': 'some url'}, {'name': 'some name', 'url': 'some url'}]
-    list_of_item_dicts = api.get_nested_api_dict(api.get_api_all(api.call_api(api.make_api_url('equipment'))), 'results')
+    list_of_item_dicts = api.get_nested_api_dict(api.get_api_all(api.call_api(api.construct_api_url('equipment'))), 'results')
 
     def __init__(self, char_id, name, currency, inventories_list):
         self.id = char_id
@@ -21,12 +21,11 @@ class Character:
         self.inventories = inventories_list  # List of player inventory names in string format. Technically not used.
 
     # TODO: This makes more sense as an inventory method. Change it once multiple inventories.
-    # TODO: Refactor: Name
     # Adds an item item under character id. Can specify a specific inventory via inv_id
-    def add_item(self, conn, item, acc_id, inv_id):
-        url = sql.execute_fetchone_sql(conn, sql.sql_store_item_url(), item)
+    def add_item_db(self, conn, item, acc_id, inv_id):
+        url = sql.execute_fetchone_sql(conn, sql.query_store_item_url(), item)
         # url = api.get_item_url(item, Character.list_of_item_dicts)
-        item_value = sql.execute_fetchone_sql(conn, sql.sql_store_item_value(), item)
+        item_value = sql.execute_fetchone_sql(conn, sql.query_store_item_value(), item)
 
         item_info = {'acc_id': acc_id,
                      'char_id': self.id,
@@ -36,12 +35,11 @@ class Character:
                      'value': item_value[0],
                      'quantity': 1}
 
-        database.add_item_row(conn, sql.sql_add_item_row(), item_info)
+        database.add_item_row(conn, sql.add_item_row(), item_info)
 
     # TODO: Test
-    # TODO: Refactor: Name
     # Updates currency column in DB based on character ID and currency.
-    def update_currency(self, conn):
+    def update_currency_db(self, conn):
         sql.execute_sql(conn, sql.update_currency(), self.currency, self.id)
 
     # Converts character.currency value (in cp) into gp,sp,cp
@@ -55,7 +53,7 @@ class Character:
 
     # Gets item price info and adds/subtracts it to/from currency based on [unit] key.
     # See convert_price_info() in api.py for more information on conversion.
-    # Also updates currency in DB via self.update_currency
+    # Also updates currency in DB via self.update_currency_db
     # Returns True if item is affordable. Else returns False.
     def buy_sell(self, item, action=None, conn=None):
         url = api.get_item_url(item, Character.list_of_item_dicts)
@@ -69,18 +67,18 @@ class Character:
             else:
                 print('---item bought---')  # TODO remove later
                 self.currency -= item_value
-                self.update_currency(conn)
+                self.update_currency_db(conn)
                 return True
         elif action == 'sell':
             print('---item sold---')  # TODO remove later
             self.currency += item_value
-            self.update_currency(conn)
+            self.update_currency_db(conn)
 
 
 # TODO: Test
 # Query all character names. Return True if name in query. Else return False.
 def character_name_taken(conn, name):
-    character_names_tups = sql.execute_fetchall_sql(conn, sql.sql_all_character_names())
+    character_names_tups = sql.execute_fetchall_sql(conn, sql.query_all_character_names())
     for tup in character_names_tups:
         if name in tup:
             return True
@@ -95,7 +93,7 @@ def character_creation(conn, acc_id, name, currency):
         return False
     else:
         character_info_dict = {'acc_id': acc_id, 'name': name, 'currency': currency}
-        database.add_character_row(conn, sql.sql_add_character_row(), character_info_dict)
+        database.add_character_row(conn, sql.add_character_row(), character_info_dict)
         return True
 
 
@@ -103,7 +101,7 @@ def character_creation(conn, acc_id, name, currency):
 # Query character row. Return player object.
 def load_character_object(conn, char_name):
     with conn:
-        char_info_list = sql.execute_fetchone_sql(conn, sql.sql_character_row(), char_name)
+        char_info_list = sql.execute_fetchone_sql(conn, sql.query_character_row(), char_name)
         char_info_dict = {'char_id': char_info_list[0], 'name': char_info_list[1], 'currency': char_info_list[2]}
         character = Character(char_info_dict['char_id'], char_info_dict['name'], char_info_dict['currency'], [])
         return character

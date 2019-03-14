@@ -19,8 +19,7 @@ def get_api_all(json_data):
 
 
 # Concatenates an api url frame with a given variable
-# TODO: Refactor: Name
-def make_api_url(some_api_dict):
+def construct_api_url(some_api_dict):
     return f'http://www.dnd5eapi.co/api/{some_api_dict}/'
 
 
@@ -31,7 +30,7 @@ def get_nested_api_dict(api_dump, dict_to_slice):
 
 # some_dict = {'name': 'some_name', 'url': 'some_url'}
 # TODO: Refactor: Name
-def url_call(name, some_dict):
+def check_for_url(name, some_dict):
     if some_dict['name'] == name:
         new_call = some_dict['url']
         return new_call
@@ -39,7 +38,6 @@ def url_call(name, some_dict):
 
 # Expects list of dictionaries
 # similar to [{'name': 'some_name', 'url': 'some_url'}, {'name': 'some_name', 'url': 'some_url'}]
-# TODO: Refactor: Name
 def get_api_info(name, list_of_dicts):
     for dic in list_of_dicts:   # For dict in list of dicts
         if dic['name'] == name:   # If dic['name'] == item searched for
@@ -49,10 +47,9 @@ def get_api_info(name, list_of_dicts):
 
 # Expects list of dictionaries
 # similar to [{'name': 'some_name', 'url': 'some_url'}, {'name': 'some_name', 'url': 'some_url'}]
-# TODO: Refactor: Name
 def get_item_url(name, list_of_dicts):
     for dic in list_of_dicts:  # For dictionary in list of dictionaries
-        new_url = url_call(name, dic)
+        new_url = check_for_url(name, dic)
         if new_url is not None:
             return new_url
 
@@ -91,11 +88,11 @@ def regex(url, api_category):
     # a = '{"results": [{"name": 1, "url": 1},{"name": 2, "url": 2}]}'
     # b = '{"results": 1}'
     # c = {'name': 1, 'url': 2}
-    # print(get_api_all(make_api_url('equipment')))
-    # pprint.pprint(get_api_results(make_api_url('Equipment'), 'results'))
-    # print(get_api_cost(get_api_all(get_item_url('Club', get_api_results(make_api_url('Equipment'))))))
+    # print(get_api_all(construct_api_url('equipment')))
+    # pprint.pprint(get_api_results(construct_api_url('Equipment'), 'results'))
+    # print(get_api_cost(get_api_all(get_item_url('Club', get_api_results(construct_api_url('Equipment'))))))
     # print(get_api_all(get_item_url('Acid Arrow', get_api_dictionary('spells'))))
-    # list_of_dics = get_nested_api_dict(get_api_all(call_api(make_api_url('equipment'))), 'results')
+    # list_of_dics = get_nested_api_dict(get_api_all(call_api(construct_api_url('equipment'))), 'results')
     # item_api_url = get_item_url('Club', list_of_dics)
     # item_info = get_api_all(call_api(item_api_url))
     # item_cost = get_nested_api_dict(item_info, 'cost')

@@ -75,7 +75,7 @@ def recent_select_value():
     except TclError:
         pass
 
-    item_value = sql.execute_fetchone_sql(conn, sql.sql_store_item_value(), item_name)
+    item_value = sql.execute_fetchone_sql(conn, sql.query_store_item_value(), item_name)
     # item_value = api.get_item_value(item_name, character.Character.list_of_item_dicts)    # Depricated API call
     return item_value[0]
 
@@ -83,7 +83,7 @@ def recent_select_value():
 # def treeview_select_value(some_treeview):
 #     item = some_treeview.selection()
 #     item_name = some_treeview.item(item[0])['text']
-#     item_value = sql.execute_fetchone_sql(conn, sql.sql_store_item_value(), item_name)
+#     item_value = sql.execute_fetchone_sql(conn, sql.query_store_item_value(), item_name)
 #     # item_value = api.get_item_value(item_name, character.Character.list_of_item_dicts)    # Deppricated API call
 #     return item_value[0]
 
@@ -130,7 +130,7 @@ def log_out():
 def populate_combo():
     temp_combo_list = []
     acc_id = user_info['acc'].id
-    characters_tuple = sql.execute_fetchall_sql(conn, sql.sql_all_characters(), acc_id)
+    characters_tuple = sql.execute_fetchall_sql(conn, sql.query_all_characters(), acc_id)
     for thing in characters_tuple:
         temp_combo_list.append(thing[1])
     chars_combo['values'] = temp_combo_list
@@ -364,7 +364,7 @@ def sell_item_gui(some_callback):
 #     gold_pic = blacksmith_treeview.item(1, image=img)
 #     gold_pic.image = img
 #     print(blacksmith_treeview.item(1,)), ['image']
-#     root.update()
+#     root.update_progressbar()
 
 # Sets current user character ID to key with all current items in inventory treeview as value.
 def cache_inv():
@@ -394,7 +394,7 @@ def inspecto_gadget(converted_value):
 # Query all items from a given store. Use values returned to populate store treeviews.
 def populate_tree(some_sql, some_tree, some_store):
     with conn:
-        for number in range(database.count_rows(conn, sql.sql_count_rows(), 'items')[0]):
+        for number in range(database.count_rows(conn, sql.count_table_rows(), 'items')):
             temp_dict = {}
             number += 1
             item_info_tuple = sql.execute_fetchone_sql(conn, some_sql, str(number), some_store)
@@ -436,7 +436,7 @@ def populate_inventory_treeview_cache(tree_items_tup):
 # Checks if current character ID has inventory in cache dictionary.
 # Reattaches if it does, else, populates via DB.
 def populate_inventory():
-    char_items = sql.execute_fetchall_sql(conn, sql.sql_all_character_items(), user_info['char'].id)
+    char_items = sql.execute_fetchall_sql(conn, sql.query_all_character_items(), user_info['char'].id)
 
     if user_info['char'].id in inv_cache.keys():
         populate_inventory_treeview_cache(inv_cache[user_info['char'].id])
@@ -446,10 +446,10 @@ def populate_inventory():
 
 # Populates the four treeview widgets that, makeup the dashboard page, with items.
 def populate_all_trees():
-    populate_tree(sql.sql_item_from_store(), blacksmith_treeview, 'Blacksmith')
-    populate_tree(sql.sql_item_from_store(), shipyard_treeview, 'Shipyard')
-    populate_tree(sql.sql_item_from_store(), general_store_treeview, 'General Store')
-    populate_tree(sql.sql_item_from_store(), stables_treeview, 'Stables')
+    populate_tree(sql.query_item_from_store(), blacksmith_treeview, 'Blacksmith')
+    populate_tree(sql.query_item_from_store(), shipyard_treeview, 'Shipyard')
+    populate_tree(sql.query_item_from_store(), general_store_treeview, 'General Store')
+    populate_tree(sql.query_item_from_store(), stables_treeview, 'Stables')
 
 
 # clears (forgets) all widgets currently attached to root window.
@@ -557,7 +557,7 @@ def start():
             con = database.create_connection(db)
             install_bar['value'] = 0
             install_bar['maximum'] = 256
-            # update()
+            # update_progressbar()
             if setup.wrong_schema(con):
                 setup.create_schema(con)
                 setup.stock_stores(con, install_bar, count, root)
@@ -569,13 +569,13 @@ def start():
 
     threading.Thread(target=real_start).start()
 
-# def update():
+# def update_progressbar():
 #     global count
 #     global max_count
 #     count += 500
     # install_bar['value'] = count
     # if count < max_count:
-    #     root.after(100, update)
+    #     root.after(100, update_progressbar)
     # elif count >= max_count:
     #     log_in_page()
 
@@ -789,7 +789,7 @@ def delete_command():
     temp = {}
     char_selected = chars_combo.get()
     acc_id = user_info['acc'].id
-    characters_tuple_list = sql.execute_fetchall_sql(conn, sql.sql_all_characters(), acc_id)
+    characters_tuple_list = sql.execute_fetchall_sql(conn, sql.query_all_characters(), acc_id)
     for tup in characters_tuple_list:
         temp[tup[1]] = tup[0]
     char_id = temp[char_selected]
@@ -837,7 +837,7 @@ def buy_command():
 
     if affordable:
         buy_item_gui(recent_selection['selected'])
-        if not database.item_in_inventory_add(conn, user_info['inv'], item_name):
+        if not database.in_inventory(conn, user_info['inv'], item_name, '+'):
             user_info['char'].add_item(conn, item_name, user_info['acc'].id, user_info['inv'])
 
     check_value_and_toggle()
@@ -860,7 +860,7 @@ def sell_command():
 
     root.update()
 
-    if not database.item_in_inventory_minus(conn, user_info['inv'], item):
+    if not database.in_inventory(conn, user_info['inv'], item, '-'):
         database.delete_item(conn, item, user_info['inv'])
 
 
