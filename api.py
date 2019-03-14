@@ -19,6 +19,7 @@ def get_api_all(json_data):
 
 
 # Concatenates an api url frame with a given variable
+# TODO: Refactor: Name
 def make_api_url(some_api_dict):
     return f'http://www.dnd5eapi.co/api/{some_api_dict}/'
 
@@ -29,6 +30,7 @@ def get_nested_api_dict(api_dump, dict_to_slice):
 
 
 # some_dict = {'name': 'some_name', 'url': 'some_url'}
+# TODO: Refactor: Name
 def url_call(name, some_dict):
     if some_dict['name'] == name:
         new_call = some_dict['url']
@@ -37,6 +39,7 @@ def url_call(name, some_dict):
 
 # Expects list of dictionaries
 # similar to [{'name': 'some_name', 'url': 'some_url'}, {'name': 'some_name', 'url': 'some_url'}]
+# TODO: Refactor: Name
 def get_api_info(name, list_of_dicts):
     for dic in list_of_dicts:   # For dict in list of dicts
         if dic['name'] == name:   # If dic['name'] == item searched for
@@ -46,6 +49,7 @@ def get_api_info(name, list_of_dicts):
 
 # Expects list of dictionaries
 # similar to [{'name': 'some_name', 'url': 'some_url'}, {'name': 'some_name', 'url': 'some_url'}]
+# TODO: Refactor: Name
 def get_item_url(name, list_of_dicts):
     for dic in list_of_dicts:  # For dictionary in list of dictionaries
         new_url = url_call(name, dic)

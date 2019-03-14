@@ -21,6 +21,7 @@ class Character:
         self.inventories = inventories_list  # List of player inventory names in string format. Technically not used.
 
     # TODO: This makes more sense as an inventory method. Change it once multiple inventories.
+    # TODO: Refactor: Name
     # Adds an item item under character id. Can specify a specific inventory via inv_id
     def add_item(self, conn, item, acc_id, inv_id):
         url = sql.execute_fetchone_sql(conn, sql.sql_store_item_url(), item)
@@ -37,6 +38,8 @@ class Character:
 
         database.add_item_row(conn, sql.sql_add_item_row(), item_info)
 
+    # TODO: Test
+    # TODO: Refactor: Name
     # Updates currency column in DB based on character ID and currency.
     def update_currency(self, conn):
         sql.execute_sql(conn, sql.update_currency(), self.currency, self.id)
@@ -74,6 +77,7 @@ class Character:
             self.update_currency(conn)
 
 
+# TODO: Test
 # Query all character names. Return True if name in query. Else return False.
 def character_name_taken(conn, name):
     character_names_tups = sql.execute_fetchall_sql(conn, sql.sql_all_character_names())
@@ -95,6 +99,7 @@ def character_creation(conn, acc_id, name, currency):
         return True
 
 
+# TODO: Test
 # Query character row. Return player object.
 def load_character_object(conn, char_name):
     with conn:

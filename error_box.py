@@ -1,5 +1,7 @@
 import tkinter
 from tkinter import messagebox
+# TODO: Not sure if I can or even need to test this.
+# TODO: Will most likely be heavily altered during OOP refactor. Don't worry till then.
 
 
 def failed_validation_is_digit():

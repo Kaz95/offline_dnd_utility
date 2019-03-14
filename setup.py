@@ -15,6 +15,7 @@ mem = ':memory:'
 
 
 # TODO consider refactoring to a single .executemany()
+# TODO: Test
 # Four sqlite statements which create the database schema.
 def create_schema(conn):
     with conn:
@@ -43,6 +44,7 @@ def wrong_schema(conn):
 
 
 # Updates value of progress bar.
+# TODO: Refactor: Name
 def update(some_bar, count):
     some_bar['value'] = count
     # print(some_bar['value'])
@@ -50,6 +52,7 @@ def update(some_bar, count):
     some_bar.update_idletasks()
 
 
+# TODO: Refactor: Variable Names
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
 def stock_stores(conn, some_bar, count, window):
     t = time.time()

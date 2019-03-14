@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 import sql
-#
+
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
@@ -71,6 +71,8 @@ def query_accounts_with_characters(conn, some_sql):
 
 
 # Returns a list of integers representing character IDs.
+# TODO: Test
+# TODO: No apparent usage.
 def query_characters_with_inventories(conn,  some_sql):
     temp = []
     acc_id_list = sql.execute_fetchall_sql(conn, some_sql)

@@ -5,11 +5,14 @@ import error_box
 db = 'C:\\sqlite\\db\\test.db'
 mem = ':memory:'
 
+# TODO: Test everything. Nothing here is currently tested....
+
 
 # Account class. Stores account_id(primary key of account table), username, and password.
 class Account:
     # Used to hold account info in {'username':'password'} format. Populated by load_account_archive()
     # log_in() then compares against it.
+    # TODO: Refactor: Name
     login_dic = {}
 
     def __init__(self, acc_id, username, password):
@@ -39,6 +42,7 @@ def account_has_characters(conn, acc_id):
 
 
 # Creates new account. Adds information to accounts table in database.
+# TODO: Refactor: Name
 def user_creates_account(conn, username, password):
     load_account_archive(conn)
     if username_taken(username):
