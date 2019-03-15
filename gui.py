@@ -8,6 +8,7 @@ import database
 import character
 import error_box
 import threading
+import static_functions
 
 # Dictionary used to store account and character objects, representing the current user information.
 user_info = {'acc': None, 'char': None, 'inv': 1}
@@ -25,26 +26,6 @@ ship_selected = {'selected': 'none'}
 inv_selected = {'selected': 'none'}
 recent_selection = {'selected': 'None'}
 
-# def log_in_page():
-#     clear()
-#
-#     title_login_label.grid(column=0, row=0, sticky=W + E)
-#     username_label.grid(column=0, row=1)
-#     login_page_username_entry.grid(column=0, row=2)
-#     password_label.grid(column=0, row=3)
-#     login_page_password_entry.grid(column=0, row=4)
-#     login_page_login_button.grid(column=0, row=5)
-#     login_page_signup_button.grid(column=0, row=6)
-#
-#     clear_entry(login_page_username_entry)
-#     clear_entry(login_page_password_entry)
-#     login_page_username_entry.focus()
-#
-#     center([820, 178])
-# Checks if given entry input is alphanumeric.
-# Return True if is alnum or empty string.
-# Else return false.
-
 
 # TODO: unit test with assertEqual.
 # Clears dictionaries storing account information objects.
@@ -59,97 +40,6 @@ def log_out():
 def clear_cache(char_id):
     print(f'-----{char_id} cache deleted-----')
     del inv_cache[char_id]
-
-
-# Detaches all treeview items present in a list of treeview items.
-# Items list is retrieved from inventory cache dictionary.
-# Notes, detach does not permanently delete the item. It merely removes it from view.
-def detach_inv(self):
-    self.inventory_treeview.detach(*inv_cache[user_info['char'].id])
-
-
-def entry_is_alnum_callback(entry_input):
-    if entry_input.isalnum():
-        return True
-    elif entry_input is '':
-        return True
-    else:
-        return False
-
-
-# Checks if given entry input is alphabetical.
-# Return True if is alpha or empty string.
-# Else return false.
-def entry_is_alpha_callback(entry_input):
-    if entry_input.isalpha():
-        return True
-    elif entry_input is '':
-        return True
-    else:
-        return False
-
-
-# Checks if given entry input is digit.
-# Return True if is digit or empty string.
-# Else return false.
-def entry_is_digit_callback(entry_input):
-    if entry_input.isdigit():
-        return True
-    elif entry_input is '':
-        return True
-    else:
-        return False
-
-
-# Generic function that is passed a tkinter entry box and clears its current contents.
-def clear_entry(some_entry):
-    some_entry.delete(0, 'end')
-
-
-# TODO: This is a copy of a function from character.py. Consider removing the other one.
-# TODO: There is probably a more efficient way to write this.
-def convert_currency(currency):
-    g = int(currency / 100)
-    s = int(round((((currency / 100) - g) * 10), 2))
-    c = int(round((((((currency / 100) - g) * 10) - s) * 10), 2))
-    converted_dict = {'gp': g, 'sp': s, 'cp': c}
-    return converted_dict
-
-
-# Searches a currency dictionary and returns key with value not equal to zero.
-def inspecto_gadget(converted_value):
-    for key, value in converted_value.items():
-        if value != 0:
-            return key
-
-
-# Query all items from a given store. Use values returned to populate store treeviews.
-def populate_tree(some_sql, conn, some_tree, some_store):
-    with conn:
-        for number in range(database.count_rows(conn, sql.count_table_rows(), 'items')):
-            temp_dict = {}
-            number += 1
-            item_info_tuple = sql.execute_fetchone_sql(conn, some_sql, str(number), some_store)
-            try:
-                temp_dict['id'] = item_info_tuple[0]
-                temp_dict['name'] = item_info_tuple[1]
-                temp_dict['value'] = item_info_tuple[2]
-                converted_value = convert_currency(temp_dict['value'])
-                cur_type = inspecto_gadget(converted_value)
-                some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'])
-
-                if cur_type == 'gp':
-                    some_tree.item(temp_dict['id'], tags='gold')
-                elif cur_type == 'sp':
-                    some_tree.item(temp_dict['id'], tags='silver')
-                elif cur_type == 'cp':
-                    some_tree.item(temp_dict['id'], tags='copper')
-
-                some_tree.set(temp_dict['id'], 'price', converted_value[cur_type])
-
-            # TODO: Consider better error handling. This is a silent pass. Not good.
-            except TypeError:
-                continue
 
 
 # Generic function that is passed a tuple with a single value.
@@ -169,9 +59,9 @@ class MainWindow:
 
         # Entry callback functions registration
 
-        self.is_alnum = self.root.register(entry_is_alnum_callback)
-        self.is_digit = self.root.register(entry_is_digit_callback)
-        self.is_alpha = self.root.register(entry_is_alpha_callback)
+        self.is_alnum = self.root.register(static_functions.entry_is_alnum_callback)
+        self.is_digit = self.root.register(static_functions.entry_is_digit_callback)
+        self.is_alpha = self.root.register(static_functions.entry_is_alpha_callback)
         self.failed_is_digit = self.root.register(error_box.failed_validation_is_digit)
         self.failed_is_alnum = self.root.register(error_box.failed_validation_is_alnum)
         self.failed_is_alpha = self.root.register(error_box.failed_validation_is_alpha)
@@ -297,8 +187,8 @@ class LoginPage(MainWindow):
         self.login_page_login_button.grid(column=0, row=5)
         self.login_page_signup_button.grid(column=0, row=6)
 
-        clear_entry(self.login_page_username_entry)
-        clear_entry(self.login_page_password_entry)
+        static_functions.clear_entry(self.login_page_username_entry)
+        static_functions.clear_entry(self.login_page_password_entry)
         # login_page_username_entry.focus()
 
         self.center([820, 178])
@@ -340,8 +230,8 @@ class SignupPage(MainWindow):
         self.signup_page_signup_button.grid(column=0, row=5)
         self.signup_page_login_button.grid(column=0, row=6)
 
-        clear_entry(self.signup_page_username_entry)
-        clear_entry(self.signup_page_password_entry)
+        static_functions.clear_entry(self.signup_page_username_entry)
+        static_functions.clear_entry(self.signup_page_password_entry)
         self.signup_page_username_entry.focus()
 
     # Creates account row based on entry boxes and adds to DB. Pushes to login page.
@@ -454,7 +344,7 @@ class CharacterSelectionPage(MainWindow):
             char_id = temp[char_selected]
             database.delete_character(self.conn, char_id)
             clear_cache(char_id)
-            clear_entry(self.chars_combo)
+            static_functions.clear_entry(self.chars_combo)
             print('-----character deleted-----')
             self.root.update()
 
@@ -561,10 +451,10 @@ class DashboardPage(MainWindow):
 
     # Populates the four treeview widgets that, makeup the dashboard page, with items.
     def populate_all_trees(self):
-        populate_tree(sql.query_item_from_store(), self.conn, self.blacksmith_treeview, 'Blacksmith')
-        populate_tree(sql.query_item_from_store(), self.conn,  self.shipyard_treeview, 'Shipyard')
-        populate_tree(sql.query_item_from_store(), self.conn,  self.general_store_treeview, 'General Store')
-        populate_tree(sql.query_item_from_store(), self.conn,  self.stables_treeview, 'Stables')
+        static_functions.populate_tree(sql.query_item_from_store(), self.conn, self.blacksmith_treeview, 'Blacksmith')
+        static_functions.populate_tree(sql.query_item_from_store(), self.conn,  self.shipyard_treeview, 'Shipyard')
+        static_functions.populate_tree(sql.query_item_from_store(), self.conn,  self.general_store_treeview, 'General Store')
+        static_functions.populate_tree(sql.query_item_from_store(), self.conn,  self.stables_treeview, 'Stables')
 
     # Gets recently selected treeview item as tuple.
     # Tries to get name of item in each treeview. It will only work with one of them presumably.

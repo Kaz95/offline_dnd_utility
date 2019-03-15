@@ -100,14 +100,14 @@ class TestDatabaseUnitIntegration(unittest.TestCase):
         with mock.patch('database.sqlite3') as mocksql:
             conn = mocksql.connect()
             mocksql.connect().cursor().fetchall.return_value = [('Club', '1'), ('Dagger', '1')]
-            database.item_in_inventory_add(conn, 1, 'Dagger')
+            database.in_inventory(conn, 1, 'Dagger', '+')
             mocksql.connect().cursor().execute.assert_called_with(sql.update_quantity(), (2, 'Dagger', 1))
 
     def test_item_in_inventory_minus(self):
         with mock.patch('database.sqlite3') as mocksql:
             conn = mocksql.connect()
             mocksql.connect().cursor().fetchall.return_value = [('Club', '3'), ('Dagger', '2')]
-            database.item_in_inventory_minus(conn, 1, 'Club')
+            database.in_inventory(conn, 1, 'Club', '-')
             mocksql.connect().cursor().execute.assert_called_with(sql.update_quantity(), (2, 'Club', 1))
 
 

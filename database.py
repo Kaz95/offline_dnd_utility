@@ -109,7 +109,7 @@ def delete_character(conn, char_id):
 
 # Update
 # TODO: Verify if I need to change tup[1] to an integer or not.
-# TODO: I may regret this change. We will see.
+# TODO: I may regret changing this to a single function. We will see.
 
 # Checks if item is in inventory. If it is,
 # Adds or subtracts one based on add_subtract variable
