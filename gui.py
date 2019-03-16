@@ -141,6 +141,8 @@ class InstallPage(MainWindow):
 
     # Starts instillation process in a separate thread from main.
     def start(self):
+        self.install.config(state='disabled')
+
         def real_start():
             while True:
                 con = database.create_connection(database.db)
