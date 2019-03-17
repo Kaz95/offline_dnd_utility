@@ -149,10 +149,10 @@ class InstallPage(MainWindow):
                 con = database.create_connection(database.db)
                 self.install_bar['value'] = 0
                 self.install_bar['maximum'] = 256
-                # update_progressbar()
+                # update_mainloop()
                 if setup.wrong_schema(con):
                     setup.create_schema(con)
-                    setup.stock_stores(con, self.install_bar, self.count, self.root)
+                    setup.stock_stores(con, self.install_bar, self.count, self.root, self.title_install_label)
                 elif not setup.wrong_schema(con):
                     LoginPage(self.root)
                     break

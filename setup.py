@@ -43,7 +43,9 @@ def wrong_schema(conn):
 
 
 # Updates value of progress bar.
-def update_progressbar(some_bar, count):
+def update_mainloop(some_bar, count, some_label):
+    percent = round((count/256) * 100)
+    some_label.config(text=f'Installing....{percent}%')
     some_bar['value'] = count
     # print(some_bar['value'])
     time.sleep(.05)
@@ -51,7 +53,7 @@ def update_progressbar(some_bar, count):
 
 
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
-def stock_stores(conn, some_bar, count, window):
+def stock_stores(conn, some_bar, count, window, some_label):
     time_to_install = time.time()
     global max_count
     store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
@@ -94,7 +96,7 @@ def stock_stores(conn, some_bar, count, window):
             database.add_store_item(conn, sql.add_store_item(), temp)
             count += 1
             print(count)
-            window.after(10, update_progressbar(some_bar, count))
+            window.after(10, update_mainloop(some_bar, count, some_label))
         # print(count)
         print('done in: ', time.time() - time_to_install)
         print('Done with everything.')
