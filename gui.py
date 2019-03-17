@@ -381,11 +381,25 @@ class DashboardPage(MainWindow):
         inventory_popup_menu.add_command(label='Remove Item')
         inventory_popup_menu.add_command(label='Change Quantity')
 
+        currency_popup_menu = Menu(tearoff=False)
+        currency_type_menu = Menu(tearoff=False)
+
+        currency_type_menu.add_command(label='Gold')
+        currency_type_menu.add_command(label='Silver')
+        currency_type_menu.add_command(label='Copper')
+
+        currency_popup_menu.add_cascade(label='Update', menu=currency_type_menu)
+        currency_popup_menu.add_cascade(label='Add', menu=currency_type_menu)
+        currency_popup_menu.add_cascade(label='Subtract', menu=currency_type_menu)
+
         def store_popup(event):
             store_popup_menu.post(event.x_root, event.y_root)
 
         def inventory_popup(event):
             inventory_popup_menu.post(event.x_root, event.y_root)
+
+        def currency_popup(event):
+            currency_popup_menu.post(event.x_root, event.y_root)
 
         def format_store(some_treeview):
             some_treeview.tag_configure('gold', image=gold_img)
@@ -434,6 +448,7 @@ class DashboardPage(MainWindow):
         self.stables_treeview.bind('<Button-3>', store_popup)
         self.general_store_treeview.bind('<Button-3>', store_popup)
         self.inventory_treeview.bind('<Button-3>', inventory_popup)
+        self.currency_treeview.bind('<Button-3>', currency_popup)
 
         # General grid formatting
         self.general_store_treeview.grid(row=0, column=0)
