@@ -405,8 +405,6 @@ class DashboardPage(MainWindow):
             print('tcl error')
             self.update_currency_treeview(self.currency_dict)
 
-        self.populate_inventory()
-
         # Binds
         self.shipyard_treeview.bind('<<TreeviewSelect>>', self.shipyard_callback)
         self.blacksmith_treeview.bind('<<TreeviewSelect>>', self.blacksmith_callback)
@@ -452,6 +450,9 @@ class DashboardPage(MainWindow):
                                                              command=self.char_select_command)
 
         self.dashboard_page_character_select_button.grid(row=5, column=3, pady=50, sticky=S + E)
+
+        self.populate_inventory()
+
         cur_size = self.screen_size()
         if cur_size['h'] != 630:
             self.center([953, 630])
@@ -587,16 +588,16 @@ class DashboardPage(MainWindow):
     # Reattach items to inventory treeview from inventory cache dictionary.
     def populate_inventory_treeview_cache(self, tree_items_tup):
         for i in tree_items_tup:
-            self.inventory_treeview.reattach(i, '', len(tree_items_tup))
+            self.inventory_treeview.move(i, '', len(tree_items_tup))
 
     # Checks if current character ID has inventory in cache dictionary.
     # Reattaches if it does, else, populates via DB.
     def populate_inventory(self):
         char_items = sql.execute_fetchall_sql(self.conn, sql.query_all_character_items(), user_info['char'].id)
 
-        if user_info['char'].id in inv_cache.keys():
-            self.populate_inventory_treeview_cache(inv_cache[user_info['char'].id])
-        elif len(char_items) > 0:
+        # if user_info['char'].id in inv_cache.keys():
+        #     self.populate_inventory_treeview_cache(inv_cache[user_info['char'].id])
+        if len(char_items) > 0:
             self.populate_inventory_treeview_db(char_items)
 
     # Sets quantity column of a given (gui)item to 1.
