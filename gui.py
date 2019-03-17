@@ -371,13 +371,21 @@ class DashboardPage(MainWindow):
         self.currency_dict = user_info['char'].convert_currency()
         self.clear()
 
+        # TODO: Refactor menu names, they are currently shite.
         # Menus
 
-        add_item_menu = Menu(tearoff=False)
-        add_item_menu.add_command(label='Add Item')
+        store_popup_menu = Menu(tearoff=False)
+        store_popup_menu.add_command(label='Add Item')
 
-        def add_item_popup(event):
-            add_item_menu.post(event.x_root, event.y_root)
+        inventory_popup_menu = Menu(tearoff=False)
+        inventory_popup_menu.add_command(label='Remove Item')
+        inventory_popup_menu.add_command(label='Change Quantity')
+
+        def store_popup(event):
+            store_popup_menu.post(event.x_root, event.y_root)
+
+        def inventory_popup(event):
+            inventory_popup_menu.post(event.x_root, event.y_root)
 
         def format_store(some_treeview):
             some_treeview.tag_configure('gold', image=gold_img)
@@ -421,10 +429,11 @@ class DashboardPage(MainWindow):
         self.inventory_treeview.bind('<<TreeviewSelect>>', self.inventory_callback)
         self.general_store_treeview.bind('<<TreeviewSelect>>', self.general_store_callback)
 
-        self.shipyard_treeview.bind('<Button-3>', add_item_popup)
-        self.blacksmith_treeview.bind('<Button-3>', add_item_popup)
-        self.stables_treeview.bind('<Button-3>', add_item_popup)
-        self.general_store_treeview.bind('<Button-3>', add_item_popup)
+        self.shipyard_treeview.bind('<Button-3>', store_popup)
+        self.blacksmith_treeview.bind('<Button-3>', store_popup)
+        self.stables_treeview.bind('<Button-3>', store_popup)
+        self.general_store_treeview.bind('<Button-3>', store_popup)
+        self.inventory_treeview.bind('<Button-3>', inventory_popup)
 
         # General grid formatting
         self.general_store_treeview.grid(row=0, column=0)
