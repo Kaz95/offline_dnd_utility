@@ -57,7 +57,8 @@ def stock_stores(conn, some_bar, count, window):
     store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
     with conn:
         url = api.construct_api_url('equipment')
-        response = api.call_api(url)
+        s = api.create_session()
+        response = api.call_api(url, s)
         response_dict = api.get_api_all(response)
         usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
         max_count = api.get_nested_api_dict(response_dict, 'count')
@@ -70,7 +71,7 @@ def stock_stores(conn, some_bar, count, window):
                 else:
                     temp['api'] = value     # add value with key 'api'
 
-                item_value = api.get_item_value(temp['item'], character.Character.list_of_item_dicts)
+                item_value = api.get_item_value(temp['item'], character.Character.list_of_item_dicts, s)
                 temp['currency'] = item_value
 
                 if value[0:37] == url:  # if one of those values beings with a url like string

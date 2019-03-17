@@ -6,11 +6,22 @@ import re
 # "http://www.dnd5eapi.co/api/"
 
 
-# Calls (api) url and returns JSON text object.
-def call_api(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    return response.text
+# TODO: Test this
+def create_session():
+    session = requests.Session()
+    return session
+
+
+# Calls (api) url and returns JSON text object. Tries to use a session object to persist underlying connection.
+def call_api(url, session=None):
+    if session is not None:
+        response = session.get(url)
+        response.raise_for_status()
+        return response.text
+    else:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
 
 
 # Converts json data to python dictionary
@@ -55,9 +66,9 @@ def get_item_url(name, list_of_dicts):
 
 
 # TODO: Test this
-def get_item_value(item, some_dict):
+def get_item_value(item, some_dict, session):
     url = get_item_url(item, some_dict)
-    item_info = get_api_all(call_api(url))
+    item_info = get_api_all(call_api(url, session))
     item_cost = get_nested_api_dict(item_info, 'cost')
     item_value = convert_price_info(item_cost)
     return item_value
@@ -98,3 +109,7 @@ def regex(url, api_category):
     # item_cost = get_nested_api_dict(item_info, 'cost')
     # print(item_cost)
 
+
+if __name__ == '__main__':
+    s = create_session()
+    print(get_api_all(call_api(s, construct_api_url('equipment'))))
