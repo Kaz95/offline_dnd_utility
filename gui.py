@@ -169,15 +169,14 @@ class LoginPage(MainWindow):
         self.password_label = ttk.Label(text='Password')
         self.title_login_label = ttk.Label(text='Log-In', width='48', style='big.TLabel', anchor='center')
 
-        self.login_page_password_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
+        self.login_page_username_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
                                                    invalidcommand=self.failed_is_alnum)
 
-        self.login_page_username_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
+        self.login_page_password_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
                                                    invalidcommand=self.failed_is_alnum)
 
         self.login_page_login_button = Button(text='Log-in', bg='gray', command=self.login_page_login_command)
         # self.login_page_login_button = Button(text='Log-in', bg='gray')
-
         self.login_page_signup_button = Button(text='Sign-up', bg='gray', command=lambda: SignupPage(self.root))
         # self.login_page_signup_button = Button(text='Sign-up', bg='gray')
 
@@ -191,7 +190,7 @@ class LoginPage(MainWindow):
 
         static_functions.clear_entry(self.login_page_username_entry)
         static_functions.clear_entry(self.login_page_password_entry)
-        # login_page_username_entry.focus()
+        self.login_page_username_entry.focus()
 
         self.center([820, 178])
 
@@ -215,14 +214,14 @@ class SignupPage(MainWindow):
         self.username_label = ttk.Label(text='Username')
         self.password_label = ttk.Label(text='Password')
 
-        self.signup_page_password_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
-                                                    invalidcommand=self.failed_is_alnum)
-
         self.signup_page_username_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
                                                     invalidcommand=self.failed_is_alnum)
 
-        self.signup_page_login_button = Button(text='Log-in', bg='gray', command=lambda: LoginPage(self.root))
+        self.signup_page_password_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
+                                                    invalidcommand=self.failed_is_alnum)
+
         self.signup_page_signup_button = Button(text='Sign-up', bg='gray', command=self.signup_page_signup_command)
+        self.signup_page_login_button = Button(text='Log-in', bg='gray', command=lambda: LoginPage(self.root))
 
         self.title_signup_label.grid(column=0, row=0, sticky=W + E)
         self.username_label.grid(column=0, row=1)
@@ -253,8 +252,10 @@ class CharacterCreationPage(MainWindow):
 
         self.currency_label = ttk.Label(text='Currency')
         self.name_label = ttk.Label(text='Name')
+
         self.name_entry = ttk.Entry(validate='key', validatecommand=(self.is_alpha, '%P'), invalidcommand=self.failed_is_alpha)
         self.currency_entry = ttk.Entry(validate='key', validatecommand=(self.is_digit, '%P'), invalidcommand=self.failed_is_digit)
+
         self.create_character_button = Button(text='Create', bg='gray', command=self.create_character_command)
         self.logout_button = Button(text='Log-out', bg='gray', command=self.logout_command)
 
@@ -265,6 +266,8 @@ class CharacterCreationPage(MainWindow):
         self.currency_entry.grid(column=0, row=4)
         self.create_character_button.grid(column=0, row=5)
         self.logout_button.grid(column=0, row=6)
+
+        self.name_entry.focus()
 
     # Creates character row based on entry boxes and adds to DB. Pushes to character selection page.
     def create_character_command(self):
@@ -308,6 +311,8 @@ class CharacterSelectionPage(MainWindow):
         self.delete_button.grid(column=0, row=4)
         self.logout_button.grid(column=0, row=5, sticky=W + S)
         self.character_creation_button.grid(column=0, row=5, sticky=E + S)
+
+        self.chars_combo.focus()
 
     # Clears dictionary holding account information objects. Pushes to login page.
     def logout_command(self):
