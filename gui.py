@@ -471,10 +471,15 @@ class DashboardPage(MainWindow):
         self.currency_treeview.set('gold', 'copper', self.currency_dict['cp'])
 
         # Inventory formatting
-        self.inventory_treeview.config(columns='quantity')
-        self.inventory_treeview.column('quantity', width=55, anchor='center')
+        self.inventory_treeview.tag_configure('gold', image=gold_img)
+        self.inventory_treeview.tag_configure('silver', image=silver_img)
+        self.inventory_treeview.tag_configure('copper', image=copper_img)
+        self.inventory_treeview.config(columns=('quantity', 'unit_value'))
+        self.inventory_treeview.column('quantity', width=2, anchor='center')
         self.inventory_treeview.heading('quantity', text='Quantity')
-        self.inventory_treeview.column('#0', width=550)
+        self.inventory_treeview.column('unit_value', width=55, anchor='center')
+        self.inventory_treeview.heading('unit_value', text='Unit Value')
+        self.inventory_treeview.column('#0', width=700)
         self.inventory_treeview.heading('#0', text='Item')
 
         # Buttons
@@ -642,6 +647,9 @@ class DashboardPage(MainWindow):
     def new_inventory_quantity(self, some_item):
         self.inventory_treeview.set(some_item, 'quantity', 1)
 
+    def new_inventory_unit_value(self, some_item, value):
+        self.inventory_treeview.set(some_item, 'unit_value', value)
+
     # Updates currency treeview based on a (presumably updated) currency dictionary.
     def update_currency_treeview(self, some_dict):
         self.currency_treeview.item('gold', text=some_dict['gp'])
@@ -676,8 +684,21 @@ class DashboardPage(MainWindow):
 
     # adds new top level item to inventory treeview.
     def new_tree_item(self, some_treeview, some_callback):
+        item_name = some_treeview.item(some_callback[0])['text']
+        item_value = sql.execute_fetchone_sql(self.conn, sql.query_store_item_value(), item_name)
+        converted_value = static_functions.convert_currency(item_value[0])
+        cur_type = static_functions.inspecto_gadget(converted_value)
         new_item = self.inventory_treeview.insert('', 'end', text=some_treeview.item(some_callback[0])['text'])
+
+        if cur_type == 'gp':
+            self.inventory_treeview.item(new_item, tags='gold')
+        elif cur_type == 'sp':
+            self.inventory_treeview.item(new_item, tags='silver')
+        elif cur_type == 'cp':
+            self.inventory_treeview.item(new_item, tags='copper')
+
         self.new_inventory_quantity(new_item)
+        self.new_inventory_unit_value(new_item, converted_value[cur_type])
 
     # Loops through inventory treeview item names.
     # Compares a given callbacks text value to each name.
