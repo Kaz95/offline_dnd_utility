@@ -383,18 +383,18 @@ class DashboardPage(MainWindow):
 
         inventory_popup_menu = Menu(tearoff=False)
         inventory_popup_menu.add_command(label='Remove Item', command=self.remove_command)
-        inventory_popup_menu.add_command(label='Change Quantity', command=self.change_quantity_command)
+        inventory_popup_menu.add_command(label='Change Quantity', command=self.update_quantity_command)
 
         currency_popup_menu = Menu(tearoff=False)
-        currency_type_menu = Menu(tearoff=False)
+        update_submenu = Menu(tearoff=False)
 
-        currency_type_menu.add_command(label='Gold')
-        currency_type_menu.add_command(label='Silver')
-        currency_type_menu.add_command(label='Copper')
+        update_submenu.add_command(label='Gold', command=lambda: self.update_currency_command('gold'))
+        update_submenu.add_command(label='Silver', command=lambda: self.update_currency_command('silver'))
+        update_submenu.add_command(label='Copper', command=lambda: self.update_currency_command('copper'))
 
-        currency_popup_menu.add_cascade(label='Update', menu=currency_type_menu)
-        currency_popup_menu.add_cascade(label='Add', menu=currency_type_menu)
-        currency_popup_menu.add_cascade(label='Subtract', menu=currency_type_menu)
+        currency_popup_menu.add_cascade(label='Update', menu=update_submenu)
+        currency_popup_menu.add_cascade(label='Add', menu=update_submenu)
+        currency_popup_menu.add_cascade(label='Subtract', menu=update_submenu)
 
         def store_popup(event):
             store_popup_menu.post(event.x_root, event.y_root)
@@ -762,7 +762,7 @@ class DashboardPage(MainWindow):
         else:
             self.inventory_treeview.delete(some_callback)
 
-    def change_quantity_command(self):
+    def update_quantity_command(self):
         tup = recent_selection['selected']
         item_name = self.inventory_treeview.item(tup[0])['text']
         answer = simpledialog.askinteger('Input',
@@ -773,6 +773,17 @@ class DashboardPage(MainWindow):
 
         self.inventory_treeview.set(tup, 'quantity', answer)
         sql.execute_sql(self.conn, sql.update_quantity(), answer, item_name, user_info['inv'])
+
+    def update_currency_command(self, cur_type):
+        if cur_type == 'gold':
+            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=100000)
+            self.currency_treeview.item('gold', text=answer)
+        elif cur_type == 'silver':
+            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=9)
+            self.currency_treeview.set('gold', 'silver', answer)
+        elif cur_type == 'copper':
+            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=9)
+            self.currency_treeview.set('gold', 'copper', answer)
 
     def add_command(self):
         item_name = None
