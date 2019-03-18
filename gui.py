@@ -378,10 +378,10 @@ class DashboardPage(MainWindow):
         # Menus
 
         store_popup_menu = Menu(tearoff=False)
-        store_popup_menu.add_command(label='Add Item')
+        store_popup_menu.add_command(label='Add Item', command=self.add_command)
 
         inventory_popup_menu = Menu(tearoff=False)
-        inventory_popup_menu.add_command(label='Remove Item')
+        inventory_popup_menu.add_command(label='Remove Item', command=self.remove_command)
         inventory_popup_menu.add_command(label='Change Quantity')
 
         currency_popup_menu = Menu(tearoff=False)
@@ -761,6 +761,27 @@ class DashboardPage(MainWindow):
         else:
             self.inventory_treeview.delete(some_callback)
 
+    def add_command(self):
+        item_name = None
+        dic = stores()
+
+        print(recent_selection['selected'])
+        tup = recent_selection['selected']
+
+        if tup[0] in dic['Ship']:
+            item_name = self.shipyard_treeview.item(tup[0])['text']
+        elif tup[0] in dic['BS']:
+            item_name = self.blacksmith_treeview.item(tup[0])['text']
+        elif tup[0] in dic['GS']:
+            item_name = self.general_store_treeview.item(tup[0])['text']
+        elif tup[0] in dic['Stables']:
+            item_name = self.stables_treeview.item(tup[0])['text']
+
+        self.buy_item_gui(recent_selection['selected'])
+        if not database.in_inventory(self.conn, user_info['inv'], item_name, '+'):
+            user_info['char'].add_item_db(self.conn, item_name, user_info['acc'].id, user_info['inv'])
+
+    # TODO: Buy and sell commands require better error handling
     # Buys item on front (gui) and back (DB) end. Updates currency based on item value.
     def buy_command(self):
 
@@ -795,6 +816,14 @@ class DashboardPage(MainWindow):
                 user_info['char'].add_item_db(self.conn, item_name, user_info['acc'].id, user_info['inv'])
 
         self.check_value_and_toggle()
+
+    def remove_command(self):
+        tup = inv_selected['selected']
+        item = self.inventory_treeview.item(tup, 'text')
+        self.sell_item_gui(inv_selected['selected'])
+        # self.root.update()
+        if not database.in_inventory(self.conn, user_info['inv'], item, '-'):
+            database.delete_item(self.conn, item, user_info['inv'])
 
     # Sells item and updates currency on front-end.
     def sell_command(self):
