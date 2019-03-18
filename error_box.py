@@ -32,3 +32,5 @@ def character_name_taken():
     messagebox.showerror('Character Creation Failed', 'There is already a character with that name.')
 
 
+def no_character_selected():
+    messagebox.showerror('No Character Selected', 'Whoops! You forgot to select a character.')

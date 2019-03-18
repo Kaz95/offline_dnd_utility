@@ -359,9 +359,12 @@ class CharacterSelectionPage(MainWindow):
     # Sets current character to a given character object, Character object is based on combobox value.
     def select_command(self):
         with self.conn:
-            user_info['char'] = character.load_character_object(self.conn, self.chars_combo.get())
-            print(user_info)
-            DashboardPage(self.root)
+            try:
+                user_info['char'] = character.load_character_object(self.conn, self.chars_combo.get())
+                print(user_info)
+                DashboardPage(self.root)
+            except TypeError:
+                error_box.no_character_selected()
 
 
 class DashboardPage(MainWindow):
