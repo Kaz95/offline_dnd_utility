@@ -777,12 +777,28 @@ class DashboardPage(MainWindow):
     def update_currency_command(self, cur_type):
         if cur_type == 'gold':
             answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=100000)
+            cur_gold_value = self.currency_treeview.item('gold', 'text')
+            diff = answer - cur_gold_value
+            diff = diff * 100
+            user_info['char'].currency += diff
+            user_info['char'].update_currency_db(self.conn)
             self.currency_treeview.item('gold', text=answer)
+
         elif cur_type == 'silver':
             answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=9)
+            cur_silver_value = self.currency_treeview.set('gold', 'silver')
+            diff = answer - cur_silver_value
+            diff = diff * 10
+            user_info['char'].currency += diff
+            user_info['char'].update_currency_db(self.conn)
             self.currency_treeview.set('gold', 'silver', answer)
+
         elif cur_type == 'copper':
             answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=9)
+            cur_copper_value = self.currency_treeview.set('gold', 'copper')
+            diff = answer - cur_copper_value
+            user_info['char'].currency += diff
+            user_info['char'].update_currency_db(self.conn)
             self.currency_treeview.set('gold', 'copper', answer)
 
     def add_command(self):
