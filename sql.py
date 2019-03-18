@@ -139,7 +139,7 @@ def query_all_character_names():
 
 # TODO: Test
 def query_all_character_items():
-    return """SELECT item, quantity FROM items WHERE character_id = ?;"""
+    return """SELECT item, quantity, unit_value FROM items WHERE character_id = ?;"""
 
 
 # TODO: Test

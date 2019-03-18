@@ -625,8 +625,12 @@ class DashboardPage(MainWindow):
     # Populates inventory treeview from a list of DB item tuples.
     def populate_inventory_treeview_db(self, db_char_items):
         for i in db_char_items:
+            converted_value = static_functions.convert_currency(i[2])
+            cur_type = static_functions.inspecto_gadget(converted_value)
             item_id = self.inventory_treeview.insert('', 'end', text=i[0])
+            static_functions.img_tag(self.inventory_treeview, item_id, cur_type)
             self.inventory_treeview.set(item_id, 'quantity', i[1])
+            self.inventory_treeview.set(item_id, 'unit_value', converted_value[cur_type])
 
     # Reattach items to inventory treeview from inventory cache dictionary.
     def populate_inventory_treeview_cache(self, tree_items_tup):
@@ -690,12 +694,7 @@ class DashboardPage(MainWindow):
         cur_type = static_functions.inspecto_gadget(converted_value)
         new_item = self.inventory_treeview.insert('', 'end', text=some_treeview.item(some_callback[0])['text'])
 
-        if cur_type == 'gp':
-            self.inventory_treeview.item(new_item, tags='gold')
-        elif cur_type == 'sp':
-            self.inventory_treeview.item(new_item, tags='silver')
-        elif cur_type == 'cp':
-            self.inventory_treeview.item(new_item, tags='copper')
+        static_functions.img_tag(self.inventory_treeview, new_item, cur_type)
 
         self.new_inventory_quantity(new_item)
         self.new_inventory_unit_value(new_item, converted_value[cur_type])

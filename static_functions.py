@@ -57,6 +57,15 @@ def inspecto_gadget(converted_value):
             return key
 
 
+def img_tag(some_tree, some_item, cur_type):
+    if cur_type == 'gp':
+        some_tree.item(some_item, tags='gold')
+    elif cur_type == 'sp':
+        some_tree.item(some_item, tags='silver')
+    elif cur_type == 'cp':
+        some_tree.item(some_item, tags='copper')
+
+
 # Query all items from a given store. Use values returned to populate store treeviews.
 def populate_tree(some_sql, conn, some_tree, some_store):
     with conn:
@@ -72,12 +81,7 @@ def populate_tree(some_sql, conn, some_tree, some_store):
                 cur_type = inspecto_gadget(converted_value)
                 some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'])
 
-                if cur_type == 'gp':
-                    some_tree.item(temp_dict['id'], tags='gold')
-                elif cur_type == 'sp':
-                    some_tree.item(temp_dict['id'], tags='silver')
-                elif cur_type == 'cp':
-                    some_tree.item(temp_dict['id'], tags='copper')
+                img_tag(some_tree, temp_dict['id'], cur_type)
 
                 some_tree.set(temp_dict['id'], 'price', converted_value[cur_type])
 
