@@ -387,14 +387,24 @@ class DashboardPage(MainWindow):
 
         currency_popup_menu = Menu(tearoff=False)
         update_submenu = Menu(tearoff=False)
+        add_submenu = Menu(tearoff=False)
+        subtract_submenu = Menu(tearoff=False)
 
         update_submenu.add_command(label='Gold', command=lambda: self.update_currency_command('gold'))
         update_submenu.add_command(label='Silver', command=lambda: self.update_currency_command('silver'))
         update_submenu.add_command(label='Copper', command=lambda: self.update_currency_command('copper'))
 
+        add_submenu.add_command(label='Gold', command=lambda: self.add_currency_command('gold'))
+        add_submenu.add_command(label='Silver', command=lambda: self.add_currency_command('silver'))
+        add_submenu.add_command(label='Copper', command=lambda: self.add_currency_command('copper'))
+
+        subtract_submenu.add_command(label='Gold', command=lambda: self.subtract_currency_command('gold'))
+        subtract_submenu.add_command(label='Silver', command=lambda: self.subtract_currency_command('silver'))
+        subtract_submenu.add_command(label='Copper', command=lambda: self.subtract_currency_command('copper'))
+
         currency_popup_menu.add_cascade(label='Update', menu=update_submenu)
-        currency_popup_menu.add_cascade(label='Add', menu=update_submenu)
-        currency_popup_menu.add_cascade(label='Subtract', menu=update_submenu)
+        currency_popup_menu.add_cascade(label='Add', menu=add_submenu)
+        currency_popup_menu.add_cascade(label='Subtract', menu=subtract_submenu)
 
         def store_popup(event):
             store_popup_menu.post(event.x_root, event.y_root)
@@ -800,6 +810,63 @@ class DashboardPage(MainWindow):
             user_info['char'].currency += diff
             user_info['char'].update_currency_db(self.conn)
             self.currency_treeview.set('gold', 'copper', answer)
+
+    def add_currency_command(self, cur_type):
+        if cur_type == 'gold':
+            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=0, maxvalue=100000)
+            cur_gold_value = self.currency_treeview.item('gold', 'text')
+            new_gold_value = answer + cur_gold_value
+            self.currency_treeview.item('gold', text=new_gold_value)
+            converted_value = answer * 100
+            user_info['char'].currency += converted_value
+            user_info['char'].update_currency_db(self.conn)
+
+        elif cur_type == 'silver':
+            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=0, maxvalue=9)
+            cur_silver_value = self.currency_treeview.set('gold', 'silver')
+            new_silver_value = answer + cur_silver_value
+            self.currency_treeview.set('gold', 'silver', new_silver_value)
+            converted_value = answer * 10
+            user_info['char'].currency += converted_value
+            user_info['char'].update_currency_db(self.conn)
+
+        elif cur_type == 'copper':
+            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=0, maxvalue=9)
+            cur_copper_value = self.currency_treeview.set('gold', 'copper')
+            new_copper_value = answer + cur_copper_value
+            self.currency_treeview.set('gold', 'copper', new_copper_value)
+            user_info['char'].currency += answer
+            user_info['char'].update_currency_db(self.conn)
+
+    def subtract_currency_command(self, cur_type):
+        if cur_type == 'gold':
+            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=0,
+                                             maxvalue=100000)
+            cur_gold_value = self.currency_treeview.item('gold', 'text')
+            new_gold_value = cur_gold_value - answer
+            self.currency_treeview.item('gold', text=new_gold_value)
+            converted_value = answer * 100
+            user_info['char'].currency -= converted_value
+            user_info['char'].update_currency_db(self.conn)
+
+        elif cur_type == 'silver':
+            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=0,
+                                             maxvalue=9)
+            cur_silver_value = self.currency_treeview.set('gold', 'silver')
+            new_silver_value = cur_silver_value - answer
+            self.currency_treeview.set('gold', 'silver', new_silver_value)
+            converted_value = answer * 10
+            user_info['char'].currency -= converted_value
+            user_info['char'].update_currency_db(self.conn)
+
+        elif cur_type == 'copper':
+            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=0,
+                                             maxvalue=9)
+            cur_copper_value = self.currency_treeview.set('gold', 'copper')
+            new_copper_value = cur_copper_value - answer
+            self.currency_treeview.set('gold', 'copper', new_copper_value)
+            user_info['char'].currency -= answer
+            user_info['char'].update_currency_db(self.conn)
 
     def add_command(self):
         item_name = None
