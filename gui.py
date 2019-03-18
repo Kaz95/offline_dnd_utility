@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import Menu
+from tkinter import simpledialog
 from stores import stores
 import sql
 import account
@@ -382,7 +383,7 @@ class DashboardPage(MainWindow):
 
         inventory_popup_menu = Menu(tearoff=False)
         inventory_popup_menu.add_command(label='Remove Item', command=self.remove_command)
-        inventory_popup_menu.add_command(label='Change Quantity')
+        inventory_popup_menu.add_command(label='Change Quantity', command=self.change_quantity_command)
 
         currency_popup_menu = Menu(tearoff=False)
         currency_type_menu = Menu(tearoff=False)
@@ -760,6 +761,18 @@ class DashboardPage(MainWindow):
             self.minus_one_inventory_quantity(some_callback)
         else:
             self.inventory_treeview.delete(some_callback)
+
+    def change_quantity_command(self):
+        tup = recent_selection['selected']
+        item_name = self.inventory_treeview.item(tup[0])['text']
+        answer = simpledialog.askinteger('Input',
+                                         f'How many {item_name} do you have?',
+                                         parent=self.root,
+                                         minvalue=1,
+                                         maxvalue=1000)
+
+        self.inventory_treeview.set(tup, 'quantity', answer)
+        sql.execute_sql(self.conn, sql.update_quantity(), answer, item_name, user_info['inv'])
 
     def add_command(self):
         item_name = None
