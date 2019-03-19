@@ -43,7 +43,9 @@ def wrong_schema(conn):
 
 
 # Updates value of progress bar.
+# TODO: Pass canceled var
 def update_mainloop(some_bar, count, some_label):
+    # TODO: If canceled close conn and delete DB file. Then return None to exit function.
     percent = round((count/256) * 100)
     some_label.config(text=f'Installing....{percent}%')
     some_bar['value'] = count
@@ -53,6 +55,7 @@ def update_mainloop(some_bar, count, some_label):
 
 
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
+# TODO: Pass queue as parameter
 def stock_stores(conn, some_bar, count, window, some_label):
     time_to_install = time.time()
     global max_count
@@ -91,11 +94,12 @@ def stock_stores(conn, some_bar, count, window, some_label):
                         temp['store'] = 'Stables'
                     else:
                         temp['store'] = 'No Store'
-
+            # TODO: Check if anything in queue. Get var, if not empty.
             # adds an item to a store table based on information stored in dictionary
             database.add_store_item(conn, sql.add_store_item(), temp)
             count += 1
             print(count)
+            # TODO: Pass new canceled var that was just obtained from queue.
             window.after(10, update_mainloop(some_bar, count, some_label))
         # print(count)
         print('done in: ', time.time() - time_to_install)

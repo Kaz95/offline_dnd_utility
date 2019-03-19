@@ -123,6 +123,7 @@ class MainWindow:
 class InstallPage(MainWindow):
     def __init__(self, root):
 
+        # TODO: Initiate a queue here
         self.count = 0
         self.max_count = 256
 
@@ -145,8 +146,13 @@ class InstallPage(MainWindow):
     def start(self):
         self.install.config(state='disabled')
 
+        # TODO: Put variables in queue here
+        # TODO: First in first out.
+
         def real_start():
             while True:
+                # TODO: Check if canceled here
+                # TODO: If canceled change canceled to False and push install page
                 con = database.create_connection(database.db)
                 self.install_bar['value'] = 0
                 self.install_bar['maximum'] = 256
@@ -161,6 +167,8 @@ class InstallPage(MainWindow):
                 #     log_in_page()
 
         threading.Thread(target=real_start).start()
+
+    # TODO: Command function that sets canceled to True, closes DB connection.
 
 
 class LoginPage(MainWindow):
