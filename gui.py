@@ -9,7 +9,7 @@ import setup
 import database
 import character
 import error_box
-import threading
+import threading, queue
 import static_functions
 
 # Dictionary used to store account and character objects, representing the current user information.
@@ -122,8 +122,8 @@ class MainWindow:
 
 class InstallPage(MainWindow):
     def __init__(self, root):
-
-        # TODO: Initiate a queue here
+        self.canceled = False
+        self.q = queue.Queue()
         self.count = 0
         self.max_count = 256
 
@@ -142,7 +142,6 @@ class InstallPage(MainWindow):
             self.install_bar.grid(column=0, row=1)
             # self.install_button.grid(column=0, row=2)
             self.button_frame.grid(column=0, row=2)
-            # TODO: Need to create a frame for 2 buttons and a cancel install button.
         else:
             LoginPage(self.root)
 
@@ -165,7 +164,7 @@ class InstallPage(MainWindow):
                 # update_mainloop()
                 if setup.wrong_schema(con):
                     setup.create_schema(con)
-                    setup.stock_stores(con, self.install_bar, self.count, self.root, self.title_install_label)
+                    setup.stock_stores(con, self.install_bar, self.root, self.title_install_label)
                 # TODO: This will cause me to attempt an action on closed connection
                 elif not setup.wrong_schema(con):
                     LoginPage(self.root)

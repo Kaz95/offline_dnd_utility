@@ -56,7 +56,8 @@ def update_mainloop(some_bar, count, some_label):
 
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
 # TODO: Pass queue as parameter
-def stock_stores(conn, some_bar, count, window, some_label):
+def stock_stores(conn, some_bar, window, some_label):
+    count = 0
     time_to_install = time.time()
     global max_count
     store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
