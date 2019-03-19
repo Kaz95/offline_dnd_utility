@@ -132,11 +132,16 @@ class InstallPage(MainWindow):
         if setup.wrong_schema(self.conn):
             self.title_install_label = ttk.Label(text='Installing....', width='48', style='big.TLabel', anchor='center')
             self.install_bar = ttk.Progressbar(root, orient=HORIZONTAL, length=200, mode='determinate')
-            self.install_button = Button(text='install', bg='gray', command=self.start)
+            self.button_frame = Frame(self.root)
+            self.install_button = Button(self.button_frame, text='Install', bg='gray', command=self.start)
+            self.cancel_install_button = Button(self.button_frame, text='Cancel', bg='gray')
 
+            self.install_button.pack(side=LEFT)
+            self.cancel_install_button.pack(side=RIGHT)
             self.title_install_label.grid(column=0, row=0, sticky=W + E)
             self.install_bar.grid(column=0, row=1)
-            self.install_button.grid(column=0, row=2)
+            # self.install_button.grid(column=0, row=2)
+            self.button_frame.grid(column=0, row=2)
             # TODO: Need to create a frame for 2 buttons and a cancel install button.
         else:
             LoginPage(self.root)
@@ -910,6 +915,7 @@ class DashboardPage(MainWindow):
         print(recent_selection['selected'])
         tup = recent_selection['selected']
 
+        # TODO: DRY
         if tup[0] in dic['Ship']:
             item_name = self.shipyard_treeview.item(tup[0])['text']
         elif tup[0] in dic['BS']:
@@ -967,9 +973,12 @@ class DashboardPage(MainWindow):
 main = Tk()
 
 # Currency icon images.
-gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
-silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
-copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
+gold_img = 'C:\\Users\\kazac\\Desktop\\buttons\\gold.png'
+silver_img = 'C:\\Users\\kazac\\Desktop\\buttons\\silver.png'
+copper_img = 'C:\\Users\\kazac\\Desktop\\buttons\\copper.png'
+# gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
+# silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
+# copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
 
 dnd_utility = InstallPage(main)
 main.mainloop()
