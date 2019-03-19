@@ -152,18 +152,22 @@ class InstallPage(MainWindow):
         self.install_button.config(state='disabled')
 
         # TODO: Put variables in queue here
+        self.q.put(self.canceled)
         # TODO: First in first out.
 
         def real_start():
+            # TODO: Will need to .get() self.canceled here.
+            canceled = self.q.get()
             while True:
                 # TODO: Check if canceled here
-                # TODO: If canceled change canceled to False. Can possibly push install page here.
+                # TODO: If canceled change canceled to False. Then break. Can possibly push install page here.
                 con = database.create_connection(database.db)
                 self.install_bar['value'] = 0
                 self.install_bar['maximum'] = 256
                 # update_mainloop()
                 if setup.wrong_schema(con):
                     setup.create_schema(con)
+                    # TODO: pass this a queue. Queue will be used to .get() self.canceled
                     setup.stock_stores(con, self.install_bar, self.root, self.title_install_label)
                 # TODO: This will cause me to attempt an action on closed connection
                 elif not setup.wrong_schema(con):
@@ -176,6 +180,11 @@ class InstallPage(MainWindow):
 
     # TODO: Command function that sets canceled to True, adds it to queue(again), closes DB connection.
     # TODO: Also push to install page.
+    def cancel_install_command(self):
+        self.canceled = True
+        self.q.put(self.canceled)
+        self.conn.close()
+        InstallPage(self.root)
 
 
 class LoginPage(MainWindow):
