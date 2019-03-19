@@ -132,11 +132,12 @@ class InstallPage(MainWindow):
         if setup.wrong_schema(self.conn):
             self.title_install_label = ttk.Label(text='Installing....', width='48', style='big.TLabel', anchor='center')
             self.install_bar = ttk.Progressbar(root, orient=HORIZONTAL, length=200, mode='determinate')
-            self.install = Button(text='install', bg='gray', command=self.start)
+            self.install_button = Button(text='install', bg='gray', command=self.start)
 
             self.title_install_label.grid(column=0, row=0, sticky=W + E)
             self.install_bar.grid(column=0, row=1)
-            self.install.grid(column=0, row=2)
+            self.install_button.grid(column=0, row=2)
+            # TODO: Need to create a frame for 2 buttons and a cancel install button.
         else:
             LoginPage(self.root)
 
@@ -144,7 +145,7 @@ class InstallPage(MainWindow):
 
     # Starts instillation process in a separate thread from main.
     def start(self):
-        self.install.config(state='disabled')
+        self.install_button.config(state='disabled')
 
         # TODO: Put variables in queue here
         # TODO: First in first out.
@@ -152,7 +153,7 @@ class InstallPage(MainWindow):
         def real_start():
             while True:
                 # TODO: Check if canceled here
-                # TODO: If canceled change canceled to False and push install page
+                # TODO: If canceled change canceled to False. Can possibly push install page here.
                 con = database.create_connection(database.db)
                 self.install_bar['value'] = 0
                 self.install_bar['maximum'] = 256
@@ -160,6 +161,7 @@ class InstallPage(MainWindow):
                 if setup.wrong_schema(con):
                     setup.create_schema(con)
                     setup.stock_stores(con, self.install_bar, self.count, self.root, self.title_install_label)
+                # TODO: This will cause me to attempt an action on closed connection
                 elif not setup.wrong_schema(con):
                     LoginPage(self.root)
                     break
@@ -168,7 +170,8 @@ class InstallPage(MainWindow):
 
         threading.Thread(target=real_start).start()
 
-    # TODO: Command function that sets canceled to True, closes DB connection.
+    # TODO: Command function that sets canceled to True, adds it to queue(again), closes DB connection.
+    # TODO: Also push to install page.
 
 
 class LoginPage(MainWindow):
