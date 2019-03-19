@@ -4,6 +4,7 @@ import stores
 import api
 import character
 import time
+import os
 
 
 # TODO: May be required for mock. Not sure atm.
@@ -44,8 +45,11 @@ def wrong_schema(conn):
 
 # Updates value of progress bar.
 # TODO: Pass canceled var
-def update_mainloop(some_bar, count, some_label):
+def update_mainloop(some_bar, count, some_label, canceled, conn):
     # TODO: If canceled close conn and delete DB file. Then return None to exit function.
+    if canceled:
+        conn.close()
+        return None
     percent = round((count/256) * 100)
     some_label.config(text=f'Installing....{percent}%')
     some_bar['value'] = count
@@ -56,55 +60,62 @@ def update_mainloop(some_bar, count, some_label):
 
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
 # TODO: Pass queue as parameter
-def stock_stores(conn, some_bar, window, some_label):
+def stock_stores(conn, some_bar, window, some_label, some_queue):
+    canceled = None
     count = 0
     time_to_install = time.time()
     global max_count
     store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
-    with conn:
-        url = api.construct_api_url('equipment')
-        s = api.create_session()
-        response = api.call_api(url, s)
-        response_dict = api.get_api_all(response)
-        usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
-        max_count = api.get_nested_api_dict(response_dict, 'count')
-        print(count)
-        for dic in usable_dict:
-            temp = {}
-            for key, value in dic.items():
-                if not temp:    # If temp dictionary is empty
-                    temp['item'] = value    # add value with key 'item'
+    # with conn:
+    url = api.construct_api_url('equipment')
+    s = api.create_session()
+    response = api.call_api(url, s)
+    response_dict = api.get_api_all(response)
+    usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
+    max_count = api.get_nested_api_dict(response_dict, 'count')
+    print(count)
+    for dic in usable_dict:
+        temp = {}
+        for key, value in dic.items():
+            if not temp:    # If temp dictionary is empty
+                temp['item'] = value    # add value with key 'item'
+            else:
+                temp['api'] = value     # add value with key 'api'
+
+            item_value = api.get_item_value(temp['item'], character.Character.list_of_item_dicts, s)
+            temp['currency'] = item_value
+
+            if value[0:37] == url:  # if one of those values beings with a url like string
+                num = api.regex(value, 'equipment/')    # slices number off url and captures as variable
+
+                # This logic compares the captured number to the numbers in the dict imported earlier
+                # Then it adds a 'store':'some_store' key:value to the temp dictionary
+                if num in store_dict['GS']:
+                    temp['store'] = 'General Store'
+                elif num in store_dict['BS']:
+                    temp['store'] = 'Blacksmith'
+                elif num in store_dict['Ship']:
+                    temp['store'] = 'Shipyard'
+                elif num in store_dict['Stables']:
+                    temp['store'] = 'Stables'
                 else:
-                    temp['api'] = value     # add value with key 'api'
+                    temp['store'] = 'No Store'
+        # TODO: Check if anything in queue. Get var, if not empty.
+        if not some_queue.empty():
+            canceled = some_queue.get()
 
-                item_value = api.get_item_value(temp['item'], character.Character.list_of_item_dicts, s)
-                temp['currency'] = item_value
-
-                if value[0:37] == url:  # if one of those values beings with a url like string
-                    num = api.regex(value, 'equipment/')    # slices number off url and captures as variable
-
-                    # This logic compares the captured number to the numbers in the dict imported earlier
-                    # Then it adds a 'store':'some_store' key:value to the temp dictionary
-                    if num in store_dict['GS']:
-                        temp['store'] = 'General Store'
-                    elif num in store_dict['BS']:
-                        temp['store'] = 'Blacksmith'
-                    elif num in store_dict['Ship']:
-                        temp['store'] = 'Shipyard'
-                    elif num in store_dict['Stables']:
-                        temp['store'] = 'Stables'
-                    else:
-                        temp['store'] = 'No Store'
-            # TODO: Check if anything in queue. Get var, if not empty.
-            # adds an item to a store table based on information stored in dictionary
-            database.add_store_item(conn, sql.add_store_item(), temp)
-            count += 1
-            print(count)
-            # TODO: Pass new canceled var that was just obtained from queue.
-            window.after(10, update_mainloop(some_bar, count, some_label))
-        # print(count)
-        print('done in: ', time.time() - time_to_install)
-        print('Done with everything.')
+        # adds an item to a store table based on information stored in dictionary
+        database.add_store_item(conn, sql.add_store_item(), temp)
+        count += 1
+        print(count)
+        # TODO: Pass new canceled var that was just obtained from queue.
+        window.after(10, update_mainloop(some_bar, count, some_label, canceled, conn))
+        if canceled:
+            some_queue.put(canceled)
+            break
+    # print(count)
+    print('done in: ', time.time() - time_to_install)
+    print('Done with everything.')
 
 
 # def fake_api():

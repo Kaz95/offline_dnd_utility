@@ -11,6 +11,8 @@ import character
 import error_box
 import threading, queue
 import static_functions
+import os
+import time
 
 # Dictionary used to store account and character objects, representing the current user information.
 user_info = {'acc': None, 'char': None, 'inv': 1}
@@ -134,7 +136,7 @@ class InstallPage(MainWindow):
             self.install_bar = ttk.Progressbar(root, orient=HORIZONTAL, length=200, mode='determinate')
             self.button_frame = Frame(self.root)
             self.install_button = Button(self.button_frame, text='Install', bg='gray', command=self.start)
-            self.cancel_install_button = Button(self.button_frame, text='Cancel', bg='gray')
+            self.cancel_install_button = Button(self.button_frame, text='Cancel', bg='gray', command=self.cancel_install_command)
 
             self.install_button.pack(side=LEFT)
             self.cancel_install_button.pack(side=RIGHT)
@@ -156,23 +158,28 @@ class InstallPage(MainWindow):
         # TODO: First in first out.
 
         def real_start():
-            # TODO: Will need to .get() self.canceled here.
             canceled = self.q.get()
             while True:
+                if not self.q.empty():
+                    canceled = self.q.get()
+                if canceled:
+                    self.canceled = False
+                    break
                 # TODO: Check if canceled here
                 # TODO: If canceled change canceled to False. Then break. Can possibly push install page here.
                 con = database.create_connection(database.db)
                 self.install_bar['value'] = 0
                 self.install_bar['maximum'] = 256
                 # update_mainloop()
-                if setup.wrong_schema(con):
-                    setup.create_schema(con)
-                    # TODO: pass this a queue. Queue will be used to .get() self.canceled
-                    setup.stock_stores(con, self.install_bar, self.root, self.title_install_label)
-                # TODO: This will cause me to attempt an action on closed connection
-                elif not setup.wrong_schema(con):
+                wrg_schema = setup.wrong_schema(con)
+                if not wrg_schema:
                     LoginPage(self.root)
                     break
+                elif wrg_schema:
+                    setup.create_schema(con)
+                    # TODO: pass this a queue. Queue will be used to .get() self.canceled
+                    setup.stock_stores(con, self.install_bar, self.root, self.title_install_label, self.q)
+
                 # if count >= max_count:
                 #     log_in_page()
 
@@ -184,6 +191,13 @@ class InstallPage(MainWindow):
         self.canceled = True
         self.q.put(self.canceled)
         self.conn.close()
+        time.sleep(1)
+        while True:
+            try:
+                os.remove('C:\\sqlite\\db\\test.db')
+                break
+            except PermissionError:
+                continue
         InstallPage(self.root)
 
 
@@ -981,12 +995,12 @@ class DashboardPage(MainWindow):
 main = Tk()
 
 # Currency icon images.
-gold_img = 'C:\\Users\\kazac\\Desktop\\buttons\\gold.png'
-silver_img = 'C:\\Users\\kazac\\Desktop\\buttons\\silver.png'
-copper_img = 'C:\\Users\\kazac\\Desktop\\buttons\\copper.png'
-# gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
-# silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
-# copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
+# gold_img = 'C:\\Users\\kazac\\Desktop\\buttons\\gold.png'
+# silver_img = 'C:\\Users\\kazac\\Desktop\\buttons\\silver.png'
+# copper_img = 'C:\\Users\\kazac\\Desktop\\buttons\\copper.png'
+gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
+silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
+copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
 
 dnd_utility = InstallPage(main)
 main.mainloop()
