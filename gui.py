@@ -10,10 +10,8 @@ import database
 import character
 import error_box
 import threading
-import queue
 import static_functions
-import os
-import time
+
 
 # Dictionary used to store account and character objects, representing the current user information.
 user_info = {'acc': None, 'char': None, 'inv': 1}
@@ -615,12 +613,12 @@ class DashboardPage(MainWindow):
 
     # Populates inventory treeview from a list of DB item tuples.
     def populate_inventory_treeview_db(self, db_char_items):
-        for i in db_char_items:
-            converted_value = static_functions.convert_currency(i[2])
+        for item in db_char_items:
+            converted_value = static_functions.convert_currency(item[2])
             cur_type = static_functions.inspecto_gadget(converted_value)
-            item_id = self.inventory_treeview.insert('', 'end', text=i[0])
+            item_id = self.inventory_treeview.insert('', 'end', text=item[0])
             static_functions.img_tag(self.inventory_treeview, item_id, cur_type)
-            self.inventory_treeview.set(item_id, 'quantity', i[1])
+            self.inventory_treeview.set(item_id, 'quantity', item[1])
             self.inventory_treeview.set(item_id, 'unit_value', converted_value[cur_type])
 
     # Repopulates inventory treeview via DB query
