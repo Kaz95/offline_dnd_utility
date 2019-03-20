@@ -46,11 +46,6 @@ def new_selection(some_selection):
 
 class MainWindow:
     def __init__(self, root):
-        # TODO: Check if file exists here
-        try:
-            os.remove(database.db)
-        except PermissionError:
-            pass
         self.conn = database.create_connection(database.db)
         self.root = root
         root.title('DnD Utility')
@@ -110,8 +105,7 @@ class MainWindow:
 
 class InstallPage(MainWindow):
     def __init__(self, root):
-        self.canceled = False
-        self.q = queue.Queue()
+
         self.count = 0
         self.max_count = 256
 
@@ -120,16 +114,12 @@ class InstallPage(MainWindow):
         if setup.wrong_schema(self.conn):
             self.title_install_label = ttk.Label(text='Installing....', width='48', style='big.TLabel', anchor='center')
             self.install_bar = ttk.Progressbar(root, orient=HORIZONTAL, length=200, mode='determinate')
-            self.button_frame = Frame(self.root)
-            self.install_button = Button(self.button_frame, text='Install', bg='gray', command=self.start)
-            self.cancel_install_button = Button(self.button_frame, text='Cancel', bg='gray', command=self.cancel_install_command)
+            self.install_button = Button(text='Install', bg='gray', command=self.start)
 
-            self.install_button.pack(side=LEFT)
-            self.cancel_install_button.pack(side=RIGHT)
             self.title_install_label.grid(column=0, row=0, sticky=W + E)
             self.install_bar.grid(column=0, row=1)
-            # self.install_button.grid(column=0, row=2)
-            self.button_frame.grid(column=0, row=2)
+            self.install_button.grid(column=0, row=2)
+
         else:
             LoginPage(self.root)
 
@@ -137,23 +127,10 @@ class InstallPage(MainWindow):
 
     # Starts instillation process in a separate thread from main.
     def start(self):
-
         self.install_button.config(state='disabled')
 
-        # TODO: Put variables in queue here
-        self.q.put(self.canceled)
-        # TODO: First in first out.
-
         def real_start():
-            canceled = self.q.get()
             while True:
-                if not self.q.empty():
-                    canceled = self.q.get()
-                if canceled:
-                    self.canceled = False
-                    break
-                # TODO: Check if canceled here
-                # TODO: If canceled change canceled to False. Then break. Can possibly push install page here.
                 con = database.create_connection(database.db)
                 self.install_bar['value'] = 0
                 self.install_bar['maximum'] = 256
@@ -164,22 +141,12 @@ class InstallPage(MainWindow):
                     break
                 elif wrg_schema:
                     setup.create_schema(con)
-                    # TODO: pass this a queue. Queue will be used to .get() self.canceled
-                    setup.stock_stores(con, self.install_bar, self.root, self.title_install_label, self.q)
+                    setup.stock_stores(con, self.install_bar, self.root, self.title_install_label)
 
                 # if count >= max_count:
                 #     log_in_page()
 
         threading.Thread(target=real_start).start()
-
-    # TODO: Command function that sets canceled to True, adds it to queue(again), closes DB connection.
-    # TODO: Also push to install page.
-    def cancel_install_command(self):
-        self.canceled = True
-        self.q.put(self.canceled)
-        self.conn.close()
-        time.sleep(1)
-        InstallPage(self.root)
 
 
 class LoginPage(MainWindow):
@@ -959,12 +926,12 @@ class DashboardPage(MainWindow):
 main = Tk()
 
 # Currency icon images.
-# gold_img = 'C:\\Users\\kazac\\Desktop\\buttons\\gold.png'
-# silver_img = 'C:\\Users\\kazac\\Desktop\\buttons\\silver.png'
-# copper_img = 'C:\\Users\\kazac\\Desktop\\buttons\\copper.png'
-gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
-silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
-copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
+gold_img = 'C:\\Users\\kazac\\Desktop\\buttons\\gold.png'
+silver_img = 'C:\\Users\\kazac\\Desktop\\buttons\\silver.png'
+copper_img = 'C:\\Users\\kazac\\Desktop\\buttons\\copper.png'
+# gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
+# silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
+# copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
 
 dnd_utility = InstallPage(main)
 main.mainloop()
