@@ -18,10 +18,6 @@ import time
 # Dictionary used to store account and character objects, representing the current user information.
 user_info = {'acc': None, 'char': None, 'inv': 1}
 
-# Empty Dictionary that is used to store cached inventory treeview items for later use.
-# TODO: Verify structure stored in cache and provide comment example.
-inv_cache = {}
-
 # Dictionaries used to capture treeview selection events. Value will be a treeview item.
 # TODO: Verify if item is stored as tuple or string and provide comment example
 gen_selected = {'selected': 'none'}
@@ -39,12 +35,6 @@ def log_out():
     user_info['acc'] = None
     user_info['char'] = None
     user_info['inv'] = None
-
-
-# Deletes a list of inventory treeview items from 'cache' based on a given character ID.
-def clear_cache(char_id):
-    print(f'-----{char_id} cache deleted-----')
-    del inv_cache[char_id]
 
 
 # Generic function that is passed a tuple with a single value.
@@ -116,16 +106,6 @@ class MainWindow:
         else:
             self.root.geometry('%dx%d+%d+%d' % (cur_size['w'], cur_size['h'], x, y))
             self.root.update()
-
-    # Sets current user character ID to key with all current items in inventory treeview as value.
-    def cache_inv(self):
-        inv_cache[user_info['char'].id] = self.inventory_treeview.get_children()
-
-    # Detaches all treeview items present in a list of treeview items.
-    # Items list is retrieved from inventory cache dictionary.
-    # Notes, detach does not permanently delete the item. It merely removes it from view.
-    def detach_inv(self):
-        self.inventory_treeview.detach(*inv_cache[user_info['char'].id])
 
 
 class InstallPage(MainWindow):
@@ -325,8 +305,6 @@ class CharacterCreationPage(MainWindow):
             LoginPage(self.root)
             self.center()
         else:
-            self.cache_inv()
-            self.detach_inv()
             log_out()
             LoginPage(self.root)
             self.center()
@@ -362,8 +340,6 @@ class CharacterSelectionPage(MainWindow):
             LoginPage(self.root)
             self.center()
         else:
-            self.cache_inv()
-            self.detach_inv()
             log_out()
             LoginPage(self.root)
             self.center()
@@ -391,7 +367,6 @@ class CharacterSelectionPage(MainWindow):
                 temp[tup[1]] = tup[0]
             char_id = temp[char_selected]
             database.delete_character(self.conn, char_id)
-            clear_cache(char_id)
             static_functions.clear_entry(self.chars_combo)
             print('-----character deleted-----')
             self.root.update()
@@ -664,15 +639,11 @@ class DashboardPage(MainWindow):
             LoginPage(self.root)
             self.center()
         else:
-            self.cache_inv()
-            self.detach_inv()
             log_out()
             LoginPage(self.root)
             self.center()
 
     def char_select_command(self):
-        self.cache_inv()
-        self.detach_inv()
         CharacterSelectionPage(self.root)
 
     # Populates inventory treeview from a list of DB item tuples.
@@ -685,18 +656,10 @@ class DashboardPage(MainWindow):
             self.inventory_treeview.set(item_id, 'quantity', i[1])
             self.inventory_treeview.set(item_id, 'unit_value', converted_value[cur_type])
 
-    # Reattach items to inventory treeview from inventory cache dictionary.
-    def populate_inventory_treeview_cache(self, tree_items_tup):
-        for i in tree_items_tup:
-            self.inventory_treeview.move(i, '', len(tree_items_tup))
-
-    # Checks if current character ID has inventory in cache dictionary.
-    # Reattaches if it does, else, populates via DB.
+    # Repopulates inventory treeview via DB query
     def populate_inventory(self):
         char_items = sql.execute_fetchall_sql(self.conn, sql.query_all_character_items(), user_info['char'].id)
 
-        # if user_info['char'].id in inv_cache.keys():
-        #     self.populate_inventory_treeview_cache(inv_cache[user_info['char'].id])
         if len(char_items) > 0:
             self.populate_inventory_treeview_db(char_items)
 
