@@ -9,7 +9,8 @@ import setup
 import database
 import character
 import error_box
-import threading, queue
+import threading
+import queue
 import static_functions
 import os
 import time
@@ -55,6 +56,11 @@ def new_selection(some_selection):
 
 class MainWindow:
     def __init__(self, root):
+        # TODO: Check if file exists here
+        try:
+            os.remove(database.db)
+        except PermissionError:
+            pass
         self.conn = database.create_connection(database.db)
         self.root = root
         root.title('DnD Utility')
@@ -151,6 +157,7 @@ class InstallPage(MainWindow):
 
     # Starts instillation process in a separate thread from main.
     def start(self):
+
         self.install_button.config(state='disabled')
 
         # TODO: Put variables in queue here
@@ -192,12 +199,6 @@ class InstallPage(MainWindow):
         self.q.put(self.canceled)
         self.conn.close()
         time.sleep(1)
-        while True:
-            try:
-                os.remove('C:\\sqlite\\db\\test.db')
-                break
-            except PermissionError:
-                continue
         InstallPage(self.root)
 
 
