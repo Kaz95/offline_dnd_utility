@@ -11,6 +11,7 @@ import character
 import error_box
 import threading
 import static_functions
+import os
 
 
 # Dictionary used to store account and character objects, representing the current user information.
@@ -44,7 +45,7 @@ def new_selection(some_selection):
 
 class MainWindow:
     def __init__(self, root):
-        self.conn = database.create_connection(database.db)
+        # self.conn = database.create_connection(database.db)
         self.root = root
         root.title('DnD Utility')
         big_label = ttk.Style()
@@ -103,7 +104,8 @@ class MainWindow:
 
 class InstallPage(MainWindow):
     def __init__(self, root):
-
+        os.remove(database.db)
+        self.conn = database.create_connection(database.db)
         self.count = 0
         self.max_count = 256
 
@@ -149,36 +151,42 @@ class InstallPage(MainWindow):
 
 class LoginPage(MainWindow):
     def __init__(self, root):
+        self.conn = database.create_connection(database.db)
+
         MainWindow.__init__(self, root)
-        self.clear()
-        self.username_label = ttk.Label(text='Username')
-        self.password_label = ttk.Label(text='Password')
-        self.title_login_label = ttk.Label(text='Log-In', width='48', style='big.TLabel', anchor='center')
+        if setup.wrong_schema(self.conn) or database.wrong_item_count(self.conn):
+            self.conn.close()
+            InstallPage(self.root)
+        else:
+            self.clear()
+            self.username_label = ttk.Label(text='Username')
+            self.password_label = ttk.Label(text='Password')
+            self.title_login_label = ttk.Label(text='Log-In', width='48', style='big.TLabel', anchor='center')
 
-        self.login_page_username_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
-                                                   invalidcommand=self.failed_is_alnum)
+            self.login_page_username_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
+                                                       invalidcommand=self.failed_is_alnum)
 
-        self.login_page_password_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
-                                                   invalidcommand=self.failed_is_alnum)
+            self.login_page_password_entry = ttk.Entry(validate='key', validatecommand=(self.is_alnum, '%P'),
+                                                       invalidcommand=self.failed_is_alnum)
 
-        self.login_page_login_button = Button(text='Log-in', bg='gray', command=self.login_page_login_command)
-        # self.login_page_login_button = Button(text='Log-in', bg='gray')
-        self.login_page_signup_button = Button(text='Sign-up', bg='gray', command=lambda: SignupPage(self.root))
-        # self.login_page_signup_button = Button(text='Sign-up', bg='gray')
+            self.login_page_login_button = Button(text='Log-in', bg='gray', command=self.login_page_login_command)
+            # self.login_page_login_button = Button(text='Log-in', bg='gray')
+            self.login_page_signup_button = Button(text='Sign-up', bg='gray', command=lambda: SignupPage(self.root))
+            # self.login_page_signup_button = Button(text='Sign-up', bg='gray')
 
-        self.title_login_label.grid(column=0, row=0, sticky=W + E)
-        self.username_label.grid(column=0, row=1)
-        self.login_page_username_entry.grid(column=0, row=2)
-        self.password_label.grid(column=0, row=3)
-        self.login_page_password_entry.grid(column=0, row=4)
-        self.login_page_login_button.grid(column=0, row=5)
-        self.login_page_signup_button.grid(column=0, row=6)
+            self.title_login_label.grid(column=0, row=0, sticky=W + E)
+            self.username_label.grid(column=0, row=1)
+            self.login_page_username_entry.grid(column=0, row=2)
+            self.password_label.grid(column=0, row=3)
+            self.login_page_password_entry.grid(column=0, row=4)
+            self.login_page_login_button.grid(column=0, row=5)
+            self.login_page_signup_button.grid(column=0, row=6)
 
-        static_functions.clear_entry(self.login_page_username_entry)
-        static_functions.clear_entry(self.login_page_password_entry)
-        self.login_page_username_entry.focus()
+            static_functions.clear_entry(self.login_page_username_entry)
+            static_functions.clear_entry(self.login_page_password_entry)
+            self.login_page_username_entry.focus()
 
-        self.center([820, 178])
+            self.center([820, 178])
 
     # Authenticates information passed to entry boxes against DB. Pushes to character creation page
     def login_page_login_command(self):
@@ -194,6 +202,8 @@ class LoginPage(MainWindow):
 
 class SignupPage(MainWindow):
     def __init__(self, root):
+        self.conn = database.create_connection(database.db)
+
         MainWindow.__init__(self, root)
         self.clear()
         self.title_signup_label = ttk.Label(text='Sign-up', width='48', style='big.TLabel', anchor='center')
@@ -230,6 +240,8 @@ class SignupPage(MainWindow):
 
 class CharacterCreationPage(MainWindow):
     def __init__(self, root):
+        self.conn = database.create_connection(database.db)
+
         MainWindow.__init__(self, root)
         self.clear()
 
@@ -277,6 +289,8 @@ class CharacterCreationPage(MainWindow):
 
 class CharacterSelectionPage(MainWindow):
     def __init__(self, root):
+        self.conn = database.create_connection(database.db)
+
         MainWindow.__init__(self, root)
         self.clear()
 
@@ -349,6 +363,7 @@ class CharacterSelectionPage(MainWindow):
 
 class DashboardPage(MainWindow):
     def __init__(self, root):
+        self.conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
         self.currency_dict = user_info['char'].convert_currency()
@@ -924,14 +939,14 @@ class DashboardPage(MainWindow):
 main = Tk()
 
 # Currency icon images.
-gold_img = 'C:\\Users\\kazac\\Desktop\\buttons\\gold.png'
-silver_img = 'C:\\Users\\kazac\\Desktop\\buttons\\silver.png'
-copper_img = 'C:\\Users\\kazac\\Desktop\\buttons\\copper.png'
-# gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
-# silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
-# copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
+# gold_img = 'C:\\Users\\kazac\\Desktop\\buttons\\gold.png'
+# silver_img = 'C:\\Users\\kazac\\Desktop\\buttons\\silver.png'
+# copper_img = 'C:\\Users\\kazac\\Desktop\\buttons\\copper.png'
+gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
+silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
+copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
 
-dnd_utility = InstallPage(main)
+dnd_utility = LoginPage(main)
 main.mainloop()
 
 

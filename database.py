@@ -193,15 +193,16 @@ def in_inventory(conn, inv_id, item, add_subtract=None):
 
 # Verifies store item count via sqlite count(*) method which returns row count for a given table.
 # Not currently used.
-# def wrong_item_count():
-#     store_item_count = 256
-#     con = create_connection(mem)
-#     with con:
-#         cursor = con.cursor()
-#         cursor.execute("SELECT count(*) FROM items;")
-#         cur_item_count = cursor.fetchone()
-#         cur_item_count = cur_item_count[0]
-#         if cur_item_count == store_item_count:
-#             return False
-#         else:
-#             return True
+def wrong_item_count(con):
+    store_item_count = 256
+    # con = create_connection(db)
+    cursor = con.cursor()
+    cursor.execute("SELECT count(*) FROM items;")
+    cur_item_count = cursor.fetchone()
+    cur_item_count = cur_item_count[0]
+    if cur_item_count == store_item_count:
+        con.close()
+        return False
+    else:
+        con.close()
+        return True
