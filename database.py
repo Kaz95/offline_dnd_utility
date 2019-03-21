@@ -201,7 +201,7 @@ def wrong_item_count(con):
     cursor.execute("SELECT count(*) FROM items;")
     cur_item_count = cursor.fetchone()
     cur_item_count = cur_item_count[0]
-    if cur_item_count == store_item_count:
+    if cur_item_count >= store_item_count:
         con.close()
         return False
     else:

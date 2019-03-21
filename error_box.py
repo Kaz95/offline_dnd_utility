@@ -34,3 +34,11 @@ def character_name_taken():
 
 def no_character_selected():
     messagebox.showerror('No Character Selected', 'Whoops! You forgot to select a character.')
+
+
+def no_store_item_selected():
+    messagebox.showerror('No Item Selected', f'Whoops! You forgot to select a store item.')
+
+
+def no_inventory_item_selected():
+    messagebox.showerror('No Item Selected', f'Whoops! You forgot to select an inventory item.')
