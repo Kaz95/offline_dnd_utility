@@ -12,7 +12,7 @@ import error_box
 import threading
 import static_functions
 import os
-
+import sys
 
 # Dictionary used to store account and character objects, representing the current user information.
 user_info = {'acc': None, 'char': None, 'inv': 1}
@@ -932,9 +932,35 @@ main = Tk()
 # gold_img = 'C:\\Users\\kazac\\Desktop\\buttons\\gold.png'
 # silver_img = 'C:\\Users\\kazac\\Desktop\\buttons\\silver.png'
 # copper_img = 'C:\\Users\\kazac\\Desktop\\buttons\\copper.png'
-gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
-silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
-copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
+# gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
+
+
+# TODO: This works with a non-onefile exe. No idea why. Figure it out ASAP.
+# __location__ = os.path.realpath(
+#     os.path.join(os.getcwd(), os.path.dirname(__file__)))
+#
+# gold_img = PhotoImage(file=os.path.join(__location__, 'gold.png'))
+# silver_img = PhotoImage(file=os.path.join(__location__, 'silver.png'))
+# copper_img = PhotoImage(file=os.path.join(__location__, 'copper.png'))
+
+# TODO: This works with a one file exe. No idea why. Figure it out ASAP
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
+gold_img = PhotoImage(file=resource_path('gold.png'))
+silver_img = PhotoImage(file=resource_path('silver.png'))
+copper_img = PhotoImage(file=resource_path('copper.png'))
+
+# silver_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\silver.png')
+# copper_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\copper.png')
 
 dnd_utility = LoginPage(main)
 main.mainloop()
