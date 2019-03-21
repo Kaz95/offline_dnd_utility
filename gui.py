@@ -798,33 +798,22 @@ class DashboardPage(MainWindow):
     # TODO: Add allows silver and copper to achieve values higher than 9
     # TODO: Subtract lets all three currency types achieve negative values
     def add_currency_command(self, cur_type):
-        copper = self.currency_treeview.set('gold', 'copper')
-        silver = self.currency_treeview.set('gold', 'silver')
-        gold = self.currency_treeview.item('gold', 'text')
-        total_currency = copper
-        total_currency += (silver * 10)
-        total_currency += (gold * 100)
         answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=1, maxvalue=100000)
         if cur_type == 'gold':
             answer = answer * 100
         elif cur_type == 'silver':
             answer = answer * 10
 
-        total_currency += answer
+        user_info['char'].currency += answer
+        user_info['char'].update_currency_db(self.conn)
 
-        new_cur_dict = static_functions.convert_currency(total_currency)
+        new_cur_dict = static_functions.convert_currency(user_info['char'].currency)
         self.currency_treeview.item('gold', text=new_cur_dict['gp'])
         self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
         self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
 
     # TODO: Needs error handling for negatives
     def subtract_currency_command(self, cur_type):
-        copper = self.currency_treeview.set('gold', 'copper')
-        silver = self.currency_treeview.set('gold', 'silver')
-        gold = self.currency_treeview.item('gold', 'text')
-        total_currency = copper
-        total_currency -= (silver * 10)
-        total_currency -= (gold * 100)
         answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=1,
                                          maxvalue=100000)
         if cur_type == 'gold':
@@ -832,9 +821,10 @@ class DashboardPage(MainWindow):
         elif cur_type == 'silver':
             answer = answer * 10
 
-        total_currency -= answer
+        user_info['char'].currency += answer
+        user_info['char'].update_currency_db(self.conn)
 
-        new_cur_dict = static_functions.convert_currency(total_currency)
+        new_cur_dict = static_functions.convert_currency(user_info['char'].currency)
         self.currency_treeview.item('gold', text=new_cur_dict['gp'])
         self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
         self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
