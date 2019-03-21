@@ -191,6 +191,7 @@ def in_inventory(conn, inv_id, item, add_subtract=None):
         # print(count_rows(con, 'items'))
 
 
+# TODO: Move to setup module
 # Verifies store item count via sqlite count(*) method which returns row count for a given table.
 # Not currently used.
 def wrong_item_count(con):
