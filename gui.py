@@ -13,6 +13,7 @@ import threading
 import static_functions
 import os
 import sys
+# Test push
 
 # Dictionary used to store account and character objects, representing the current user information.
 user_info = {'acc': None, 'char': None, 'inv': 1}
