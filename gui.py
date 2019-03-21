@@ -821,7 +821,7 @@ class DashboardPage(MainWindow):
         elif cur_type == 'silver':
             answer = answer * 10
 
-        user_info['char'].currency += answer
+        user_info['char'].currency -= answer
         user_info['char'].update_currency_db(self.conn)
 
         new_cur_dict = static_functions.convert_currency(user_info['char'].currency)
