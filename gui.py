@@ -823,14 +823,16 @@ class DashboardPage(MainWindow):
             answer = answer * 100
         elif cur_type == 'silver':
             answer = answer * 10
+        if answer > user_info['char'].currency:
+            error_box.cant_remove_that_much()
+        else:
+            user_info['char'].currency -= answer
+            user_info['char'].update_currency_db(self.conn)
 
-        user_info['char'].currency -= answer
-        user_info['char'].update_currency_db(self.conn)
-
-        new_cur_dict = static_functions.convert_currency(user_info['char'].currency)
-        self.currency_treeview.item('gold', text=new_cur_dict['gp'])
-        self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
-        self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
+            new_cur_dict = static_functions.convert_currency(user_info['char'].currency)
+            self.currency_treeview.item('gold', text=new_cur_dict['gp'])
+            self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
+            self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
 
     def add_command(self):
         try:

@@ -37,8 +37,12 @@ def no_character_selected():
 
 
 def no_store_item_selected():
-    messagebox.showerror('No Item Selected', f'Whoops! You forgot to select a store item.')
+    messagebox.showerror('No Item Selected', 'Whoops! You forgot to select a store item.')
 
 
 def no_inventory_item_selected():
-    messagebox.showerror('No Item Selected', f'Whoops! You forgot to select an inventory item.')
+    messagebox.showerror('No Item Selected', 'Whoops! You forgot to select an inventory item.')
+
+
+def cant_remove_that_much():
+    messagebox.showerror('Removal Failed', 'You can\'t remove more currency than you have')
