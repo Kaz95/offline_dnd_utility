@@ -3,14 +3,7 @@ python:
   - "3.7"
 dist: xenial
 sudo: true
-os: windows
 install:
   - pip install -r requirements.txt
 script:
   - python -m unittest discover
-jobs:
-  include:
-    - stage: test
-      script: python -m unittest discover
-    - stage: deploy
-      script: pyinstaller gui.spec
