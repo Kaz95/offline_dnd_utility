@@ -41,12 +41,14 @@ def get_nested_api_dict(api_dump, dict_to_slice):
 
 # some_dict = {'name': 'some_name', 'url': 'some_url'}
 # TODO: Refactor: Name
+# TODO: Might be a better way to write this.
 def check_for_url(name, some_dict):
     if some_dict['name'] == name:
         new_call = some_dict['url']
         return new_call
 
 
+# TODO: Might be a better way to write this
 # Expects list of dictionaries
 # similar to [{'name': 'some_name', 'url': 'some_url'}, {'name': 'some_name', 'url': 'some_url'}]
 def get_api_info(name, list_of_dicts):
@@ -56,6 +58,7 @@ def get_api_info(name, list_of_dicts):
             return api_info
 
 
+# TODO: Might be a better way to write this.
 # Expects list of dictionaries
 # similar to [{'name': 'some_name', 'url': 'some_url'}, {'name': 'some_name', 'url': 'some_url'}]
 def get_item_url(name, list_of_dicts):
