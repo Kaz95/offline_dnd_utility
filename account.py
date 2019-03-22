@@ -20,6 +20,7 @@ class Account:
         self.password = password
 
 
+# TODO: If in makes more sense.
 # Checks if username is taken. Return True/False respectively.
 def username_taken(username):
     for key in Account.account_archive_dictionary.keys():
@@ -29,6 +30,8 @@ def username_taken(username):
             return False
 
 
+# TODO: I think I can do an if in statement here as well. Even if im searching nested structures.
+# TODO: Useless print statement as well.
 # Query a list of account IDs with character. Check if current account(ID) exists in that list. Returns True/False.
 def account_has_characters(conn, acc_id):
     account_id_tups_list = sql.execute_fetchall_sql(conn, sql.query_accounts_with_characters())
@@ -40,6 +43,7 @@ def account_has_characters(conn, acc_id):
     return False
 
 
+# TODO: conn
 # Creates new account. Adds information to accounts table in database.
 def user_creates_account(conn, username, password):
     load_account_archive(conn)
@@ -53,6 +57,7 @@ def user_creates_account(conn, username, password):
             return True
 
 
+# TODO: conn
 # Loads all account username/password information and stores as key:value pairs in Account.log_in_dict.
 def load_account_archive(conn):
     Account.account_archive_dictionary = {}
@@ -62,6 +67,7 @@ def load_account_archive(conn):
             Account.account_archive_dictionary[tup[0]] = tup[1]
 
 
+# TODO: conn
 # Returns username if authenticated.
 def log_in(conn, username, password):
     load_account_archive(conn)  # Loads account info for authentication into Account.login_dic
@@ -78,6 +84,7 @@ def log_in(conn, username, password):
         return acc
 
 
+# TODO: conn
 # query ALL account information from accounts table based on username. Returns Account object based on query.
 def load_account_object(conn, username):
     with conn:
