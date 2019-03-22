@@ -42,6 +42,8 @@ class Character:
     def update_currency_db(self, conn):
         sql.execute_sql(conn, sql.update_currency(), self.currency, self.id)
 
+    # TODO: Inefficient
+    # TODO: Dry. There is a copy of this function in static_functions.py
     # Converts character.currency value (in cp) into gp,sp,cp
     def convert_currency(self):
         amount_in_cp = self.currency
@@ -51,6 +53,7 @@ class Character:
         converted_dict = {'gp': g, 'sp': s, 'cp': c}
         return converted_dict
 
+    # TODO: action= and conn= aren't exactly optional and should not be treated as such.
     # Gets item price info and adds/subtracts it to/from currency based on [unit] key.
     # See convert_price_info() in api.py for more information on conversion.
     # Also updates currency in DB via self.update_currency_db
@@ -76,6 +79,8 @@ class Character:
 
 
 # TODO: Test
+# TODO: I think 'if in' works on nested structures.
+# TODO: conn
 # Query all character names. Return True if name in query. Else return False.
 def character_name_taken(conn, name):
     character_names_tups = sql.execute_fetchall_sql(conn, sql.query_all_character_names())
@@ -86,6 +91,7 @@ def character_name_taken(conn, name):
 
 
 # TODO: unit test with mock assert called with.
+# TODO: conn
 # Adds character to DB based on current character information.
 def character_creation(conn, acc_id, name, currency):
     if character_name_taken(conn, name):
@@ -98,6 +104,7 @@ def character_creation(conn, acc_id, name, currency):
 
 
 # TODO: Test
+# TODO: conn
 # Query character row. Return player object.
 def load_character_object(conn, char_name):
     with conn:

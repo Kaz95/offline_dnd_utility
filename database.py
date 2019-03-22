@@ -13,6 +13,7 @@ mem = ':memory:'
 # TODO: Refactor database integration tests when this is done.
 
 
+# TODO: May want to capture various errors. Like file in use or shite.
 # Creates a connection to test.db
 def create_connection(db_path):
     try:
@@ -26,35 +27,39 @@ def create_connection(db_path):
 # INSERT
 # These functions all assume acc_info is passed as a dictionary with known keys.
 
-
+# TODO: conn
 # Inserts given values into accounts table at given columns.
 def add_account_row(conn, some_sql, acc_info):
     sql.execute_sql(conn, some_sql, acc_info['username'], acc_info['password'])
 
 
+# TODO: conn
 # Inserts given values into accounts table at given columns.
 def add_inventory_row(conn, some_sql, inv_info):
     sql.execute_sql(conn, some_sql, inv_info['acc_id'], inv_info['char_id'], inv_info['name'])
 
 
+# TODO: conn
 # Inserts given values into accounts table at given columns.
 def add_character_row(conn, some_sql, char_info):
     sql.execute_sql(conn, some_sql, char_info['acc_id'], char_info['name'], char_info['currency'])
 
 
+# TODO: conn
 # Inserts given values into accounts table at given columns.
 def add_item_row(conn, some_sql, item_info):
     sql.execute_sql(conn, some_sql, item_info['acc_id'], item_info['char_id'], item_info['inv_id'], item_info['item'],
                     item_info['api'], item_info['value'], item_info['quantity'])
 
 
+# TODO: conn
 # Used to populate store tables
 def add_store_item(conn, some_sql, item_info):
     sql.execute_sql(conn, some_sql, item_info['item'], item_info['api'], item_info['currency'], item_info['store'])
 
 
 # SELECT
-
+# TODO: conn
 def count_rows(conn, some_sql, some_table):
     new_sql = some_sql.format(some_table)
     count_tuple = sql.execute_fetchone_sql(conn, new_sql)
@@ -62,6 +67,8 @@ def count_rows(conn, some_sql, some_table):
 
 
 # TODO Reminder: Complex is better than complicated. Remember the shit block. Never forget.
+# TODO: conn
+# TODO: Might be able to apply list comprehension.
 # Returns a list of integers representing account IDs.
 def query_accounts_with_characters(conn, some_sql):
     temp = []
@@ -85,21 +92,25 @@ def query_accounts_with_characters(conn, some_sql):
 # Delete
 
 # Deletes a single item based on inventory ID.
+# TODO: conn
 def delete_item(conn, item, inv_id):
     sql.execute_sql(conn, sql.delete_item(), item, inv_id)
 
 
 # Deletes all items based on character ID.
+# TODO: conn
 def delete_all_character_items(conn, char_id):
     sql.execute_sql(conn, sql.delete_all('items', 'character_id'), char_id)
 
 
 # Deletes all character inventories based on character ID.
+# TODO: conn
 def delete_character_inventories(conn, char_id):
     sql.execute_sql(conn, sql.delete_all('inventories', 'character_id'), char_id)
 
 
 # TODO: test this
+# TODO: conn
 # Deletes all information pertaining to a given character ID from DB.
 def delete_character(conn, char_id):
     delete_all_character_items(conn, char_id)
@@ -110,6 +121,10 @@ def delete_character(conn, char_id):
 # Update
 # TODO: Verify if I need to change tup[1] to an integer or not.
 # TODO: I may regret changing this to a single function. We will see.
+
+# TODO: add_subtract= is not optional. Don't treat it as such.
+# TODO: conn
+# TODO: Might be able to nested 'if in'
 
 # Checks if item is in inventory. If it is,
 # Adds or subtracts one based on add_subtract variable
@@ -192,6 +207,7 @@ def in_inventory(conn, inv_id, item, add_subtract=None):
 
 
 # TODO: Move to setup module
+# TODO: conn
 # Verifies store item count via sqlite count(*) method which returns row count for a given table.
 # Not currently used.
 def wrong_item_count(con):

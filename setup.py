@@ -4,7 +4,6 @@ import stores
 import api
 import character
 import time
-import os
 
 
 # TODO: May be required for mock. Not sure atm.
@@ -16,6 +15,7 @@ mem = ':memory:'
 
 # TODO consider refactoring to a single .executemany()
 # TODO: Test
+# TODO: conn
 # Four sqlite statements which create the database schema.
 def create_schema(conn):
     with conn:
@@ -25,6 +25,7 @@ def create_schema(conn):
         sql.execute_sql(conn, sql.create_items_table())
 
 
+# TODO: conn
 # Verifies database setup correctly
 # You want a False return
 def wrong_schema(conn):
@@ -44,7 +45,6 @@ def wrong_schema(conn):
 
 
 # Updates value of progress bar.
-# TODO: Pass canceled var
 def update_mainloop(some_bar, count, some_label):
     percent = round((count/256) * 100)
     some_label.config(text=f'Installing....{percent}%')
@@ -54,8 +54,8 @@ def update_mainloop(some_bar, count, some_label):
     some_bar.update_idletasks()
 
 
+# TODO: DRY
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
-# TODO: Pass queue as parameter
 def stock_stores(conn, some_bar, window, some_label):
     count = 0
     time_to_install = time.time()

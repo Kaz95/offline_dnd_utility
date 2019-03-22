@@ -1,7 +1,5 @@
 from tkinter import *
-from tkinter import ttk
-from tkinter import Menu
-from tkinter import simpledialog
+from tkinter import ttk, Menu, simpledialog
 from stores import stores
 import sql
 import account
@@ -83,6 +81,7 @@ class MainWindow:
         return {'w': width, 'h': height}
 
     # Centers root window. Dashboard and install required a different formula to center properly.
+    # TODO: DRY
     # TODO: This is a quick and dirty solution
     def center(self, dash=None):
         cur_size = self.screen_size()
@@ -102,14 +101,17 @@ class MainWindow:
             self.root.update()
 
 
+# TODO: conn
 class InstallPage(MainWindow):
     def __init__(self, root):
         os.remove(database.db)
         self.conn = database.create_connection(database.db)
         self.count = 0
+        # TODO: I don't think I use max_count. I could, but I don't think I am. Maybe make private class var?
         self.max_count = 256
 
         MainWindow.__init__(self, root)
+        # TODO: DRY. I think I can clear in main window inni.
         self.clear()
         if setup.wrong_schema(self.conn):
             self.title_install_label = ttk.Label(text='Installing....', width='48', style='big.TLabel', anchor='center')
@@ -122,7 +124,7 @@ class InstallPage(MainWindow):
 
         else:
             LoginPage(self.root)
-
+        # TODO: DRY. I think I can center in main window inni.
         self.center()
 
     # Starts instillation process in a separate thread from main.
@@ -149,6 +151,7 @@ class InstallPage(MainWindow):
         threading.Thread(target=real_start).start()
 
 
+# TODO: conn
 class LoginPage(MainWindow):
     def __init__(self, root):
         self.conn = database.create_connection(database.db)
@@ -159,6 +162,7 @@ class LoginPage(MainWindow):
             InstallPage(self.root)
         else:
             self.conn = database.create_connection(database.db)
+            # TODO: DRY. I think I can clear in main window inni.
             self.clear()
             self.username_label = ttk.Label(text='Username')
             self.password_label = ttk.Label(text='Password')
@@ -201,11 +205,13 @@ class LoginPage(MainWindow):
                     CharacterCreationPage(self.root)
 
 
+# TODO: conn
 class SignupPage(MainWindow):
     def __init__(self, root):
         self.conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
+        # TODO: DRY. I think I can clear in main window inni.
         self.clear()
         self.title_signup_label = ttk.Label(text='Sign-up', width='48', style='big.TLabel', anchor='center')
         self.username_label = ttk.Label(text='Username')
@@ -239,11 +245,13 @@ class SignupPage(MainWindow):
                 LoginPage(self.root)
 
 
+# TODO: conn
 class CharacterCreationPage(MainWindow):
     def __init__(self, root):
         self.conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
+        # TODO: DRY. I think I can clear in main window inni.
         self.clear()
 
         self.title_char_creation__label = ttk.Label(text='Character Creation', width='48', style='big.TLabel',
@@ -276,6 +284,7 @@ class CharacterCreationPage(MainWindow):
             if character.character_creation(self.conn, user_info['acc'].id, name, currency):
                 CharacterSelectionPage(self.root)
 
+    # TODO: DRY. This is ultra redundant do to gutting inv cache functionality. Also repeated in two classes.
     # Clears dictionary holding account information objects. Pushes to login page.
     def logout_command(self):
         if not user_info['char']:
@@ -288,11 +297,13 @@ class CharacterCreationPage(MainWindow):
             self.center()
 
 
+# TODO: conn
 class CharacterSelectionPage(MainWindow):
     def __init__(self, root):
         self.conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
+        # TODO: DRY. I tihnk I can clear in main window inni.
         self.clear()
 
         self.title_char_select_label = ttk.Label(text='Character Selection', width='48', style='big.TLabel', anchor='center')
@@ -313,6 +324,7 @@ class CharacterSelectionPage(MainWindow):
 
         self.chars_combo.focus()
 
+    # TODO: DRY. This is ultra redundant do to gutting inv cache functionality. Also repeated in two classes.
     # Clears dictionary holding account information objects. Pushes to login page.
     def logout_command(self):
         if not user_info['char']:
@@ -326,6 +338,7 @@ class CharacterSelectionPage(MainWindow):
 
     # Query characters from DB based on current account id.
     # Slices name from tuples returned and appends to empty list. Sets combo values to list.
+    # TODO: Might be able to apply list comprehension
     # TODO: unit test assertEqual temp_combo_list.
     def populate_combo(self):
         with self.conn:
@@ -336,6 +349,7 @@ class CharacterSelectionPage(MainWindow):
                 temp_combo_list.append(thing[1])
             self.chars_combo['values'] = temp_combo_list
 
+    # TODO: Might be able to apply list comprehension
     # Deletes a character from the front(gui) and back(DB) end.
     def delete_command(self):
         with self.conn:
@@ -362,12 +376,14 @@ class CharacterSelectionPage(MainWindow):
                 error_box.no_character_selected()
 
 
+# TODO: conn
 class DashboardPage(MainWindow):
     def __init__(self, root):
         self.conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
         self.currency_dict = user_info['char'].convert_currency()
+        # TODO: DRY. I think i can clear in main window inni.
         self.clear()
 
         # TODO: Refactor menu names, they are currently shite.
@@ -401,12 +417,15 @@ class DashboardPage(MainWindow):
         currency_popup_menu.add_cascade(label='Add', menu=add_submenu)
         currency_popup_menu.add_cascade(label='Subtract', menu=subtract_submenu)
 
+        # TODO: DRY
         def store_popup(event):
             store_popup_menu.post(event.x_root, event.y_root)
 
+        # TODO: DRY
         def inventory_popup(event):
             inventory_popup_menu.post(event.x_root, event.y_root)
 
+        # TODO: DRY
         def currency_popup(event):
             currency_popup_menu.post(event.x_root, event.y_root)
 
@@ -420,6 +439,7 @@ class DashboardPage(MainWindow):
             some_treeview.heading('price', text='Price')
             some_treeview.heading('#0', text='Item')
 
+        # TODO: DRY
         # Gen Store formatting
         format_store(self.general_store_treeview)
 
@@ -445,6 +465,7 @@ class DashboardPage(MainWindow):
             print('tcl error')
             self.update_currency_treeview(self.currency_dict)
 
+        # TODO: DRY
         # Binds
         self.shipyard_treeview.bind('<<TreeviewSelect>>', self.shipyard_callback)
         self.blacksmith_treeview.bind('<<TreeviewSelect>>', self.blacksmith_callback)
@@ -452,6 +473,7 @@ class DashboardPage(MainWindow):
         self.inventory_treeview.bind('<<TreeviewSelect>>', self.inventory_callback)
         self.general_store_treeview.bind('<<TreeviewSelect>>', self.general_store_callback)
 
+        # TODO: DRY
         self.shipyard_treeview.bind('<Button-3>', store_popup)
         self.blacksmith_treeview.bind('<Button-3>', store_popup)
         self.stables_treeview.bind('<Button-3>', store_popup)
@@ -509,6 +531,7 @@ class DashboardPage(MainWindow):
         if cur_size['h'] != 630:
             self.center([953, 630])
 
+    # TODO: DRY
     # Populates the four treeview widgets that, makeup the dashboard page, with items.
     def populate_all_trees(self):
         static_functions.populate_tree(sql.query_item_from_store(), self.conn, self.blacksmith_treeview, 'Blacksmith')
@@ -516,6 +539,7 @@ class DashboardPage(MainWindow):
         static_functions.populate_tree(sql.query_item_from_store(), self.conn,  self.general_store_treeview, 'General Store')
         static_functions.populate_tree(sql.query_item_from_store(), self.conn,  self.stables_treeview, 'Stables')
 
+    # TODO: DRY
     # Gets recently selected treeview item as tuple.
     # Tries to get name of item in each treeview. It will only work with one of them presumably.
     # Query DB for item value based on name of item.
@@ -568,21 +592,25 @@ class DashboardPage(MainWindow):
         some_dict['selected'] = some_treeview.selection()
         new_selection(some_dict['selected'])
 
+    # TODO: DRY
     def general_store_callback(self, event):
         # check_value_and_toggle()
         self.generic_selection_callback(event, gen_selected, self.general_store_treeview)
         self.check_value_and_toggle()
 
+    # TODO: DRY
     def blacksmith_callback(self, event):
         # check_value_and_toggle()
         self.generic_selection_callback(event, bs_selected, self.blacksmith_treeview)
         self.check_value_and_toggle()
 
+    # TODO: DRY
     def stables_callback(self, event):
         # check_value_and_toggle()
         self.generic_selection_callback(event, stable_selected, self.stables_treeview)
         self.check_value_and_toggle()
 
+    # TODO: DRY
     def shipyard_callback(self, event):
         # print(shipyard_treeview.selection())  # Gets tuple with id as first value
         # # print(treeview.set('I001', 'quantity'))
@@ -597,6 +625,7 @@ class DashboardPage(MainWindow):
         self.generic_selection_callback(event, ship_selected, self.shipyard_treeview)
         self.check_value_and_toggle()
 
+    # TODO: DRY
     # The inventory callback function also attempts to deselect all previously selections in store widgets.
     def inventory_callback(self, event):
         # TODO: This is bugged. Toggle select causes unwanted behavior. Find a way to check if toggeled on.
@@ -613,6 +642,7 @@ class DashboardPage(MainWindow):
         print(self.inventory_treeview.item(self.inventory_treeview.selection(), 'text'))
         print(recent_selection['selected'])
 
+    # TODO: DRY. Ultra redundant because gutting inv cache. Repeats in multiple classes.
     # Clears dictionary holding account information objects. Pushes to login page.
     def logout_command(self):
         if not user_info['char']:
@@ -717,6 +747,7 @@ class DashboardPage(MainWindow):
 
         self.new_tree_item(some_treeview, some_callback)
 
+    # TODO: DRY
     # Adds a new GUI item to inventory treeview if item name not already in.
     # If already in, adds one to the quantity column value of a given item.
     def buy_item_gui(self, some_callback):
@@ -770,6 +801,7 @@ class DashboardPage(MainWindow):
         except TclError:
             error_box.no_inventory_item_selected()
 
+    # TODO: DRY
     def update_currency_command(self, cur_type):
         if cur_type == 'gold':
             answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=100000)
@@ -797,9 +829,7 @@ class DashboardPage(MainWindow):
             user_info['char'].update_currency_db(self.conn)
             self.currency_treeview.set('gold', 'copper', answer)
 
-    # TODO: Add and subtract currency commands are able to cause unwanted behavior.
-    # TODO: Add allows silver and copper to achieve values higher than 9
-    # TODO: Subtract lets all three currency types achieve negative values
+    # TODO: DRY
     def add_currency_command(self, cur_type):
         answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=1, maxvalue=100000)
         if cur_type == 'gold':
@@ -815,7 +845,7 @@ class DashboardPage(MainWindow):
         self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
         self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
 
-    # TODO: Needs error handling for negatives
+    # TODO: DRY
     def subtract_currency_command(self, cur_type):
         answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=1,
                                          maxvalue=100000)
@@ -834,6 +864,7 @@ class DashboardPage(MainWindow):
             self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
             self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
 
+    # TODO: DRY
     def add_command(self):
         try:
             item_name = None
@@ -842,6 +873,7 @@ class DashboardPage(MainWindow):
             print(recent_selection['selected'])
             tup = recent_selection['selected']
 
+            # TODO: DRY
             if tup[0] in dic['Ship']:
                 item_name = self.shipyard_treeview.item(tup[0])['text']
             elif tup[0] in dic['BS']:
@@ -857,6 +889,7 @@ class DashboardPage(MainWindow):
         except TypeError:
             error_box.no_store_item_selected()
 
+    # TODO: DRY
     # TODO: Buy and sell commands require better error handling
     # Buys item on front (gui) and back (DB) end. Updates currency based on item value.
     def buy_command(self):
