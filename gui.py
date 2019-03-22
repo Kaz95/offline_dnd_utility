@@ -928,6 +928,8 @@ class DashboardPage(MainWindow):
 
 main = Tk()
 
+os.makedirs("C:\\sqlite", exist_ok=True)
+os.makedirs("C:\\sqlite\\db", exist_ok=True)
 # Currency icon images.
 # gold_img = 'C:\\Users\\kazac\\Desktop\\buttons\\gold.png'
 # silver_img = 'C:\\Users\\kazac\\Desktop\\buttons\\silver.png'
