@@ -1,6 +1,6 @@
 import subprocess
 
-subprocess.Popen('C:\\Users\\Terrance\\Documents\\Untitled1.ps1')
+subprocess.Popen(['start', 'C:\\Users\\Terrance\\Desktop\\CreateExe.ps1'], shell=True)
 
 
 

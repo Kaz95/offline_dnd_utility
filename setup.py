@@ -4,6 +4,7 @@ import stores
 import api
 import character
 import time
+import sys
 
 
 # TODO: May be required for mock. Not sure atm.
@@ -41,17 +42,24 @@ def wrong_schema(conn):
 
 
 # Updates value of progress bar.
-def update_mainloop(some_bar, count, some_label):
+def update_mainloop(some_bar, count, some_label, window, canceled):
     percent = round((count/256) * 100)
     some_label.config(text=f'Installing....{percent}%')
     some_bar['value'] = count
     # print(some_bar['value'])
     time.sleep(.05)
-    some_bar.update_idletasks()
+    # print(some_bar.winfo_exists())
+    # print(window.winfo_exists())
+    if not canceled:
+        some_bar.update_idletasks()
+    else:
+        window.quit()
+        sys.exit()
 
 
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
-def stock_stores(conn, some_bar, window, some_label):
+def stock_stores(conn, some_bar, window, some_label, some_queue):
+    canceled = False
     count = 0
     time_to_install = time.time()
     global max_count
@@ -96,7 +104,10 @@ def stock_stores(conn, some_bar, window, some_label):
         count += 1
         print(count)
         # TODO: Pass new canceled var that was just obtained from queue.
-        window.after(10, update_mainloop(some_bar, count, some_label))
+        # window.after(10, update_mainloop(some_bar, count, some_label, window))
+        if not some_queue.empty():
+            canceled = some_queue.get()
+        update_mainloop(some_bar, count, some_label, window, canceled)
     # print(count)
     print('done in: ', time.time() - time_to_install)
     print('Done with everything.')

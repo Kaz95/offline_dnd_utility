@@ -7,10 +7,11 @@ import setup
 import database
 import character
 import error_box
-import threading
+import threading, queue
 import static_functions
 import os
 import sys
+
 
 # Dictionary used to store account and character objects, representing the current user information.
 user_info = {'acc': None, 'char': None, 'inv': 1}
@@ -43,8 +44,11 @@ def new_selection(some_selection):
 
 class MainWindow:
     def __init__(self, root):
+        self.closed = True
+        self.queue = queue.Queue()
         # self.conn = database.create_connection(database.db)
         self.root = root
+        self.root.protocol("WM_DELETE_WINDOW", self.close_both_threads)
         root.title('DnD Utility')
         big_label = ttk.Style()
         big_label.configure('big.TLabel', font=('Times', 25))
@@ -69,6 +73,16 @@ class MainWindow:
         self.currency_treeview = ttk.Treeview(root)
 
         self.store_treeviews = [self.shipyard_treeview, self.stables_treeview, self.blacksmith_treeview, self.general_store_treeview]
+
+    def close_both_threads(self):
+        if threading.active_count() == 2:
+            closed = True
+            self.queue.put(closed)
+        else:
+            self.root.quit()
+        # print(threading.active_count())
+        # sys.exit(-1)
+        # self.root.quit()
 
     # clears (forgets) all widgets currently attached to root window.
     def clear(self):
@@ -150,7 +164,7 @@ class InstallPage(MainWindow):
                     break
                 elif wrg_schema:
                     setup.create_schema(con)
-                    setup.stock_stores(con, self.install_bar, self.root, self.title_install_label)
+                    setup.stock_stores(con, self.install_bar, self.root, self.title_install_label, self.queue)
 
                 # if count >= max_count:
                 #     log_in_page()
@@ -930,7 +944,6 @@ class DashboardPage(MainWindow):
 
 
 main = Tk()
-
 os.makedirs("C:\\sqlite", exist_ok=True)
 os.makedirs("C:\\sqlite\\db", exist_ok=True)
 # Currency icon images.
