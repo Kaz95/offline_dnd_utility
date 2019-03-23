@@ -48,6 +48,7 @@ class MainWindow:
         root.title('DnD Utility')
         big_label = ttk.Style()
         big_label.configure('big.TLabel', font=('Times', 25))
+        self.clear()
 
         # Entry callback functions registration
 
@@ -67,6 +68,8 @@ class MainWindow:
         self.inventory_treeview = ttk.Treeview(root)
         self.currency_treeview = ttk.Treeview(root)
 
+        self.store_treeviews = [self.shipyard_treeview, self.stables_treeview, self.blacksmith_treeview, self.general_store_treeview]
+
     # clears (forgets) all widgets currently attached to root window.
     def clear(self):
         for widget in self.root.grid_slaves():
@@ -81,7 +84,6 @@ class MainWindow:
         return {'w': width, 'h': height}
 
     # Centers root window. Dashboard and install required a different formula to center properly.
-    # TODO: DRY
     # TODO: This is a quick and dirty solution
     def center(self, dash=None):
         cur_size = self.screen_size()
@@ -92,13 +94,14 @@ class MainWindow:
         if dash == [953, 630]:
             y -= 250
             self.root.geometry('%dx%d+%d+%d' % (dash[0], dash[1], x, y))
-            self.root.update()
+            # self.root.update()
         elif dash == [820, 178]:
             self.root.geometry('%dx%d+%d+%d' % (dash[0], dash[1], x, y))
-            self.root.update()
+            # self.root.update()
         else:
             self.root.geometry('%dx%d+%d+%d' % (cur_size['w'], cur_size['h'], x, y))
-            self.root.update()
+            # self.root.update()
+        self.root.update()
 
 
 # TODO: conn
@@ -111,8 +114,7 @@ class InstallPage(MainWindow):
         self.max_count = 256
 
         MainWindow.__init__(self, root)
-        # TODO: DRY. I think I can clear in main window inni.
-        self.clear()
+
         if setup.wrong_schema(self.conn):
             self.title_install_label = ttk.Label(text='Installing....', width='48', style='big.TLabel', anchor='center')
             self.install_bar = ttk.Progressbar(root, orient=HORIZONTAL, length=200, mode='determinate')
@@ -162,8 +164,7 @@ class LoginPage(MainWindow):
             InstallPage(self.root)
         else:
             self.conn = database.create_connection(database.db)
-            # TODO: DRY. I think I can clear in main window inni.
-            self.clear()
+
             self.username_label = ttk.Label(text='Username')
             self.password_label = ttk.Label(text='Password')
             self.title_login_label = ttk.Label(text='Log-In', width='48', style='big.TLabel', anchor='center')
@@ -211,8 +212,7 @@ class SignupPage(MainWindow):
         self.conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
-        # TODO: DRY. I think I can clear in main window inni.
-        self.clear()
+
         self.title_signup_label = ttk.Label(text='Sign-up', width='48', style='big.TLabel', anchor='center')
         self.username_label = ttk.Label(text='Username')
         self.password_label = ttk.Label(text='Password')
@@ -251,8 +251,6 @@ class CharacterCreationPage(MainWindow):
         self.conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
-        # TODO: DRY. I think I can clear in main window inni.
-        self.clear()
 
         self.title_char_creation__label = ttk.Label(text='Character Creation', width='48', style='big.TLabel',
                                                     anchor='center')
@@ -303,8 +301,7 @@ class CharacterSelectionPage(MainWindow):
         self.conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
-        # TODO: DRY. I tihnk I can clear in main window inni.
-        self.clear()
+
 
         self.title_char_select_label = ttk.Label(text='Character Selection', width='48', style='big.TLabel', anchor='center')
         self.characters_label = ttk.Label(text='Characters')
@@ -382,9 +379,7 @@ class DashboardPage(MainWindow):
         self.conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
-        self.currency_dict = user_info['char'].convert_currency()
-        # TODO: DRY. I think i can clear in main window inni.
-        self.clear()
+        self.currency_dict = static_functions.convert_currency(user_info['char'].currency)
 
         # TODO: Refactor menu names, they are currently shite.
         # Menus

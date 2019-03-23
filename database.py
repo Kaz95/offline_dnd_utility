@@ -13,7 +13,7 @@ mem = ':memory:'
 # TODO: Refactor database integration tests when this is done.
 
 
-# TODO: May want to capture various errors. Like file in use or shite.
+# TODO: May want to capture various errors. Like file in use or some shite.
 # Creates a connection to test.db
 def create_connection(db_path):
     try:

@@ -40,7 +40,6 @@ def clear_entry(some_entry):
     some_entry.delete(0, 'end')
 
 
-# TODO: This is a copy of a function from character.py. Consider removing the other one.
 # TODO: There is probably a more efficient way to write this.
 def convert_currency(currency):
     g = int(currency / 100)

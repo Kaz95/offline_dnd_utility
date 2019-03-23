@@ -51,8 +51,3 @@ class TestPlayerClassIntegration(unittest.TestCase):
             fake_player.buy_sell('Club', 'sell', conn)
             self.assertEqual(fake_player.currency, 5010)
             mocksql.connect().cursor().execute.assert_called_with(sql.update_currency(), (5010, 1))
-
-    def test_convert_currency(self):
-        fake_player = character.Character(1, 'kaz', 4374, [])
-        converted_cur = fake_player.convert_currency()
-        self.assertEqual(converted_cur, {'gp': 43, 'sp': 7, 'cp': 4})

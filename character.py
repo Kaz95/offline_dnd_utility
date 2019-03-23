@@ -42,17 +42,6 @@ class Character:
     def update_currency_db(self, conn):
         sql.execute_sql(conn, sql.update_currency(), self.currency, self.id)
 
-    # TODO: Inefficient
-    # TODO: Dry. There is a copy of this function in static_functions.py
-    # Converts character.currency value (in cp) into gp,sp,cp
-    def convert_currency(self):
-        amount_in_cp = self.currency
-        g = int(amount_in_cp / 100)
-        s = int(round((((amount_in_cp / 100) - g) * 10), 2))
-        c = int(round((((((amount_in_cp / 100) - g) * 10) - s) * 10), 2))
-        converted_dict = {'gp': g, 'sp': s, 'cp': c}
-        return converted_dict
-
     # TODO: action= and conn= aren't exactly optional and should not be treated as such.
     # Gets item price info and adds/subtracts it to/from currency based on [unit] key.
     # See convert_price_info() in api.py for more information on conversion.
