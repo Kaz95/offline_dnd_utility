@@ -54,7 +54,6 @@ def update_mainloop(some_bar, count, some_label):
     some_bar.update_idletasks()
 
 
-# TODO: DRY
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
 def stock_stores(conn, some_bar, window, some_label):
     count = 0

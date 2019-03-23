@@ -103,6 +103,12 @@ class MainWindow:
             # self.root.update()
         self.root.update()
 
+    # Clears dictionary holding account information objects. Pushes to login page.
+    def logout_command(self):
+        log_out()
+        LoginPage(self.root)
+        self.center()
+
 
 # TODO: conn
 class InstallPage(MainWindow):
@@ -126,7 +132,7 @@ class InstallPage(MainWindow):
 
         else:
             LoginPage(self.root)
-        # TODO: DRY. I think I can center in main window inni.
+
         self.center()
 
     # Starts instillation process in a separate thread from main.
@@ -282,18 +288,6 @@ class CharacterCreationPage(MainWindow):
             if character.character_creation(self.conn, user_info['acc'].id, name, currency):
                 CharacterSelectionPage(self.root)
 
-    # TODO: DRY. This is ultra redundant do to gutting inv cache functionality. Also repeated in two classes.
-    # Clears dictionary holding account information objects. Pushes to login page.
-    def logout_command(self):
-        if not user_info['char']:
-            log_out()
-            LoginPage(self.root)
-            self.center()
-        else:
-            log_out()
-            LoginPage(self.root)
-            self.center()
-
 
 # TODO: conn
 class CharacterSelectionPage(MainWindow):
@@ -301,7 +295,6 @@ class CharacterSelectionPage(MainWindow):
         self.conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
-
 
         self.title_char_select_label = ttk.Label(text='Character Selection', width='48', style='big.TLabel', anchor='center')
         self.characters_label = ttk.Label(text='Characters')
@@ -320,18 +313,6 @@ class CharacterSelectionPage(MainWindow):
         self.character_creation_button.grid(column=0, row=5, sticky=E + S)
 
         self.chars_combo.focus()
-
-    # TODO: DRY. This is ultra redundant do to gutting inv cache functionality. Also repeated in two classes.
-    # Clears dictionary holding account information objects. Pushes to login page.
-    def logout_command(self):
-        if not user_info['char']:
-            log_out()
-            LoginPage(self.root)
-            self.center()
-        else:
-            log_out()
-            LoginPage(self.root)
-            self.center()
 
     # Query characters from DB based on current account id.
     # Slices name from tuples returned and appends to empty list. Sets combo values to list.
@@ -412,15 +393,12 @@ class DashboardPage(MainWindow):
         currency_popup_menu.add_cascade(label='Add', menu=add_submenu)
         currency_popup_menu.add_cascade(label='Subtract', menu=subtract_submenu)
 
-        # TODO: DRY
         def store_popup(event):
             store_popup_menu.post(event.x_root, event.y_root)
 
-        # TODO: DRY
         def inventory_popup(event):
             inventory_popup_menu.post(event.x_root, event.y_root)
 
-        # TODO: DRY
         def currency_popup(event):
             currency_popup_menu.post(event.x_root, event.y_root)
 
@@ -434,18 +412,19 @@ class DashboardPage(MainWindow):
             some_treeview.heading('price', text='Price')
             some_treeview.heading('#0', text='Item')
 
-        # TODO: DRY
-        # Gen Store formatting
-        format_store(self.general_store_treeview)
-
-        # Blacksmith formatting
-        format_store(self.blacksmith_treeview)
-
-        # Stables formatting
-        format_store(self.stables_treeview)
-
-        # Shipyard formatting
-        format_store(self.shipyard_treeview)
+        for treeview in self.store_treeviews:
+            format_store(treeview)
+        # # Gen Store formatting
+        # format_store(self.general_store_treeview)
+        #
+        # # Blacksmith formatting
+        # format_store(self.blacksmith_treeview)
+        #
+        # # Stables formatting
+        # format_store(self.stables_treeview)
+        #
+        # # Shipyard formatting
+        # format_store(self.shipyard_treeview)
 
         # Populate trees
         try:
@@ -460,7 +439,6 @@ class DashboardPage(MainWindow):
             print('tcl error')
             self.update_currency_treeview(self.currency_dict)
 
-        # TODO: DRY
         # Binds
         self.shipyard_treeview.bind('<<TreeviewSelect>>', self.shipyard_callback)
         self.blacksmith_treeview.bind('<<TreeviewSelect>>', self.blacksmith_callback)
@@ -468,11 +446,13 @@ class DashboardPage(MainWindow):
         self.inventory_treeview.bind('<<TreeviewSelect>>', self.inventory_callback)
         self.general_store_treeview.bind('<<TreeviewSelect>>', self.general_store_callback)
 
-        # TODO: DRY
-        self.shipyard_treeview.bind('<Button-3>', store_popup)
-        self.blacksmith_treeview.bind('<Button-3>', store_popup)
-        self.stables_treeview.bind('<Button-3>', store_popup)
-        self.general_store_treeview.bind('<Button-3>', store_popup)
+        for treeview in self.store_treeviews:
+            treeview.bind('<Button-3>', store_popup)
+
+        # self.shipyard_treeview.bind('<Button-3>', store_popup)
+        # self.blacksmith_treeview.bind('<Button-3>', store_popup)
+        # self.stables_treeview.bind('<Button-3>', store_popup)
+        # self.general_store_treeview.bind('<Button-3>', store_popup)
         self.inventory_treeview.bind('<Button-3>', inventory_popup)
         self.currency_treeview.bind('<Button-3>', currency_popup)
 
@@ -526,7 +506,6 @@ class DashboardPage(MainWindow):
         if cur_size['h'] != 630:
             self.center([953, 630])
 
-    # TODO: DRY
     # Populates the four treeview widgets that, makeup the dashboard page, with items.
     def populate_all_trees(self):
         static_functions.populate_tree(sql.query_item_from_store(), self.conn, self.blacksmith_treeview, 'Blacksmith')
@@ -542,25 +521,30 @@ class DashboardPage(MainWindow):
     def recent_select_value(self):
         item = recent_selection['selected']
         item_name = None
-        try:
-            item_name = self.general_store_treeview.item(item[0])['text']
-        except TclError:
-            pass
-
-        try:
-            item_name = self.blacksmith_treeview.item(item[0])['text']
-        except TclError:
-            pass
-
-        try:
-            item_name = self.stables_treeview.item(item[0])['text']
-        except TclError:
-            pass
-
-        try:
-            item_name = self.shipyard_treeview.item(item[0])['text']
-        except TclError:
-            pass
+        for treeview in self.store_treeviews:
+            try:
+                item_name = treeview.item(item[0])['text']
+            except TclError:
+                pass
+        # try:
+        #     item_name = self.general_store_treeview.item(item[0])['text']
+        # except TclError:
+        #     pass
+        #
+        # try:
+        #     item_name = self.blacksmith_treeview.item(item[0])['text']
+        # except TclError:
+        #     pass
+        #
+        # try:
+        #     item_name = self.stables_treeview.item(item[0])['text']
+        # except TclError:
+        #     pass
+        #
+        # try:
+        #     item_name = self.shipyard_treeview.item(item[0])['text']
+        # except TclError:
+        #     pass
 
         item_value = sql.execute_fetchone_sql(self.conn, sql.query_store_item_value(), item_name)
         # item_value = api.get_item_value(item_name, character.Character.list_of_item_dicts)    # Depricated API call
@@ -587,25 +571,21 @@ class DashboardPage(MainWindow):
         some_dict['selected'] = some_treeview.selection()
         new_selection(some_dict['selected'])
 
-    # TODO: DRY
     def general_store_callback(self, event):
         # check_value_and_toggle()
         self.generic_selection_callback(event, gen_selected, self.general_store_treeview)
         self.check_value_and_toggle()
 
-    # TODO: DRY
     def blacksmith_callback(self, event):
         # check_value_and_toggle()
         self.generic_selection_callback(event, bs_selected, self.blacksmith_treeview)
         self.check_value_and_toggle()
 
-    # TODO: DRY
     def stables_callback(self, event):
         # check_value_and_toggle()
         self.generic_selection_callback(event, stable_selected, self.stables_treeview)
         self.check_value_and_toggle()
 
-    # TODO: DRY
     def shipyard_callback(self, event):
         # print(shipyard_treeview.selection())  # Gets tuple with id as first value
         # # print(treeview.set('I001', 'quantity'))
@@ -620,7 +600,6 @@ class DashboardPage(MainWindow):
         self.generic_selection_callback(event, ship_selected, self.shipyard_treeview)
         self.check_value_and_toggle()
 
-    # TODO: DRY
     # The inventory callback function also attempts to deselect all previously selections in store widgets.
     def inventory_callback(self, event):
         # TODO: This is bugged. Toggle select causes unwanted behavior. Find a way to check if toggeled on.
@@ -636,18 +615,6 @@ class DashboardPage(MainWindow):
         print(self.inventory_treeview.selection())
         print(self.inventory_treeview.item(self.inventory_treeview.selection(), 'text'))
         print(recent_selection['selected'])
-
-    # TODO: DRY. Ultra redundant because gutting inv cache. Repeats in multiple classes.
-    # Clears dictionary holding account information objects. Pushes to login page.
-    def logout_command(self):
-        if not user_info['char']:
-            log_out()
-            LoginPage(self.root)
-            self.center()
-        else:
-            log_out()
-            LoginPage(self.root)
-            self.center()
 
     def char_select_command(self):
         CharacterSelectionPage(self.root)
@@ -796,7 +763,6 @@ class DashboardPage(MainWindow):
         except TclError:
             error_box.no_inventory_item_selected()
 
-    # TODO: DRY
     def update_currency_command(self, cur_type):
         if cur_type == 'gold':
             answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=100000)
@@ -824,9 +790,9 @@ class DashboardPage(MainWindow):
             user_info['char'].update_currency_db(self.conn)
             self.currency_treeview.set('gold', 'copper', answer)
 
-    # TODO: DRY
     def add_currency_command(self, cur_type):
         answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=1, maxvalue=100000)
+
         if cur_type == 'gold':
             answer = answer * 100
         elif cur_type == 'silver':
@@ -836,14 +802,16 @@ class DashboardPage(MainWindow):
         user_info['char'].update_currency_db(self.conn)
 
         new_cur_dict = static_functions.convert_currency(user_info['char'].currency)
-        self.currency_treeview.item('gold', text=new_cur_dict['gp'])
-        self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
-        self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
 
-    # TODO: DRY
+        self.update_currency_treeview(new_cur_dict)
+        # self.currency_treeview.item('gold', text=new_cur_dict['gp'])
+        # self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
+        # self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
+
     def subtract_currency_command(self, cur_type):
         answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=1,
                                          maxvalue=100000)
+
         if cur_type == 'gold':
             answer = answer * 100
         elif cur_type == 'silver':
@@ -855,28 +823,44 @@ class DashboardPage(MainWindow):
             user_info['char'].update_currency_db(self.conn)
 
             new_cur_dict = static_functions.convert_currency(user_info['char'].currency)
-            self.currency_treeview.item('gold', text=new_cur_dict['gp'])
-            self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
-            self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
 
-    # TODO: DRY
+            self.update_currency_treeview(new_cur_dict)
+            # self.currency_treeview.item('gold', text=new_cur_dict['gp'])
+            # self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
+            # self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
+
+    def get_tree_item_name(self, item_id):
+        item_name = None
+        dic = stores()
+        if item_id in dic['Ship']:
+            item_name = self.shipyard_treeview.item(item_id)['text']
+        elif item_id in dic['BS']:
+            item_name = self.blacksmith_treeview.item(item_id)['text']
+        elif item_id in dic['GS']:
+            item_name = self.general_store_treeview.item(item_id)['text']
+        elif item_id in dic['Stables']:
+            item_name = self.stables_treeview.item(item_id)['text']
+
+        return item_name
+
     def add_command(self):
         try:
-            item_name = None
-            dic = stores()
+            # item_name = None
+            # dic = stores()
 
             print(recent_selection['selected'])
-            tup = recent_selection['selected']
+            # tup = recent_selection['selected']
 
-            # TODO: DRY
-            if tup[0] in dic['Ship']:
-                item_name = self.shipyard_treeview.item(tup[0])['text']
-            elif tup[0] in dic['BS']:
-                item_name = self.blacksmith_treeview.item(tup[0])['text']
-            elif tup[0] in dic['GS']:
-                item_name = self.general_store_treeview.item(tup[0])['text']
-            elif tup[0] in dic['Stables']:
-                item_name = self.stables_treeview.item(tup[0])['text']
+            item_name = self.get_tree_item_name(recent_selection['selected'][0])
+
+            # if tup[0] in dic['Ship']:
+            #     item_name = self.shipyard_treeview.item(tup[0])['text']
+            # elif tup[0] in dic['BS']:
+            #     item_name = self.blacksmith_treeview.item(tup[0])['text']
+            # elif tup[0] in dic['GS']:
+            #     item_name = self.general_store_treeview.item(tup[0])['text']
+            # elif tup[0] in dic['Stables']:
+            #     item_name = self.stables_treeview.item(tup[0])['text']
 
             self.buy_item_gui(recent_selection['selected'])
             if not database.in_inventory(self.conn, user_info['inv'], item_name, '+'):
@@ -884,34 +868,35 @@ class DashboardPage(MainWindow):
         except TypeError:
             error_box.no_store_item_selected()
 
-    # TODO: DRY
     # TODO: Buy and sell commands require better error handling
     # Buys item on front (gui) and back (DB) end. Updates currency based on item value.
     def buy_command(self):
 
-        item_name = None
+        # item_name = None
         affordable = None
-        dic = stores()
+        # dic = stores()
 
         print(recent_selection['selected'])
-        tup = recent_selection['selected']
+        # tup = recent_selection['selected']
 
-        # TODO: DRY
-        if tup[0] in dic['Ship']:
-            item_name = self.shipyard_treeview.item(tup[0])['text']
-        elif tup[0] in dic['BS']:
-            item_name = self.blacksmith_treeview.item(tup[0])['text']
-        elif tup[0] in dic['GS']:
-            item_name = self.general_store_treeview.item(tup[0])['text']
-        elif tup[0] in dic['Stables']:
-            item_name = self.stables_treeview.item(tup[0])['text']
+        item_name = self.get_tree_item_name(recent_selection['selected'][0])
+
+        # if tup[0] in dic['Ship']:
+        #     item_name = self.shipyard_treeview.item(tup[0])['text']
+        # elif tup[0] in dic['BS']:
+        #     item_name = self.blacksmith_treeview.item(tup[0])['text']
+        # elif tup[0] in dic['GS']:
+        #     item_name = self.general_store_treeview.item(tup[0])['text']
+        # elif tup[0] in dic['Stables']:
+        #     item_name = self.stables_treeview.item(tup[0])['text']
         if item_name is not None:
             affordable = user_info['char'].buy_sell(item_name, 'buy', self.conn)
 
-        currency_dict = user_info['char'].convert_currency()
-        self.currency_treeview.item('gold', text=currency_dict['gp'])
-        self.currency_treeview.set('gold', 'silver', currency_dict['sp'])
-        self.currency_treeview.set('gold', 'copper', currency_dict['cp'])
+        currency_dict = static_functions.convert_currency(user_info['char'].currency)
+        self.update_currency_treeview(currency_dict)
+        # self.currency_treeview.item('gold', text=currency_dict['gp'])
+        # self.currency_treeview.set('gold', 'silver', currency_dict['sp'])
+        # self.currency_treeview.set('gold', 'copper', currency_dict['cp'])
 
         self.root.update()
 
@@ -942,9 +927,10 @@ class DashboardPage(MainWindow):
         user_info['char'].buy_sell(item, 'sell', self.conn)
 
         currency_dict = user_info['char'].convert_currency()
-        self.currency_treeview.item('gold', text=currency_dict['gp'])
-        self.currency_treeview.set('gold', 'silver', currency_dict['sp'])
-        self.currency_treeview.set('gold', 'copper', currency_dict['cp'])
+        self.update_currency_treeview(currency_dict)
+        # self.currency_treeview.item('gold', text=currency_dict['gp'])
+        # self.currency_treeview.set('gold', 'silver', currency_dict['sp'])
+        # self.currency_treeview.set('gold', 'copper', currency_dict['cp'])
 
         self.sell_item_gui(inv_selected['selected'])
 
