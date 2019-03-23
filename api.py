@@ -7,6 +7,7 @@ import re
 
 
 # TODO: Test this
+# Creates and returns a simple session object.
 def create_session():
     session = requests.Session()
     return session
@@ -69,6 +70,10 @@ def get_item_url(name, list_of_dicts):
 
 
 # TODO: Test this
+# Retrieves the url associated with an item.
+# Uses url to requests info from API
+# Slices the cost dictionary from its parent
+# Converts the sliced dictionary to base currency type and returns value
 def get_item_value(item, some_dict, session):
     url = get_item_url(item, some_dict)
     item_info = get_api_all(call_api(url, session))
@@ -78,6 +83,7 @@ def get_item_value(item, some_dict, session):
 
 
 # Takes input as {'quantity': 'x', 'unit': 'y'}
+# Converts to base currency type and returns value.
 def convert_price_info(price_dict):
     if price_dict['unit'] == 'gp':
         converted_value = price_dict['quantity'] * 100  # Converts gp prices to universal cp unit used for back end math

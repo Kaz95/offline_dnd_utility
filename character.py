@@ -11,6 +11,7 @@ mem = ':memory:'
 class Character:
 
     # TODO: unit_integration_test: FIXTURE REQUIRED
+    # Main equipment dictionary returned from DnD 5e API
     # [{'name': 'some name', 'url': 'some url'}, {'name': 'some name', 'url': 'some url'}]
     list_of_item_dicts = api.get_nested_api_dict(api.get_api_all(api.call_api(api.construct_api_url('equipment'))), 'results')
 
@@ -18,11 +19,11 @@ class Character:
         self.id = char_id
         self.currency = currency    # All currency held in cp. cp is then formatted via convert_currency() before view.
         self.name = name
-        self.inventories = inventories_list  # List of player inventory names in string format. Technically not used.
+        self.inventories = inventories_list  # List of player inventory names in string format. Not currently used.
 
     # TODO: Not tested
     # TODO: This makes more sense as an inventory method. Change it once multiple inventories.
-    # Adds an item item under character id. Can specify a specific inventory via inv_id
+    # Adds an item under character id. Can specify a specific inventory via inv_id
     def add_item_db(self, conn, item, acc_id, inv_id):
         url = sql.execute_fetchone_sql(conn, sql.query_store_item_url(), item)
         # url = api.get_item_url(item, Character.list_of_item_dicts)
@@ -55,7 +56,6 @@ class Character:
         item_value = api.convert_price_info(item_cost)
         if action == 'buy':
             if item_value > self.currency:
-                print('not enough currency')  # TODO remove later
                 return False
             else:
                 print('---item bought---')  # TODO remove later
@@ -81,6 +81,7 @@ def character_name_taken(conn, name):
 
 # TODO: unit test with mock assert called with.
 # Adds character to DB based on current character information.
+# If character name taken, display error box.
 def character_creation(conn, acc_id, name, currency):
     if character_name_taken(conn, name):
         error_box.character_name_taken()
@@ -92,7 +93,7 @@ def character_creation(conn, acc_id, name, currency):
 
 
 # TODO: Test
-# Query character row. Return player object.
+# Query character row. Returns character object.
 def load_character_object(conn, char_name):
     char_info_list = sql.execute_fetchone_sql(conn, sql.query_character_row(), char_name)
     char_info_dict = {'char_id': char_info_list[0], 'name': char_info_list[1], 'currency': char_info_list[2]}

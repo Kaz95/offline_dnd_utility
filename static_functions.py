@@ -2,6 +2,9 @@ import database
 import sql
 
 
+# Checks if given entry input is alphanumerical.
+# Return True if is alpha or empty string.
+# Else return false.
 def entry_is_alnum_callback(entry_input):
     if entry_input.isalnum():
         return True
@@ -56,6 +59,7 @@ def inspecto_gadget(converted_value):
             return key
 
 
+# Tags a treeview items with a given img tag based on currency type.
 def img_tag(some_tree, some_item, cur_type):
     if cur_type == 'gp':
         some_tree.item(some_item, tags='gold')

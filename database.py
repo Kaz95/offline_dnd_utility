@@ -54,6 +54,7 @@ def add_store_item(conn, some_sql, item_info):
 
 
 # SELECT
+# Returns rowcount of a given table.
 def count_rows(conn, some_sql, some_table):
     new_sql = some_sql.format(some_table)
     count_tuple = sql.execute_fetchone_sql(conn, new_sql)
@@ -196,7 +197,7 @@ def in_inventory(conn, inv_id, item, add_subtract=None):
 # TODO: Move to setup module
 # TODO: conn
 # Verifies store item count via sqlite count(*) method which returns row count for a given table.
-# Not currently used.
+# If rowcount >=256 return True, else return False.
 def wrong_item_count(con):
     store_item_count = 256
     cur_item_count = sql.execute_fetchone_sql(con, sql.query_row_count())

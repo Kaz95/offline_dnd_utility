@@ -44,11 +44,16 @@ def new_selection(some_selection):
 
 class MainWindow:
     def __init__(self, root):
+        # These two super class variables are used for handling clean program exit.
         self.closed = True
         self.queue = queue.Queue()
+
         # self.conn = database.create_connection(database.db)
         self.root = root
+
+        # This overrides tkinter's handling of exiting the program.
         self.root.protocol("WM_DELETE_WINDOW", self.close_both_threads)
+
         root.title('DnD Utility')
         big_label = ttk.Style()
         big_label.configure('big.TLabel', font=('Times', 25))
@@ -72,17 +77,16 @@ class MainWindow:
         self.inventory_treeview = ttk.Treeview(root)
         self.currency_treeview = ttk.Treeview(root)
 
+        # List of store treeviews
         self.store_treeviews = [self.shipyard_treeview, self.stables_treeview, self.blacksmith_treeview, self.general_store_treeview]
 
+    # Command to handle closing of both threads on tkinter window exit.
     def close_both_threads(self):
         if threading.active_count() == 2:
             closed = True
             self.queue.put(closed)
         else:
             self.root.quit()
-        # print(threading.active_count())
-        # sys.exit(-1)
-        # self.root.quit()
 
     # clears (forgets) all widgets currently attached to root window.
     def clear(self):
@@ -126,7 +130,9 @@ class MainWindow:
 
 class InstallPage(MainWindow):
     def __init__(self, root):
+        # Removes the DB file. There's is no way to reach this page without creating a DB file first.
         os.remove(database.db)
+
         self.conn = database.create_connection(database.db)
         self.count = 0
         # TODO: I don't think I use max_count. I could, but I don't think I am. Maybe make private class var?
@@ -153,6 +159,7 @@ class InstallPage(MainWindow):
         self.install_button.config(state='disabled')
 
         def real_start():
+            # Loops is required to push login page after successful installation.
             while True:
                 con = database.create_connection(database.db)
                 self.install_bar['value'] = 0
@@ -174,6 +181,7 @@ class InstallPage(MainWindow):
 
 class LoginPage(MainWindow):
     def __init__(self, root):
+        # Connection used to check if the database is setup correctly. Is discarded no matter the outcome.
         self.temp_conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
@@ -349,6 +357,7 @@ class CharacterSelectionPage(MainWindow):
         self.root.update()
 
     # Sets current character to a given character object, Character object is based on combobox value.
+    # If no value is selected, displays error box.
     def select_command(self):
         try:
             user_info['char'] = character.load_character_object(self.conn, self.chars_combo.get())
@@ -430,11 +439,14 @@ class DashboardPage(MainWindow):
         # format_store(self.shipyard_treeview)
 
         # Populate trees
+        # TODO: Verify purpose of error handling.
         try:
             self.populate_all_trees()
         except TclError:
             pass
 
+        # Creates the initial currency item. If item exists, updates treeview instead.
+        # TODO: Verify that error handling is both necessary and used correctly.
         try:
             self.currency_treeview.insert('', 'end', 'gold', text=self.currency_dict['gp'])
 
@@ -643,6 +655,7 @@ class DashboardPage(MainWindow):
     def new_inventory_quantity(self, some_item):
         self.inventory_treeview.set(some_item, 'quantity', 1)
 
+    # Sets a given item's unit value column to a given value.
     def new_inventory_unit_value(self, some_item, value):
         self.inventory_treeview.set(some_item, 'unit_value', value)
 
@@ -751,6 +764,8 @@ class DashboardPage(MainWindow):
         else:
             self.inventory_treeview.delete(some_callback)
 
+    # Updates quantity of recently selected inventory item based on value returned from simple dialogue.
+    # Displays error box if no items elected.
     def update_quantity_command(self):
         try:
             tup = recent_selection['selected']
@@ -766,6 +781,7 @@ class DashboardPage(MainWindow):
         except TclError:
             error_box.no_inventory_item_selected()
 
+    # Updates a given currency type's value in treeview based on value returned from simpledialogue.
     def update_currency_command(self, cur_type):
         if cur_type == 'gold':
             answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=100000)
@@ -793,6 +809,8 @@ class DashboardPage(MainWindow):
             user_info['char'].update_currency_db(self.conn)
             self.currency_treeview.set('gold', 'copper', answer)
 
+    # Adds value returned from simple dialogue to a given currency type. Converts to base currency type for calculations
+    # Then updates currency treeview
     def add_currency_command(self, cur_type):
         answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=1, maxvalue=100000)
 
@@ -811,6 +829,8 @@ class DashboardPage(MainWindow):
         # self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
         # self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
 
+    # Subtracts value returned from simple dialogue to a given currency type. Converts to base currency type for calculations
+    # Then updates currency treeview
     def subtract_currency_command(self, cur_type):
         answer = simpledialog.askinteger('Input', f'How much {cur_type} do you want to add?', minvalue=1,
                                          maxvalue=100000)
@@ -832,6 +852,8 @@ class DashboardPage(MainWindow):
             # self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
             # self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
 
+    # Attempts to retrieve the text value of given item_id in each store treeview.
+    # Presumably only found inside one, so no error handling needed.
     def get_tree_item_name(self, item_id):
         item_name = None
         dic = stores()
@@ -846,6 +868,7 @@ class DashboardPage(MainWindow):
 
         return item_name
 
+    # Same as buy command minus the currency.
     def add_command(self):
         try:
             # item_name = None
@@ -910,6 +933,7 @@ class DashboardPage(MainWindow):
 
         self.check_value_and_toggle()
 
+    # Same as sell command minus the currency
     def remove_command(self):
         try:
             tup = inv_selected['selected']
@@ -944,6 +968,7 @@ class DashboardPage(MainWindow):
 
 
 main = Tk()
+# Create directories required for DB file creation
 os.makedirs("C:\\sqlite", exist_ok=True)
 os.makedirs("C:\\sqlite\\db", exist_ok=True)
 # Currency icon images.
@@ -973,6 +998,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
+# Currency type icon images
 gold_img = PhotoImage(file=resource_path('gold.png'))
 silver_img = PhotoImage(file=resource_path('silver.png'))
 copper_img = PhotoImage(file=resource_path('copper.png'))
