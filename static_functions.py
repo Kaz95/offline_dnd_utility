@@ -67,23 +67,22 @@ def img_tag(some_tree, some_item, cur_type):
 
 # Query all items from a given store. Use values returned to populate store treeviews.
 def populate_tree(some_sql, conn, some_tree, some_store):
-    with conn:
-        for number in range(database.count_rows(conn, sql.count_table_rows(), 'items')):
-            temp_dict = {}
-            number += 1
-            item_info_tuple = sql.execute_fetchone_sql(conn, some_sql, str(number), some_store)
-            try:
-                temp_dict['id'] = item_info_tuple[0]
-                temp_dict['name'] = item_info_tuple[1]
-                temp_dict['value'] = item_info_tuple[2]
-                converted_value = convert_currency(temp_dict['value'])
-                cur_type = inspecto_gadget(converted_value)
-                some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'])
+    for number in range(database.count_rows(conn, sql.count_table_rows(), 'items')):
+        temp_dict = {}
+        number += 1
+        item_info_tuple = sql.execute_fetchone_sql(conn, some_sql, str(number), some_store)
+        try:
+            temp_dict['id'] = item_info_tuple[0]
+            temp_dict['name'] = item_info_tuple[1]
+            temp_dict['value'] = item_info_tuple[2]
+            converted_value = convert_currency(temp_dict['value'])
+            cur_type = inspecto_gadget(converted_value)
+            some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'])
 
-                img_tag(some_tree, temp_dict['id'], cur_type)
+            img_tag(some_tree, temp_dict['id'], cur_type)
 
-                some_tree.set(temp_dict['id'], 'price', converted_value[cur_type])
+            some_tree.set(temp_dict['id'], 'price', converted_value[cur_type])
 
-            # TODO: Consider better error handling. This is a silent pass. Not good.
-            except TypeError:
-                continue
+        # TODO: Consider better error handling. This is a silent pass. Not good.
+        except TypeError:
+            continue

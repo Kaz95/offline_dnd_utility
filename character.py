@@ -69,7 +69,6 @@ class Character:
 
 # TODO: Test
 # TODO: I think 'if in' works on nested structures.
-# TODO: conn
 # Query all character names. Return True if name in query. Else return False.
 def character_name_taken(conn, name):
     character_names_tups = sql.execute_fetchall_sql(conn, sql.query_all_character_names())
@@ -80,7 +79,6 @@ def character_name_taken(conn, name):
 
 
 # TODO: unit test with mock assert called with.
-# TODO: conn
 # Adds character to DB based on current character information.
 def character_creation(conn, acc_id, name, currency):
     if character_name_taken(conn, name):
@@ -93,14 +91,12 @@ def character_creation(conn, acc_id, name, currency):
 
 
 # TODO: Test
-# TODO: conn
 # Query character row. Return player object.
 def load_character_object(conn, char_name):
-    with conn:
-        char_info_list = sql.execute_fetchone_sql(conn, sql.query_character_row(), char_name)
-        char_info_dict = {'char_id': char_info_list[0], 'name': char_info_list[1], 'currency': char_info_list[2]}
-        character = Character(char_info_dict['char_id'], char_info_dict['name'], char_info_dict['currency'], [])
-        return character
+    char_info_list = sql.execute_fetchone_sql(conn, sql.query_character_row(), char_name)
+    char_info_dict = {'char_id': char_info_list[0], 'name': char_info_list[1], 'currency': char_info_list[2]}
+    character = Character(char_info_dict['char_id'], char_info_dict['name'], char_info_dict['currency'], [])
+    return character
 
 
 # if __name__ == '__main__':

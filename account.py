@@ -43,7 +43,6 @@ def account_has_characters(conn, acc_id):
     return False
 
 
-# TODO: conn
 # Creates new account. Adds information to accounts table in database.
 def user_creates_account(conn, username, password):
     load_account_archive(conn)
@@ -51,23 +50,19 @@ def user_creates_account(conn, username, password):
         error_box.username_taken()
         return False
     else:
-        with conn:
-            acc_info = {'username': username, 'password': password}
-            database.add_account_row(conn, sql.add_account_row(), acc_info)
-            return True
+        acc_info = {'username': username, 'password': password}
+        database.add_account_row(conn, sql.add_account_row(), acc_info)
+        return True
 
 
-# TODO: conn
 # Loads all account username/password information and stores as key:value pairs in Account.log_in_dict.
 def load_account_archive(conn):
     Account.account_archive_dictionary = {}
-    with conn:
-        list_of_username_password_tups = sql.execute_fetchall_sql(conn, sql.query_username_password())
-        for tup in list_of_username_password_tups:
-            Account.account_archive_dictionary[tup[0]] = tup[1]
+    list_of_username_password_tups = sql.execute_fetchall_sql(conn, sql.query_username_password())
+    for tup in list_of_username_password_tups:
+        Account.account_archive_dictionary[tup[0]] = tup[1]
 
 
-# TODO: conn
 # Returns username if authenticated.
 def log_in(conn, username, password):
     load_account_archive(conn)  # Loads account info for authentication into Account.login_dic
@@ -84,14 +79,12 @@ def log_in(conn, username, password):
         return acc
 
 
-# TODO: conn
 # query ALL account information from accounts table based on username. Returns Account object based on query.
 def load_account_object(conn, username):
-    with conn:
-        char_info_list = sql.execute_fetchone_sql(conn, sql.query_account_row(), username)
-        char_info_dict = {'acc_id': char_info_list[0], 'username': char_info_list[1], 'password': char_info_list[2]}
-        acc = Account(char_info_dict['acc_id'], char_info_dict['username'], char_info_dict['password'])
-        return acc
+    char_info_list = sql.execute_fetchone_sql(conn, sql.query_account_row(), username)
+    char_info_dict = {'acc_id': char_info_list[0], 'username': char_info_list[1], 'password': char_info_list[2]}
+    acc = Account(char_info_dict['acc_id'], char_info_dict['username'], char_info_dict['password'])
+    return acc
 
 
 # if __name__ == '__main__':

@@ -6,22 +6,40 @@ import sqlite3
 
 
 # Modular sqlite execute functions which are passed a connection and some sql
-def execute_sql(con, sql_statement, *args):
-    cur = con.cursor()
-    cur.execute(sql_statement, args)
-    con.commit()
+# def execute_sql(con, sql_statement, *args):
+#     cur = con.cursor()
+#     cur.execute(sql_statement, args)
+#     con.commit()
 
+
+# Modular sqlite execute functions which are passed a connection and some sql
+def execute_sql(con, sql_statement, *args):
+    with con:
+        con.execute(sql_statement, args)
+
+
+# def execute_fetchone_sql(con, sql_statement, *args):
+#     cur = con.cursor()
+#     cur.execute(sql_statement, args)
+#     return cur.fetchone()
 
 def execute_fetchone_sql(con, sql_statement, *args):
-    cur = con.cursor()
-    cur.execute(sql_statement, args)
-    return cur.fetchone()
+    with con:
+        cur = con.cursor()
+        cur.execute(sql_statement, args)
+        return cur.fetchone()
 
+
+# def execute_fetchall_sql(con, sql_statement, *args):
+#     cur = con.cursor()
+#     cur.execute(sql_statement, args)
+#     return cur.fetchall()
 
 def execute_fetchall_sql(con, sql_statement, *args):
-    cur = con.cursor()
-    cur.execute(sql_statement, args)
-    return cur.fetchall()
+    with con:
+        cur = con.cursor()
+        cur.execute(sql_statement, args)
+        return cur.fetchall()
 
 
 # SQL statements
@@ -150,6 +168,10 @@ def query_store_item_value():
 # TODO: Test
 def query_store_item_url():
     return """SELECT api FROM items WHERE item = ? AND quantity IS NULL;"""
+
+
+def query_row_count():
+    return """SELECT count(*) FROM items;"""
 
 
 # Delete

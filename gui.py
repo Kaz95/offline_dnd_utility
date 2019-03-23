@@ -110,7 +110,6 @@ class MainWindow:
         self.center()
 
 
-# TODO: conn
 class InstallPage(MainWindow):
     def __init__(self, root):
         os.remove(database.db)
@@ -159,16 +158,16 @@ class InstallPage(MainWindow):
         threading.Thread(target=real_start).start()
 
 
-# TODO: conn
 class LoginPage(MainWindow):
     def __init__(self, root):
-        self.conn = database.create_connection(database.db)
+        self.temp_conn = database.create_connection(database.db)
 
         MainWindow.__init__(self, root)
-        if setup.wrong_schema(self.conn) or database.wrong_item_count(self.conn):
-            self.conn.close()
+        if setup.wrong_schema(self.temp_conn) or database.wrong_item_count(self.temp_conn):
+            self.temp_conn.close()
             InstallPage(self.root)
         else:
+            self.temp_conn.close()
             self.conn = database.create_connection(database.db)
 
             self.username_label = ttk.Label(text='Username')
@@ -202,17 +201,15 @@ class LoginPage(MainWindow):
 
     # Authenticates information passed to entry boxes against DB. Pushes to character creation page
     def login_page_login_command(self):
-        with self.conn:
-            # account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
-            user_info['acc'] = account.log_in(self.conn, self.login_page_username_entry.get(), self.login_page_password_entry.get())
-            if user_info['acc'] is not None:
-                if account.account_has_characters(self.conn, user_info['acc'].id):
-                    CharacterSelectionPage(self.root)
-                else:
-                    CharacterCreationPage(self.root)
+        # account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
+        user_info['acc'] = account.log_in(self.conn, self.login_page_username_entry.get(), self.login_page_password_entry.get())
+        if user_info['acc'] is not None:
+            if account.account_has_characters(self.conn, user_info['acc'].id):
+                CharacterSelectionPage(self.root)
+            else:
+                CharacterCreationPage(self.root)
 
 
-# TODO: conn
 class SignupPage(MainWindow):
     def __init__(self, root):
         self.conn = database.create_connection(database.db)
@@ -246,12 +243,10 @@ class SignupPage(MainWindow):
 
     # Creates account row based on entry boxes and adds to DB. Pushes to login page.
     def signup_page_signup_command(self):
-        with self.conn:
-            if account.user_creates_account(self.conn, self.signup_page_username_entry.get(), self.signup_page_password_entry.get()):
-                LoginPage(self.root)
+        if account.user_creates_account(self.conn, self.signup_page_username_entry.get(), self.signup_page_password_entry.get()):
+            LoginPage(self.root)
 
 
-# TODO: conn
 class CharacterCreationPage(MainWindow):
     def __init__(self, root):
         self.conn = database.create_connection(database.db)
@@ -282,14 +277,12 @@ class CharacterCreationPage(MainWindow):
 
     # Creates character row based on entry boxes and adds to DB. Pushes to character selection page.
     def create_character_command(self):
-        with self.conn:
-            name = self.name_entry.get()
-            currency = self.currency_entry.get()
-            if character.character_creation(self.conn, user_info['acc'].id, name, currency):
-                CharacterSelectionPage(self.root)
+        name = self.name_entry.get()
+        currency = self.currency_entry.get()
+        if character.character_creation(self.conn, user_info['acc'].id, name, currency):
+            CharacterSelectionPage(self.root)
 
 
-# TODO: conn
 class CharacterSelectionPage(MainWindow):
     def __init__(self, root):
         self.conn = database.create_connection(database.db)
@@ -319,42 +312,38 @@ class CharacterSelectionPage(MainWindow):
     # TODO: Might be able to apply list comprehension
     # TODO: unit test assertEqual temp_combo_list.
     def populate_combo(self):
-        with self.conn:
-            temp_combo_list = []
-            acc_id = user_info['acc'].id
-            characters_tuple = sql.execute_fetchall_sql(self.conn, sql.query_all_characters(), acc_id)
-            for thing in characters_tuple:
-                temp_combo_list.append(thing[1])
-            self.chars_combo['values'] = temp_combo_list
+        temp_combo_list = []
+        acc_id = user_info['acc'].id
+        characters_tuple = sql.execute_fetchall_sql(self.conn, sql.query_all_characters(), acc_id)
+        for thing in characters_tuple:
+            temp_combo_list.append(thing[1])
+        self.chars_combo['values'] = temp_combo_list
 
     # TODO: Might be able to apply list comprehension
     # Deletes a character from the front(gui) and back(DB) end.
     def delete_command(self):
-        with self.conn:
-            temp = {}
-            char_selected = self.chars_combo.get()
-            acc_id = user_info['acc'].id
-            characters_tuple_list = sql.execute_fetchall_sql(self.conn, sql.query_all_characters(), acc_id)
-            for tup in characters_tuple_list:
-                temp[tup[1]] = tup[0]
-            char_id = temp[char_selected]
-            database.delete_character(self.conn, char_id)
-            static_functions.clear_entry(self.chars_combo)
-            print('-----character deleted-----')
-            self.root.update()
+        temp = {}
+        char_selected = self.chars_combo.get()
+        acc_id = user_info['acc'].id
+        characters_tuple_list = sql.execute_fetchall_sql(self.conn, sql.query_all_characters(), acc_id)
+        for tup in characters_tuple_list:
+            temp[tup[1]] = tup[0]
+        char_id = temp[char_selected]
+        database.delete_character(self.conn, char_id)
+        static_functions.clear_entry(self.chars_combo)
+        print('-----character deleted-----')
+        self.root.update()
 
     # Sets current character to a given character object, Character object is based on combobox value.
     def select_command(self):
-        with self.conn:
-            try:
-                user_info['char'] = character.load_character_object(self.conn, self.chars_combo.get())
-                print(user_info)
-                DashboardPage(self.root)
-            except TypeError:
-                error_box.no_character_selected()
+        try:
+            user_info['char'] = character.load_character_object(self.conn, self.chars_combo.get())
+            print(user_info)
+            DashboardPage(self.root)
+        except TypeError:
+            error_box.no_character_selected()
 
 
-# TODO: conn
 class DashboardPage(MainWindow):
     def __init__(self, root):
         self.conn = database.create_connection(database.db)

@@ -15,33 +15,29 @@ mem = ':memory:'
 
 # TODO consider refactoring to a single .executemany()
 # TODO: Test
-# TODO: conn
 # Four sqlite statements which create the database schema.
 def create_schema(conn):
-    with conn:
-        sql.execute_sql(conn, sql.create_accounts_table())
-        sql.execute_sql(conn, sql.create_characters_table())
-        sql.execute_sql(conn, sql.create_inventories_table())
-        sql.execute_sql(conn, sql.create_items_table())
+    sql.execute_sql(conn, sql.create_accounts_table())
+    sql.execute_sql(conn, sql.create_characters_table())
+    sql.execute_sql(conn, sql.create_inventories_table())
+    sql.execute_sql(conn, sql.create_items_table())
 
 
-# TODO: conn
 # Verifies database setup correctly
 # You want a False return
 def wrong_schema(conn):
     schema = ['accounts', 'characters', 'inventories', 'items']
-    with conn:
-        schema.sort()
-        cur_tables = []
-        tables_tup_list = sql.execute_fetchall_sql(conn, sql.check_table_schema())
-        for tup in tables_tup_list:
-            for index in tup:
-                cur_tables.append(index)
-        cur_tables.sort()
-        if cur_tables == schema:
-            return False
-        else:
-            return True
+    schema.sort()
+    cur_tables = []
+    tables_tup_list = sql.execute_fetchall_sql(conn, sql.check_table_schema())
+    for tup in tables_tup_list:
+        for index in tup:
+            cur_tables.append(index)
+    cur_tables.sort()
+    if cur_tables == schema:
+        return False
+    else:
+        return True
 
 
 # Updates value of progress bar.
