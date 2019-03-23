@@ -10,7 +10,7 @@ class TestSQL(unittest.TestCase):
             conn = mocksql.connect()
             call = """some sql"""
             sql.execute_sql(conn, call)
-            mocksql.connect().cursor().execute.assert_called_with(call, ())
+            mocksql.connect().execute.assert_called_with(call, ())
 
     def test_execute_fetchall_sql(self):
         with mock.patch('sql.sqlite3') as mocksql:

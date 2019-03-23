@@ -32,7 +32,7 @@ class TestPlayerClassIntegration(unittest.TestCase):
             fake_player = character.Character(1, 'kaz', 5000, [])
             conn = mocksql.connect()
             fake_player.add_item_db(conn, 'Club', 1, 1)
-            mocksql.connect().cursor().execute.assert_called_with(sql.add_item_row(),
+            mocksql.connect().execute.assert_called_with(sql.add_item_row(),
                                                                   (1, 1, 1, 'Club',
                                                                    0, 0,  1))
 
@@ -42,7 +42,7 @@ class TestPlayerClassIntegration(unittest.TestCase):
             fake_player = character.Character(1, 'kaz', 5000, [])
             fake_player.buy_sell('Club', 'buy', conn)
             self.assertEqual(fake_player.currency, 4990)
-            mocksql.connect().cursor().execute.assert_called_with(sql.update_currency(), (4990, 1))
+            mocksql.connect().execute.assert_called_with(sql.update_currency(), (4990, 1))
 
     def test_buy_sell_sell(self):
         with mock.patch('database.sqlite3') as mocksql:
@@ -50,4 +50,4 @@ class TestPlayerClassIntegration(unittest.TestCase):
             fake_player = character.Character(1, 'kaz', 5000, [])
             fake_player.buy_sell('Club', 'sell', conn)
             self.assertEqual(fake_player.currency, 5010)
-            mocksql.connect().cursor().execute.assert_called_with(sql.update_currency(), (5010, 1))
+            mocksql.connect().execute.assert_called_with(sql.update_currency(), (5010, 1))
