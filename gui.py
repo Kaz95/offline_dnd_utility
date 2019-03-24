@@ -69,18 +69,6 @@ class MainWindow:
         self.failed_is_alnum = self.root.register(error_box.failed_validation_is_alnum)
         self.failed_is_alpha = self.root.register(error_box.failed_validation_is_alpha)
 
-        # Treeviews
-
-        self.shipyard_treeview = ttk.Treeview(root)  # ttk.Treeview(parent) Sets a treeview to a given parent window
-        self.general_store_treeview = ttk.Treeview(root)
-        self.blacksmith_treeview = ttk.Treeview(root)
-        self.stables_treeview = ttk.Treeview(root)
-        self.inventory_treeview = ttk.Treeview(root)
-        self.currency_treeview = ttk.Treeview(root)
-
-        # List of store treeviews
-        self.store_treeviews = [self.shipyard_treeview, self.stables_treeview, self.blacksmith_treeview, self.general_store_treeview]
-
     # Command to handle closing of both threads on tkinter window exit.
     def close_both_threads(self):
         if threading.active_count() == 2:
@@ -370,6 +358,33 @@ class DashboardPage(MainWindow):
         MainWindow.__init__(self, root)
         self.currency_dict = static_functions.convert_currency(user_info['char'].currency)
 
+        self.gen_frame = Frame(root)
+        self.bs_frame = Frame(root)
+        self.ship_frame = Frame(root)
+        self.stable_frame = Frame(root)
+
+        # Treeviews
+
+        self.shipyard_treeview = ttk.Treeview(self.ship_frame)  # ttk.Treeview(parent) Sets a treeview to a given parent window
+        self.general_store_treeview = ttk.Treeview(self.gen_frame)
+        self.blacksmith_treeview = ttk.Treeview(self.bs_frame)
+        self.stables_treeview = ttk.Treeview(self.stable_frame)
+        self.inventory_treeview = ttk.Treeview(root)
+        self.currency_treeview = ttk.Treeview(root)
+
+        # List of store treeviews
+        self.store_treeviews = [self.shipyard_treeview, self.stables_treeview, self.blacksmith_treeview, self.general_store_treeview]
+
+        # Scrollbars
+        self.gen_vsb = ttk.Scrollbar(self.gen_frame, orient="vertical", command=self.general_store_treeview.yview)
+        self.bs_vsb = ttk.Scrollbar(self.bs_frame, orient="vertical", command=self.blacksmith_treeview.yview)
+        self.stable_vsb = ttk.Scrollbar(self.stable_frame, orient="vertical", command=self.stables_treeview.yview)
+
+        self.general_store_treeview.configure(yscrollcommand=self.gen_vsb.set)
+        self.blacksmith_treeview.configure(yscrollcommand=self.bs_vsb.set)
+        self.stables_treeview.configure(yscrollcommand=self.stable_vsb.set)
+
+
         # TODO: Refactor menu names, they are currently shite.
         # Menus
 
@@ -454,9 +469,23 @@ class DashboardPage(MainWindow):
 
         # General grid formatting
         self.general_store_treeview.grid(row=0, column=0)
-        self.blacksmith_treeview.grid(row=0, column=1)
-        self.stables_treeview.grid(row=0, column=2)
-        self.shipyard_treeview.grid(row=0, column=3)
+        self.blacksmith_treeview.grid(row=0, column=0)
+        self.stables_treeview.grid(row=0, column=0)
+        self.shipyard_treeview.grid(row=0, column=0)
+
+        self.gen_vsb.grid(row=0, column=1, sticky='ns')
+        self.bs_vsb.grid(row=0, column=1, sticky='ns')
+        self.stable_vsb.grid(row=0, column=1, sticky='ns')
+
+        self.gen_frame.grid(row=0, column=0)
+        self.bs_frame.grid(row=0, column=1)
+        self.stable_frame.grid(row=0, column=2)
+        self.ship_frame.grid(row=0, column=3)
+
+        # self.general_store_treeview.grid(row=0, column=0)
+        # self.blacksmith_treeview.grid(row=0, column=1)
+        # self.stables_treeview.grid(row=0, column=2)
+        # self.shipyard_treeview.grid(row=0, column=3)
         self.inventory_treeview.grid(row=3, columnspan=4, sticky=W + E)
         self.currency_treeview.grid(row=2, columnspan=4)
 
