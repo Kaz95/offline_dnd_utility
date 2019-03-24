@@ -17,15 +17,15 @@ def failed_validation_is_alnum():
 
 
 def wrong_username():
-    messagebox.showerror('Log-in Failed', 'No account associated with that username')
+    messagebox.showerror('Log-in Failed', 'No account associated with that username.')
 
 
 def wrong_password():
-    messagebox.showerror('Log-in Failed', 'Incorrect password')
+    messagebox.showerror('Log-in Failed', 'Incorrect password.')
 
 
 def username_taken():
-    messagebox.showerror('Sign-up Failed', 'There is already an account with that username')
+    messagebox.showerror('Sign-up Failed', 'There is already an account with that username.')
 
 
 def character_name_taken():
@@ -45,4 +45,13 @@ def no_inventory_item_selected():
 
 
 def cant_remove_that_much():
-    messagebox.showerror('Removal Failed', 'You can\'t remove more currency than you have')
+    messagebox.showerror('Removal Failed', 'You can\'t remove more currency than you have.')
+
+
+def cancel_install():
+    return messagebox.askokcancel('Cancel Installation', 'Cancel Installation')
+
+
+if __name__ == '__main__':
+    answer = cancel_install()
+    print(answer)

@@ -72,8 +72,10 @@ class MainWindow:
     # Command to handle closing of both threads on tkinter window exit.
     def close_both_threads(self):
         if threading.active_count() == 2:
-            closed = True
-            self.queue.put(closed)
+            answer = error_box.cancel_install()
+            if answer:
+                closed = True
+                self.queue.put(closed)
         else:
             self.root.quit()
 
@@ -92,6 +94,7 @@ class MainWindow:
 
     # Centers root window. Dashboard and install required a different formula to center properly.
     # TODO: This is a quick and dirty solution
+    # TODO: Magic numbers are bad mkay.
     def center(self, dash=None):
         cur_size = self.screen_size()
         ws = self.root.winfo_screenwidth()
@@ -528,6 +531,7 @@ class DashboardPage(MainWindow):
         self.populate_inventory()
 
         cur_size = self.screen_size()
+        # TODO: Magic numbers are bad mkay.
         if cur_size['h'] != 630:
             self.center([1003, 630])
 
