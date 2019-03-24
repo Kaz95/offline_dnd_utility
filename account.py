@@ -2,9 +2,6 @@ import database
 import sql
 import error_box
 
-db = 'C:\\sqlite\\db\\test.db'
-mem = ':memory:'
-
 # TODO: Test everything. Nothing here is currently tested....
 
 
@@ -86,9 +83,3 @@ def load_account_object(conn, username):
     char_info_dict = {'acc_id': char_info_list[0], 'username': char_info_list[1], 'password': char_info_list[2]}
     acc = Account(char_info_dict['acc_id'], char_info_dict['username'], char_info_dict['password'])
     return acc
-
-
-# if __name__ == '__main__':
-#     user_creates_account()
-#     load_account_archive()
-#     print(Account.login_dic)

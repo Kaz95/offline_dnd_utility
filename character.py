@@ -3,9 +3,6 @@ import database
 import sql
 import error_box
 
-db = 'C:\\sqlite\\db\\test.db'
-mem = ':memory:'
-
 
 # Player Class. Holds player_id(Primary Key of characters table), character name, currency, and player inventories.
 class Character:
@@ -26,7 +23,6 @@ class Character:
     # Adds an item under character id. Can specify a specific inventory via inv_id
     def add_item_db(self, conn, item, acc_id, inv_id):
         url = sql.execute_fetchone_sql(conn, sql.query_store_item_url(), item)
-        # url = api.get_item_url(item, Character.list_of_item_dicts)
         item_value = sql.execute_fetchone_sql(conn, sql.query_store_item_value(), item)
 
         item_info = {'acc_id': acc_id,
@@ -99,8 +95,3 @@ def load_character_object(conn, char_name):
     char_info_dict = {'char_id': char_info_list[0], 'name': char_info_list[1], 'currency': char_info_list[2]}
     character = Character(char_info_dict['char_id'], char_info_dict['name'], char_info_dict['currency'], [])
     return character
-
-
-# if __name__ == '__main__':
-#     a = Character(1, 'kaz', 5000, [8])
-    # print(a.display_currency())

@@ -101,24 +101,3 @@ def regex(url, api_category):
     temp_obj = reg.search(url)
     string = temp_obj.group()
     return string
-
-
-# if __name__ == '__main__':
-#     Examples of fake json objects
-    # a = '{"results": [{"name": 1, "url": 1},{"name": 2, "url": 2}]}'
-    # b = '{"results": 1}'
-    # c = {'name': 1, 'url': 2}
-    # print(get_api_all(construct_api_url('equipment')))
-    # pprint.pprint(get_api_results(construct_api_url('Equipment'), 'results'))
-    # print(get_api_cost(get_api_all(get_item_url('Club', get_api_results(construct_api_url('Equipment'))))))
-    # print(get_api_all(get_item_url('Acid Arrow', get_api_dictionary('spells'))))
-    # list_of_dics = get_nested_api_dict(get_api_all(call_api(construct_api_url('equipment'))), 'results')
-    # item_api_url = get_item_url('Club', list_of_dics)
-    # item_info = get_api_all(call_api(item_api_url))
-    # item_cost = get_nested_api_dict(item_info, 'cost')
-    # print(item_cost)
-
-
-if __name__ == '__main__':
-    s = create_session()
-    print(get_api_all(call_api(s, construct_api_url('equipment'))))

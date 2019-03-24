@@ -6,22 +6,10 @@ import sqlite3
 
 
 # Modular sqlite execute functions which are passed a connection and some sql
-# def execute_sql(con, sql_statement, *args):
-#     cur = con.cursor()
-#     cur.execute(sql_statement, args)
-#     con.commit()
-
-
-# Modular sqlite execute functions which are passed a connection and some sql
 def execute_sql(con, sql_statement, *args):
     with con:
         con.execute(sql_statement, args)
 
-
-# def execute_fetchone_sql(con, sql_statement, *args):
-#     cur = con.cursor()
-#     cur.execute(sql_statement, args)
-#     return cur.fetchone()
 
 def execute_fetchone_sql(con, sql_statement, *args):
     with con:
@@ -29,11 +17,6 @@ def execute_fetchone_sql(con, sql_statement, *args):
         cur.execute(sql_statement, args)
         return cur.fetchone()
 
-
-# def execute_fetchall_sql(con, sql_statement, *args):
-#     cur = con.cursor()
-#     cur.execute(sql_statement, args)
-#     return cur.fetchall()
 
 def execute_fetchall_sql(con, sql_statement, *args):
     with con:

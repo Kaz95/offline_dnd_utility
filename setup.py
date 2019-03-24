@@ -6,12 +6,8 @@ import character
 import time
 import sys
 
-
 # TODO: May be required for mock. Not sure atm.
 import sqlite3
-
-db = 'C:\\sqlite\\db\\test.db'
-mem = ':memory:'
 
 
 # TODO consider refactoring to a single .executemany()
@@ -46,10 +42,7 @@ def update_mainloop(some_bar, count, some_label, window, canceled):
     percent = round((count/256) * 100)
     some_label.config(text=f'Installing....{percent}%')
     some_bar['value'] = count
-    # print(some_bar['value'])
     time.sleep(.05)
-    # print(some_bar.winfo_exists())
-    # print(window.winfo_exists())
     if not canceled:
         some_bar.update_idletasks()
     else:
@@ -62,16 +55,12 @@ def stock_stores(conn, some_bar, window, some_label, some_queue):
     canceled = False
     count = 0
     time_to_install = time.time()
-    global max_count
     store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
-    # with conn:
     url = api.construct_api_url('equipment')
     s = api.create_session()
     response = api.call_api(url, s)
     response_dict = api.get_api_all(response)
     usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
-    max_count = api.get_nested_api_dict(response_dict, 'count')
-    print(count)
     for dic in usable_dict:
         temp = {}
         for key, value in dic.items():
@@ -104,54 +93,10 @@ def stock_stores(conn, some_bar, window, some_label, some_queue):
         count += 1
         print(count)
         # TODO: Pass new canceled var that was just obtained from queue.
-        # window.after(10, update_mainloop(some_bar, count, some_label, window))
         if not some_queue.empty():
             canceled = some_queue.get()
         update_mainloop(some_bar, count, some_label, window, canceled)
-    # print(count)
+
     print('done in: ', time.time() - time_to_install)
     print('Done with everything.')
 
-
-# def fake_api():
-#     global fake_items
-#     global done
-#     for i in range(256):
-#         fake_item = {'item': 'item', 'api': 'api', 'currency': i + 1, 'store': 'store'}
-#         fake_items.append(fake_item)
-#         time.sleep(.2)
-#         print(fake_items)
-    # done = True
-
-
-# def add_but_check():
-#     global fake_items
-#     global done
-#     print('============')
-#     conn = database.create_connection(db)
-#     while True:
-#         print(fake_items)
-#         if len(fake_items) != 0:
-#             print('============')
-            # database.add_store_item(conn, sql.add_store_item(), fake_items[0])
-            # fake_items.pop(0)
-            # print(fake_items)
-        # if done:
-        #     break
-
-
-# if __name__ == '__main__':
-#     fake_items = []
-#     done = False
-#     conn = database.create_connection(db)
-#     create_schema(conn)
-    # t = time.time()
-    # t1 = threading.Thread(target=fake_api)
-    # t2 = threading.Thread(target=add_but_check)
-    # t1.start()
-    # t2.start()
-    # t1.join()
-    # t2.join()
-
-    # print('done in: ', time.time() - t)
-    # print('Done with everything.')

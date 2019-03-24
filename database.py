@@ -72,17 +72,6 @@ def query_accounts_with_characters(conn, some_sql):
     return temp
 
 
-# Returns a list of integers representing character IDs.
-# TODO: Test
-# TODO: No apparent usage.
-# def query_characters_with_inventories(conn,  some_sql):
-#     temp = []
-#     acc_id_list = sql.execute_fetchall_sql(conn, some_sql)
-#     for tup in acc_id_list:
-#         temp.append(tup[0])
-#     return temp
-
-
 # Delete
 
 # Deletes a single item based on inventory ID.
@@ -140,60 +129,6 @@ def in_inventory(conn, inv_id, item, add_subtract=None):
     return False
 
 
-# Checks if item is in inventory. If it is, subtracts one from DB quantity column and returns True. Else returns False.
-# def item_in_inventory_minus(conn, inv_id, item):
-#     with conn:
-#         items_in_inv_list = sql.execute_fetchall_sql(conn, sql.query_items_in_inventory(), inv_id)
-#
-#         for tup in items_in_inv_list:
-#             if item in tup:
-#                 int_quantity = int(tup[1])
-#                 if int_quantity > 1:
-#                     int_quantity -= 1
-#                     sql.execute_sql(conn, sql.update_quantity(), int_quantity, tup[0], inv_id)
-#                     return True
-#         return False
-
-
-# if __name__ == '__main__':
-#     acc = ('username', 'password')
-#     inv = (1, 'inv name')
-#     char = (1, 'char name', 420)
-#     item = (2, 2, 2, 'item name', 'api url', 1)
-#     account1 = {'user': 'kaza', 'pass': 'tree'}
-#     character1 = {'acc_id': 1, 'name': 'char name', 'currency': 5000}
-#     inventory1 = {'acc_id': 1, 'char_id': 1, 'name': 'inv name'}
-#     item1 = {'acc_id': 1, 'char_id': 1, 'inv_id': 1, 'item': 'item name', 'api': 'api url', 'quant': 1}
-#     con = create_connection(db)
-    # with con:
-        # add_account_row(con, sql.add_account_row(), account1)
-        # add_inventory_row(con, sql.add_inventory_row(), inventory1)
-        # add_character_row(con, sql.add_character_row(), character1)
-        # add_item_row(con, sql.add_item_row(), item1)
-
-        # modular queries
-        # print('1', query_fetchall(con, sql.query_username_password()))
-        # print('2', query_fetchone_list(con, sql.query_account_row(), acc[0]))
-        # print('3', query_fetchone_list(con, sql.query_character_row(), char[1]))
-        # print('4', query_fetchone_list(con, sql.query_inventory_row(), inv[1]))
-        # print('5', query_fetchall_list(con, sql.query_all_characters(), 1))
-        # print('6', query_fetchall_list(con, sql.query_all_inventory_names(), 1))
-        # print('7', query_fetchall(con, sql.query_accounts_with_characters()))
-        # print('8', query_fetchall(con, sql.query_characters_with_inventories()))
-
-        # Use these as reference for new queries
-
-        # print('1' + query_username_password(con, query_username_password()))
-        # print('2', query_account_row(con, query_account_row(), 'Kazact'))
-        # print('3', query_character_row(con, query_character_row(), 'char name'))
-        # print('4', query_inventory_row(con, query_inventory_row(), 'Kazact'))
-        # print('5', query_all_characters(con, query_all_characters(), '1'))
-        # print('6', query_all_inventories(con, sql.query_all_inventory_names(), 1))
-        # print('7', query_accounts_with_characters(con, sql.query_accounts_with_characters()))
-        # print('7', query_characters_with_inventories(con, sql.query_characters_with_inventories()))
-        # print(count_rows(con, 'items'))
-
-
 # TODO: Move to setup module
 # TODO: conn
 # Verifies store item count via sqlite count(*) method which returns row count for a given table.
@@ -201,9 +136,6 @@ def in_inventory(conn, inv_id, item, add_subtract=None):
 def wrong_item_count(con):
     store_item_count = 256
     cur_item_count = sql.execute_fetchone_sql(con, sql.query_row_count())
-    # cursor = con.cursor()
-    # cursor.execute("SELECT count(*) FROM items;")
-    # cur_item_count = cursor.fetchone()
     cur_item_count = cur_item_count[0]
     if cur_item_count >= store_item_count:
         return False

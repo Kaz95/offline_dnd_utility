@@ -82,9 +82,7 @@ def populate_tree(some_sql, conn, some_tree, some_store):
             converted_value = convert_currency(temp_dict['value'])
             cur_type = inspecto_gadget(converted_value)
             some_tree.insert('', 'end', temp_dict['id'], text=temp_dict['name'])
-
             img_tag(some_tree, temp_dict['id'], cur_type)
-
             some_tree.set(temp_dict['id'], 'price', converted_value[cur_type])
 
         # TODO: Consider better error handling. This is a silent pass. Not good.

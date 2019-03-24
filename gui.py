@@ -7,7 +7,8 @@ import setup
 import database
 import character
 import error_box
-import threading, queue
+import threading
+import queue
 import static_functions
 import os
 import sys
@@ -112,13 +113,11 @@ class MainWindow:
         if dash == [953, 630]:
             y -= 250
             self.root.geometry('%dx%d+%d+%d' % (dash[0], dash[1], x, y))
-            # self.root.update()
         elif dash == [820, 178]:
             self.root.geometry('%dx%d+%d+%d' % (dash[0], dash[1], x, y))
-            # self.root.update()
         else:
             self.root.geometry('%dx%d+%d+%d' % (cur_size['w'], cur_size['h'], x, y))
-            # self.root.update()
+
         self.root.update()
 
     # Clears dictionary holding account information objects. Pushes to login page.
@@ -136,6 +135,7 @@ class InstallPage(MainWindow):
         self.conn = database.create_connection(database.db)
         self.count = 0
         # TODO: I don't think I use max_count. I could, but I don't think I am. Maybe make private class var?
+        # TODO: Check count via 'count' dictionary in api. Hard code as maximum for install bar.
         self.max_count = 256
 
         MainWindow.__init__(self, root)
@@ -172,9 +172,6 @@ class InstallPage(MainWindow):
                 elif wrg_schema:
                     setup.create_schema(con)
                     setup.stock_stores(con, self.install_bar, self.root, self.title_install_label, self.queue)
-
-                # if count >= max_count:
-                #     log_in_page()
 
         threading.Thread(target=real_start).start()
 
@@ -361,7 +358,6 @@ class CharacterSelectionPage(MainWindow):
     def select_command(self):
         try:
             user_info['char'] = character.load_character_object(self.conn, self.chars_combo.get())
-            print(user_info)
             DashboardPage(self.root)
         except TypeError:
             error_box.no_character_selected()
@@ -426,19 +422,7 @@ class DashboardPage(MainWindow):
 
         for treeview in self.store_treeviews:
             format_store(treeview)
-        # # Gen Store formatting
-        # format_store(self.general_store_treeview)
-        #
-        # # Blacksmith formatting
-        # format_store(self.blacksmith_treeview)
-        #
-        # # Stables formatting
-        # format_store(self.stables_treeview)
-        #
-        # # Shipyard formatting
-        # format_store(self.shipyard_treeview)
 
-        # Populate trees
         # TODO: Verify purpose of error handling.
         try:
             self.populate_all_trees()
@@ -464,10 +448,7 @@ class DashboardPage(MainWindow):
         for treeview in self.store_treeviews:
             treeview.bind('<Button-3>', store_popup)
 
-        # self.shipyard_treeview.bind('<Button-3>', store_popup)
-        # self.blacksmith_treeview.bind('<Button-3>', store_popup)
-        # self.stables_treeview.bind('<Button-3>', store_popup)
-        # self.general_store_treeview.bind('<Button-3>', store_popup)
+
         self.inventory_treeview.bind('<Button-3>', inventory_popup)
         self.currency_treeview.bind('<Button-3>', currency_popup)
 
@@ -541,28 +522,7 @@ class DashboardPage(MainWindow):
                 item_name = treeview.item(item[0])['text']
             except TclError:
                 pass
-        # try:
-        #     item_name = self.general_store_treeview.item(item[0])['text']
-        # except TclError:
-        #     pass
-        #
-        # try:
-        #     item_name = self.blacksmith_treeview.item(item[0])['text']
-        # except TclError:
-        #     pass
-        #
-        # try:
-        #     item_name = self.stables_treeview.item(item[0])['text']
-        # except TclError:
-        #     pass
-        #
-        # try:
-        #     item_name = self.shipyard_treeview.item(item[0])['text']
-        # except TclError:
-        #     pass
-
         item_value = sql.execute_fetchone_sql(self.conn, sql.query_store_item_value(), item_name)
-        # item_value = api.get_item_value(item_name, character.Character.list_of_item_dicts)    # Depricated API call
         return item_value[0]
 
     # Changes activebackground color of buy button to a given color.
@@ -587,49 +547,24 @@ class DashboardPage(MainWindow):
         new_selection(some_dict['selected'])
 
     def general_store_callback(self, event):
-        # check_value_and_toggle()
         self.generic_selection_callback(event, gen_selected, self.general_store_treeview)
         self.check_value_and_toggle()
 
     def blacksmith_callback(self, event):
-        # check_value_and_toggle()
         self.generic_selection_callback(event, bs_selected, self.blacksmith_treeview)
         self.check_value_and_toggle()
 
     def stables_callback(self, event):
-        # check_value_and_toggle()
         self.generic_selection_callback(event, stable_selected, self.stables_treeview)
         self.check_value_and_toggle()
 
     def shipyard_callback(self, event):
-        # print(shipyard_treeview.selection())  # Gets tuple with id as first value
-        # # print(treeview.set('I001', 'quantity'))
-        # print(shipyard_treeview.item('I001'))
-        # tup = shipyard_treeview.selection()
-        # # Gets value of quantity for item selected.
-        # # Quantity can be swapped for another column
-        # print(shipyard_treeview.set(tup[0], 'quantity'))
-        # print(shipyard_treeview.item(tup[0])['text'])   # Gets name of item selected
-        # print(shipyard_treeview.selection())
-        # check_value_and_toggle()
         self.generic_selection_callback(event, ship_selected, self.shipyard_treeview)
         self.check_value_and_toggle()
 
     # The inventory callback function also attempts to deselect all previously selections in store widgets.
     def inventory_callback(self, event):
-        # TODO: This is bugged. Toggle select causes unwanted behavior. Find a way to check if toggeled on.
-        # try:
-        #     blacksmith_treeview.selection_toggle(bs_selected['selected'])
-        #     general_store_treeview.selection_toggle(gen_selected['selected'])
-        #     stables_treeview.selection_toggle(stable_selected['selected'])
-        #     shipyard_treeview.selection_toggle(ship_selected['selected'])
-        # except TclError:
-        #     pass
-
         self.generic_selection_callback(event, inv_selected, self.inventory_treeview)
-        print(self.inventory_treeview.selection())
-        print(self.inventory_treeview.item(self.inventory_treeview.selection(), 'text'))
-        print(recent_selection['selected'])
 
     def char_select_command(self):
         CharacterSelectionPage(self.root)
@@ -698,9 +633,7 @@ class DashboardPage(MainWindow):
         converted_value = static_functions.convert_currency(item_value[0])
         cur_type = static_functions.inspecto_gadget(converted_value)
         new_item = self.inventory_treeview.insert('', 'end', text=some_treeview.item(some_callback[0])['text'])
-
         static_functions.img_tag(self.inventory_treeview, new_item, cur_type)
-
         self.new_inventory_quantity(new_item)
         self.new_inventory_unit_value(new_item, converted_value[cur_type])
 
@@ -732,7 +665,6 @@ class DashboardPage(MainWindow):
         stores_dic = stores()
 
         if len(self.inventory_treeview.get_children()) != 0:
-
             if some_callback[0] in stores_dic['Ship']:
                 self.try_add_one_gui_quantity(self.shipyard_treeview, some_callback)
 
@@ -778,13 +710,18 @@ class DashboardPage(MainWindow):
 
             self.inventory_treeview.set(tup, 'quantity', answer)
             sql.execute_sql(self.conn, sql.update_quantity(), answer, item_name, user_info['inv'])
+
         except TclError:
             error_box.no_inventory_item_selected()
 
     # Updates a given currency type's value in treeview based on value returned from simpledialogue.
     def update_currency_command(self, cur_type):
         if cur_type == 'gold':
-            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=100000)
+            answer = simpledialog.askinteger('Input',
+                                             f'How much {cur_type} do you have?',
+                                             minvalue=0,
+                                             maxvalue=100000)
+
             cur_gold_value = self.currency_treeview.item('gold', 'text')
             diff = answer - cur_gold_value
             diff = diff * 100
@@ -793,7 +730,11 @@ class DashboardPage(MainWindow):
             self.currency_treeview.item('gold', text=answer)
 
         elif cur_type == 'silver':
-            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=9)
+            answer = simpledialog.askinteger('Input',
+                                             f'How much {cur_type} do you have?',
+                                             minvalue=0,
+                                             maxvalue=9)
+
             cur_silver_value = self.currency_treeview.set('gold', 'silver')
             diff = answer - cur_silver_value
             diff = diff * 10
@@ -802,7 +743,11 @@ class DashboardPage(MainWindow):
             self.currency_treeview.set('gold', 'silver', answer)
 
         elif cur_type == 'copper':
-            answer = simpledialog.askinteger('Input', f'How much {cur_type} do you have?', minvalue=0, maxvalue=9)
+            answer = simpledialog.askinteger('Input',
+                                             f'How much {cur_type} do you have?',
+                                             minvalue=0,
+                                             maxvalue=9)
+
             cur_copper_value = self.currency_treeview.set('gold', 'copper')
             diff = answer - cur_copper_value
             user_info['char'].currency += diff
@@ -821,13 +766,8 @@ class DashboardPage(MainWindow):
 
         user_info['char'].currency += answer
         user_info['char'].update_currency_db(self.conn)
-
         new_cur_dict = static_functions.convert_currency(user_info['char'].currency)
-
         self.update_currency_treeview(new_cur_dict)
-        # self.currency_treeview.item('gold', text=new_cur_dict['gp'])
-        # self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
-        # self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
 
     # Subtracts value returned from simple dialogue to a given currency type. Converts to base currency type for calculations
     # Then updates currency treeview
@@ -844,19 +784,16 @@ class DashboardPage(MainWindow):
         else:
             user_info['char'].currency -= answer
             user_info['char'].update_currency_db(self.conn)
-
             new_cur_dict = static_functions.convert_currency(user_info['char'].currency)
-
             self.update_currency_treeview(new_cur_dict)
-            # self.currency_treeview.item('gold', text=new_cur_dict['gp'])
-            # self.currency_treeview.set('gold', 'silver', new_cur_dict['sp'])
-            # self.currency_treeview.set('gold', 'copper', new_cur_dict['cp'])
+
 
     # Attempts to retrieve the text value of given item_id in each store treeview.
     # Presumably only found inside one, so no error handling needed.
     def get_tree_item_name(self, item_id):
         item_name = None
         dic = stores()
+
         if item_id in dic['Ship']:
             item_name = self.shipyard_treeview.item(item_id)['text']
         elif item_id in dic['BS']:
@@ -871,63 +808,34 @@ class DashboardPage(MainWindow):
     # Same as buy command minus the currency.
     def add_command(self):
         try:
-            # item_name = None
-            # dic = stores()
-
             print(recent_selection['selected'])
-            # tup = recent_selection['selected']
-
             item_name = self.get_tree_item_name(recent_selection['selected'][0])
-
-            # if tup[0] in dic['Ship']:
-            #     item_name = self.shipyard_treeview.item(tup[0])['text']
-            # elif tup[0] in dic['BS']:
-            #     item_name = self.blacksmith_treeview.item(tup[0])['text']
-            # elif tup[0] in dic['GS']:
-            #     item_name = self.general_store_treeview.item(tup[0])['text']
-            # elif tup[0] in dic['Stables']:
-            #     item_name = self.stables_treeview.item(tup[0])['text']
-
             self.buy_item_gui(recent_selection['selected'])
+
             if not database.in_inventory(self.conn, user_info['inv'], item_name, '+'):
                 user_info['char'].add_item_db(self.conn, item_name, user_info['acc'].id, user_info['inv'])
+
         except TypeError:
             error_box.no_store_item_selected()
 
     # TODO: Buy and sell commands require better error handling
     # Buys item on front (gui) and back (DB) end. Updates currency based on item value.
     def buy_command(self):
-
         # item_name = None
         affordable = None
-        # dic = stores()
-
         print(recent_selection['selected'])
-        # tup = recent_selection['selected']
-
         item_name = self.get_tree_item_name(recent_selection['selected'][0])
 
-        # if tup[0] in dic['Ship']:
-        #     item_name = self.shipyard_treeview.item(tup[0])['text']
-        # elif tup[0] in dic['BS']:
-        #     item_name = self.blacksmith_treeview.item(tup[0])['text']
-        # elif tup[0] in dic['GS']:
-        #     item_name = self.general_store_treeview.item(tup[0])['text']
-        # elif tup[0] in dic['Stables']:
-        #     item_name = self.stables_treeview.item(tup[0])['text']
         if item_name is not None:
             affordable = user_info['char'].buy_sell(item_name, 'buy', self.conn)
 
         currency_dict = static_functions.convert_currency(user_info['char'].currency)
         self.update_currency_treeview(currency_dict)
-        # self.currency_treeview.item('gold', text=currency_dict['gp'])
-        # self.currency_treeview.set('gold', 'silver', currency_dict['sp'])
-        # self.currency_treeview.set('gold', 'copper', currency_dict['cp'])
-
         self.root.update()
 
         if affordable:
             self.buy_item_gui(recent_selection['selected'])
+
             if not database.in_inventory(self.conn, user_info['inv'], item_name, '+'):
                 user_info['char'].add_item_db(self.conn, item_name, user_info['acc'].id, user_info['inv'])
 
@@ -939,28 +847,21 @@ class DashboardPage(MainWindow):
             tup = inv_selected['selected']
             item = self.inventory_treeview.item(tup, 'text')
             self.sell_item_gui(inv_selected['selected'])
-            # self.root.update()
+
             if not database.in_inventory(self.conn, user_info['inv'], item, '-'):
                 database.delete_item(self.conn, item, user_info['inv'])
+
         except TclError:
             error_box.no_inventory_item_selected()
 
     # Sells item and updates currency on front-end.
     def sell_command(self):
-        # print(recent_selection['selected'])
         tup = inv_selected['selected']
         item = self.inventory_treeview.item(tup, 'text')
-
         user_info['char'].buy_sell(item, 'sell', self.conn)
-
         currency_dict = user_info['char'].convert_currency()
         self.update_currency_treeview(currency_dict)
-        # self.currency_treeview.item('gold', text=currency_dict['gp'])
-        # self.currency_treeview.set('gold', 'silver', currency_dict['sp'])
-        # self.currency_treeview.set('gold', 'copper', currency_dict['cp'])
-
         self.sell_item_gui(inv_selected['selected'])
-
         self.root.update()
 
         if not database.in_inventory(self.conn, user_info['inv'], item, '-'):
@@ -971,11 +872,6 @@ main = Tk()
 # Create directories required for DB file creation
 os.makedirs("C:\\sqlite", exist_ok=True)
 os.makedirs("C:\\sqlite\\db", exist_ok=True)
-# Currency icon images.
-# gold_img = 'C:\\Users\\kazac\\Desktop\\buttons\\gold.png'
-# silver_img = 'C:\\Users\\kazac\\Desktop\\buttons\\silver.png'
-# copper_img = 'C:\\Users\\kazac\\Desktop\\buttons\\copper.png'
-# gold_img = PhotoImage(file='C:\\Users\\Terrance\\Desktop\\button_screens\\gold.png')
 
 
 # TODO: This works with a non-onefile exe. No idea why. Figure it out ASAP.
