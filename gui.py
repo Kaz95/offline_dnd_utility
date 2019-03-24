@@ -98,7 +98,7 @@ class MainWindow:
         hs = self.root.winfo_screenheight()
         x = (ws / 2) - (cur_size['w'] / 2)
         y = (hs / 2) - (cur_size['h'] / 2)
-        if dash == [953, 630]:
+        if dash == [1003, 630]:
             y -= 250
             self.root.geometry('%dx%d+%d+%d' % (dash[0], dash[1], x, y))
         elif dash == [820, 178]:
@@ -529,7 +529,7 @@ class DashboardPage(MainWindow):
 
         cur_size = self.screen_size()
         if cur_size['h'] != 630:
-            self.center([953, 630])
+            self.center([1003, 630])
 
     # Populates the four treeview widgets that, makeup the dashboard page, with items.
     def populate_all_trees(self):
