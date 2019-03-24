@@ -40,6 +40,7 @@ def wrong_schema(conn):
 # Updates value of progress bar.
 def update_mainloop(some_bar, count, some_label, window, canceled):
     percent = round((count/256) * 100)
+
     some_label.config(text=f'Installing....{percent}%')
     some_bar['value'] = count
     time.sleep(.05)

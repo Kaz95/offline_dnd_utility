@@ -46,6 +46,9 @@ def user_creates_account(conn, username, password):
     if username_taken(username):
         error_box.username_taken()
         return False
+    elif password == '':
+        error_box.no_password()
+        return False
     else:
         acc_info = {'username': username, 'password': password}
         database.add_account_row(conn, sql.add_account_row(), acc_info)

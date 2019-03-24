@@ -52,6 +52,10 @@ def cancel_install():
     return messagebox.askokcancel('Cancel Installation', 'Cancel Installation')
 
 
+def no_password():
+    messagebox.showerror('No Password', 'Please provide a password.')
+
+
 if __name__ == '__main__':
     answer = cancel_install()
     print(answer)
