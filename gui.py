@@ -466,7 +466,6 @@ class DashboardPage(MainWindow):
         for treeview in self.store_treeviews:
             treeview.bind('<Button-3>', store_popup)
 
-
         self.inventory_treeview.bind('<Button-3>', inventory_popup)
         self.currency_treeview.bind('<Button-3>', currency_popup)
 
@@ -549,6 +548,7 @@ class DashboardPage(MainWindow):
     # Return Item value as integer.
     def recent_select_value(self):
         item = recent_selection['selected']
+        print(item)
         item_name = None
         for treeview in self.store_treeviews:
             try:
@@ -575,9 +575,15 @@ class DashboardPage(MainWindow):
         item_value = self.recent_select_value()
         self.toggle_affordable_color(item_value)
 
+    # Sets recent selection and toggles previous selection.
     def generic_selection_callback(self, event, some_dict, some_treeview):
         some_dict['selected'] = some_treeview.selection()
-        new_selection(some_dict['selected'])
+        if recent_selection['selected'] == 'None' or len(some_treeview.selection()) > 0:
+            new_selection(some_dict['selected'])
+
+        for tree in self.store_treeviews:
+            if len(tree.selection()) > 0 and tree.selection() != recent_selection['selected']:
+                tree.selection_toggle(tree.selection())
 
     def general_store_callback(self, event):
         self.generic_selection_callback(event, gen_selected, self.general_store_treeview)
@@ -892,7 +898,7 @@ class DashboardPage(MainWindow):
         tup = inv_selected['selected']
         item = self.inventory_treeview.item(tup, 'text')
         user_info['char'].buy_sell(item, 'sell', self.conn)
-        currency_dict = user_info['char'].convert_currency()
+        currency_dict = static_functions.convert_currency(user_info['char'].currency)
         self.update_currency_treeview(currency_dict)
         self.sell_item_gui(inv_selected['selected'])
         self.root.update()
