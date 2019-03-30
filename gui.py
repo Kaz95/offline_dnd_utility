@@ -387,7 +387,6 @@ class DashboardPage(MainWindow):
         self.blacksmith_treeview.configure(yscrollcommand=self.bs_vsb.set)
         self.stables_treeview.configure(yscrollcommand=self.stable_vsb.set)
 
-
         # TODO: Refactor menu names, they are currently shite.
         # Menus
 
@@ -395,8 +394,9 @@ class DashboardPage(MainWindow):
         store_popup_menu.add_command(label='Add Item', command=self.add_command)
 
         inventory_popup_menu = Menu(tearoff=False)
+        inventory_popup_menu.add_command(label='Subtract One', command=self.subtract_one_command)
         inventory_popup_menu.add_command(label='Remove Item', command=self.remove_command)
-        inventory_popup_menu.add_command(label='Change Quantity', command=self.update_quantity_command)
+        inventory_popup_menu.add_command(label='Update Quantity', command=self.update_quantity_command)
 
         currency_popup_menu = Menu(tearoff=False)
         update_submenu = Menu(tearoff=False)
@@ -826,7 +826,6 @@ class DashboardPage(MainWindow):
             new_cur_dict = static_functions.convert_currency(user_info['char'].currency)
             self.update_currency_treeview(new_cur_dict)
 
-
     # Attempts to retrieve the text value of given item_id in each store treeview.
     # Presumably only found inside one, so no error handling needed.
     def get_tree_item_name(self, item_id):
@@ -882,6 +881,17 @@ class DashboardPage(MainWindow):
 
     # Same as sell command minus the currency
     def remove_command(self):
+        try:
+            tup = inv_selected['selected']
+            item = self.inventory_treeview.item(tup, 'text')
+            self.inventory_treeview.delete(tup)
+            database.delete_item(self.conn, item, user_info['inv'])
+
+        except TclError:
+            error_box.no_inventory_item_selected()
+
+    # Same as sell command minus the currency
+    def subtract_one_command(self):
         try:
             tup = inv_selected['selected']
             item = self.inventory_treeview.item(tup, 'text')
