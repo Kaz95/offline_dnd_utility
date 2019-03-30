@@ -201,7 +201,7 @@ def count_table_rows():
 # Update
 
 def update_quantity():
-    return """UPDATE items SET quantity = ? WHERE item = ? AND inventory_id = ?"""
+    return """UPDATE items SET quantity = ? WHERE item = ? AND character_id = ?"""
 
 
 # TODO: Test

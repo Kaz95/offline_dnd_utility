@@ -425,6 +425,7 @@ class DashboardPage(MainWindow):
         def select_item(event, some_tree):
             iid = some_tree.identify_row(event.y)
             if iid is not None:
+                print(iid)
                 some_tree.selection_set(iid)
                 return True
 
@@ -445,7 +446,8 @@ class DashboardPage(MainWindow):
                 store_popup_menu.post(event.x_root, event.y_root)
 
         def inventory_popup(event):
-            inventory_popup_menu.post(event.x_root, event.y_root)
+            if select_item(event, self.inventory_treeview):
+                inventory_popup_menu.post(event.x_root, event.y_root)
 
         def currency_popup(event):
             currency_popup_menu.post(event.x_root, event.y_root)
