@@ -33,7 +33,7 @@ def log_out():
     print('-----Logged Out-----')
     user_info['acc'] = None
     user_info['char'] = None
-    user_info['inv'] = None
+    # user_info['inv'] = None
 
 
 # Generic function that is passed a tuple with a single value.
@@ -378,6 +378,9 @@ class DashboardPage(MainWindow):
         # List of store treeviews
         self.store_treeviews = [self.shipyard_treeview, self.stables_treeview, self.blacksmith_treeview, self.general_store_treeview]
 
+        recent_selection['selected'] = 'None'
+        inv_selected['selected'] = 'none'
+
         # Scrollbars
         self.gen_vsb = ttk.Scrollbar(self.gen_frame, orient="vertical", command=self.general_store_treeview.yview)
         self.bs_vsb = ttk.Scrollbar(self.bs_frame, orient="vertical", command=self.blacksmith_treeview.yview)
@@ -544,7 +547,7 @@ class DashboardPage(MainWindow):
         self.buy.grid(row=1, columnspan=4, sticky=W + E)
         self.sell = Button(text='Sell', bg='gray', activebackground='green', command=self.sell_command)
         self.sell.grid(row=4, columnspan=4, sticky=N + W + E)
-        self.logout_button = Button(text='Log-out', bg='gray', command=self.screen_size)
+        self.logout_button = Button(text='Log-out', bg='gray', command=self.logout_command)
         self.logout_button.grid(row=5, column=0, pady=50, sticky=S + W)
         self.dashboard_page_character_select_button = Button(text='Character Selection', bg='gray',
                                                              command=self.char_select_command)
@@ -586,7 +589,7 @@ class DashboardPage(MainWindow):
     def change_button_background(self, color):
         self.buy.config(activebackground=color)
 
-    # Changes buy button activebackground color -
+    # Changes buy button activebackground color
     # based on if a character object's currency value is greater than a given item value.
     def toggle_affordable_color(self, item_value):
         if item_value >= user_info['char'].currency:
