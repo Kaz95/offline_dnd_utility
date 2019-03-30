@@ -101,7 +101,7 @@ class MainWindow:
         hs = self.root.winfo_screenheight()
         x = (ws / 2) - (cur_size['w'] / 2)
         y = (hs / 2) - (cur_size['h'] / 2)
-        if dash == [1003, 630]:
+        if dash == [1019, 647]:
             y -= 250
             self.root.geometry('%dx%d+%d+%d' % (dash[0], dash[1], x, y))
         elif dash == [820, 178]:
@@ -361,10 +361,10 @@ class DashboardPage(MainWindow):
         MainWindow.__init__(self, root)
         self.currency_dict = static_functions.convert_currency(user_info['char'].currency)
 
-        self.gen_frame = Frame(root)
-        self.bs_frame = Frame(root)
-        self.ship_frame = Frame(root)
-        self.stable_frame = Frame(root)
+        self.gen_frame = LabelFrame(root, text='General Store')
+        self.bs_frame = LabelFrame(root, text='Blacksmith')
+        self.ship_frame = LabelFrame(root, text='Shipyard')
+        self.stable_frame = LabelFrame(root, text='Stables')
 
         # Treeviews
 
@@ -419,8 +419,27 @@ class DashboardPage(MainWindow):
         currency_popup_menu.add_cascade(label='Add', menu=add_submenu)
         currency_popup_menu.add_cascade(label='Subtract', menu=subtract_submenu)
 
-        def store_popup(event):
-            store_popup_menu.post(event.x_root, event.y_root)
+        def select_item(event, some_tree):
+            iid = some_tree.identify_row(event.y)
+            if iid is not None:
+                some_tree.selection_set(iid)
+                return True
+
+        def general_store_popup(event):
+            if select_item(event, self.general_store_treeview):
+                store_popup_menu.post(event.x_root, event.y_root)
+
+        def blacksmith_popup(event):
+            if select_item(event, self.blacksmith_treeview):
+                store_popup_menu.post(event.x_root, event.y_root)
+
+        def stables_popup(event):
+            if select_item(event, self.stables_treeview):
+                store_popup_menu.post(event.x_root, event.y_root)
+
+        def shipyard_popup(event):
+            if select_item(event, self.shipyard_treeview):
+                store_popup_menu.post(event.x_root, event.y_root)
 
         def inventory_popup(event):
             inventory_popup_menu.post(event.x_root, event.y_root)
@@ -463,8 +482,13 @@ class DashboardPage(MainWindow):
         self.inventory_treeview.bind('<<TreeviewSelect>>', self.inventory_callback)
         self.general_store_treeview.bind('<<TreeviewSelect>>', self.general_store_callback)
 
-        for treeview in self.store_treeviews:
-            treeview.bind('<Button-3>', store_popup)
+        # for treeview in self.store_treeviews:
+        #     treeview.bind('<Button-3>', general_store_popup)
+
+        self.general_store_treeview.bind('<Button-3>', general_store_popup)
+        self.blacksmith_treeview.bind('<Button-3>', blacksmith_popup)
+        self.stables_treeview.bind('<Button-3>', stables_popup)
+        self.shipyard_treeview.bind('<Button-3>', shipyard_popup)
 
         self.inventory_treeview.bind('<Button-3>', inventory_popup)
         self.currency_treeview.bind('<Button-3>', currency_popup)
@@ -520,7 +544,7 @@ class DashboardPage(MainWindow):
         self.buy.grid(row=1, columnspan=4, sticky=W + E)
         self.sell = Button(text='Sell', bg='gray', activebackground='green', command=self.sell_command)
         self.sell.grid(row=4, columnspan=4, sticky=N + W + E)
-        self.logout_button = Button(text='Log-out', bg='gray', command=self.logout_command)
+        self.logout_button = Button(text='Log-out', bg='gray', command=self.screen_size)
         self.logout_button.grid(row=5, column=0, pady=50, sticky=S + W)
         self.dashboard_page_character_select_button = Button(text='Character Selection', bg='gray',
                                                              command=self.char_select_command)
@@ -531,8 +555,8 @@ class DashboardPage(MainWindow):
 
         cur_size = self.screen_size()
         # TODO: Magic numbers are bad mkay.
-        if cur_size['h'] != 630:
-            self.center([1003, 630])
+        if cur_size['h'] != 647:
+            self.center([1019, 647])
 
     # Populates the four treeview widgets that, makeup the dashboard page, with items.
     def populate_all_trees(self):
