@@ -601,8 +601,12 @@ class DashboardPage(MainWindow):
 
     # Gets item value of recent treeview selection and toggles button activebackground color based on that value.
     def check_value_and_toggle(self):
-        item_value = self.recent_select_value()
-        self.toggle_affordable_color(item_value)
+        try:
+            item_value = self.recent_select_value()
+            self.toggle_affordable_color(item_value)
+        # TODO: Remove later
+        except TypeError:
+            print('ima type error')
 
     # Sets recent selection and toggles previous selection.
     def generic_selection_callback(self, event, some_dict, some_treeview):
