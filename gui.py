@@ -45,6 +45,7 @@ def new_selection(some_selection):
 
 class MainWindow:
     def __init__(self, root):
+        self.main_thread = threading.main_thread()
         # These two super class variables are used for handling clean program exit.
         self.closed = True
         self.queue = queue.Queue()
@@ -171,6 +172,7 @@ class LoginPage(MainWindow):
     def __init__(self, root):
         # Connection used to check if the database is setup correctly. Is discarded no matter the outcome.
         self.temp_conn = database.create_connection(database.db)
+        self.thread_id = threading.get_ident()
 
         MainWindow.__init__(self, root)
         if setup.wrong_schema(self.temp_conn) or database.wrong_item_count(self.temp_conn):
@@ -211,6 +213,12 @@ class LoginPage(MainWindow):
 
     # Authenticates information passed to entry boxes against DB. Pushes to character creation page
     def login_page_login_command(self):
+        print(threading.get_ident())
+        print(self.thread_id)
+        if self.thread_id != threading.get_ident():
+            error_box.wrong_username()
+            LoginPage(self.root)
+            return
         # account.log_in(conn, login_page_username_entry.get(), login_page_password_entry.get())
         user_info['acc'] = account.log_in(self.conn, self.login_page_username_entry.get(), self.login_page_password_entry.get())
         if user_info['acc'] is not None:
