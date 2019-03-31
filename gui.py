@@ -618,6 +618,9 @@ class DashboardPage(MainWindow):
             if len(tree.selection()) > 0 and tree.selection() != recent_selection['selected']:
                 tree.selection_toggle(tree.selection())
 
+        if len(self.inventory_treeview.selection()) > 0 and self.inventory_treeview.selection() != recent_selection['selected']:
+            self.inventory_treeview.selection_toggle(self.inventory_treeview.selection())
+
     def general_store_callback(self, event):
         self.generic_selection_callback(event, gen_selected, self.general_store_treeview)
         self.check_value_and_toggle()
