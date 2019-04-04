@@ -67,14 +67,18 @@ def stock_stores(conn, some_bar, window, some_label, some_queue):
     for dic in usable_dict:
         temp = {}
         for key, value in dic.items():
+            # TODO: First thing will always be to slice ID off url via regex and add to dictionary
+            # TODO: Then add item name and url to dictionary with sliced ID as key
             if not temp:    # If temp dictionary is empty
                 temp['item'] = value    # add value with key 'item'
             else:
                 temp['api'] = value     # add value with key 'api'
 
+            # TODO: API call and add return to dictionary
             item_value = api.get_item_value(temp['item'], character.Character.list_of_item_dicts, s)
             temp['currency'] = item_value
 
+            # TODO: Regex id and use to add store 'tag' to dictionary. This isn't DRY. I regex twice.
             if value[0:37] == url:  # if one of those values beings with a url like string
                 num = api.regex(value, 'equipment/')    # slices number off url and captures as variable
 
@@ -91,15 +95,16 @@ def stock_stores(conn, some_bar, window, some_label, some_queue):
                 else:
                     temp['store'] = 'No Store'
 
+        # TODO: Get from queue and DB Insert
+        # TODO: Either as each specific column value becomes available, or only full item info dictionaries.
         # adds an item to a store table based on information stored in dictionary
         database.add_store_item(conn, sql.add_store_item(), temp)
         count += 1
         print(count)
-        # TODO: Pass new canceled var that was just obtained from queue.
+        # TODO: Change this to a Daemon thread to avoid having to do this cancel workaround
         if not some_queue.empty():
             canceled = some_queue.get()
         update_mainloop(some_bar, count, some_label, window, canceled)
 
     print('done in: ', time.time() - time_to_install)
     print('Done with everything.')
-
