@@ -53,6 +53,7 @@ def update_mainloop(some_bar, count, some_label, window, canceled):
 
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
 def stock_stores(conn, some_bar, window, some_label, some_queue):
+    # TODO: This is a seam
     canceled = False
     count = 0
     time_to_install = time.time()
@@ -62,6 +63,7 @@ def stock_stores(conn, some_bar, window, some_label, some_queue):
     response = api.call_api(url, s)
     response_dict = api.get_api_all(response)
     usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
+    # TODO: This is a seam
     for dic in usable_dict:
         temp = {}
         for key, value in dic.items():
