@@ -9,7 +9,7 @@ class TestSQL(unittest.TestCase):
         with mock.patch('sql.sqlite3') as mocksql:
             conn = mocksql.connect()
             call = """some sql"""
-            sql.execute_sql(conn, call)
+            sql.execute_sql_with_conn(conn, call)
             mocksql.connect().execute.assert_called_with(call, ())
 
     def test_execute_fetchall_sql(self):
@@ -137,7 +137,7 @@ class TestSQL(unittest.TestCase):
             VALUES(?,?,?)""")
 
     def test_sql_add_store_item(self):
-        self.assertEqual(sql.add_store_item(),
+        self.assertEqual(sql.add_store_item_p1(),
                          """INSERT INTO items (item, api, unit_value, store)
              VALUES(?,?,?,?)""")
 

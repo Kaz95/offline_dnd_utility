@@ -6,9 +6,14 @@ import sqlite3
 
 
 # Modular sqlite execute functions which are passed a connection and some sql
-def execute_sql(con, sql_statement, *args):
+def execute_sql_with_conn(con, sql_statement, *args):
     with con:
         con.execute(sql_statement, args)
+
+
+# Modular sqlite execute functions which are passed a connection and some sql
+def execute_sql(con, sql_statement, *args):
+    con.execute(sql_statement, args)
 
 
 def execute_fetchone_sql(con, sql_statement, *args):
@@ -190,9 +195,12 @@ def add_character_row():
             VALUES(?,?,?)"""
 
 
-def add_store_item():
-    return """INSERT INTO items (item, api, unit_value, store)
+def add_store_item_p1():
+    return """INSERT INTO items (item, api, store_index, store)
              VALUES(?,?,?,?)"""
+
+def add_store_item_p2():
+    return """INSERT INTO items (unit_value) WHERE store_index = ? VALUES(?)"""
 
 
 def count_table_rows():

@@ -29,28 +29,28 @@ def create_connection(db_path):
 
 # Inserts given values into accounts table at given columns.
 def add_account_row(conn, some_sql, acc_info):
-    sql.execute_sql(conn, some_sql, acc_info['username'], acc_info['password'])
+    sql.execute_sql_with_conn(conn, some_sql, acc_info['username'], acc_info['password'])
 
 
 # Inserts given values into accounts table at given columns.
 def add_inventory_row(conn, some_sql, inv_info):
-    sql.execute_sql(conn, some_sql, inv_info['acc_id'], inv_info['char_id'], inv_info['name'])
+    sql.execute_sql_with_conn(conn, some_sql, inv_info['acc_id'], inv_info['char_id'], inv_info['name'])
 
 
 # Inserts given values into accounts table at given columns.
 def add_character_row(conn, some_sql, char_info):
-    sql.execute_sql(conn, some_sql, char_info['acc_id'], char_info['name'], char_info['currency'])
+    sql.execute_sql_with_conn(conn, some_sql, char_info['acc_id'], char_info['name'], char_info['currency'])
 
 
 # Inserts given values into accounts table at given columns.
 def add_item_row(conn, some_sql, item_info):
-    sql.execute_sql(conn, some_sql, item_info['acc_id'], item_info['char_id'], item_info['inv_id'], item_info['item'],
-                    item_info['api'], item_info['value'], item_info['quantity'])
+    sql.execute_sql_with_conn(conn, some_sql, item_info['acc_id'], item_info['char_id'], item_info['inv_id'], item_info['item'],
+                              item_info['api'], item_info['value'], item_info['quantity'])
 
 
 # Used to populate store tables
-def add_store_item(conn, some_sql, item_info):
-    sql.execute_sql(conn, some_sql, item_info['item'], item_info['api'], item_info['currency'], item_info['store'])
+def add_store_item_p1(conn, some_sql, item_info):
+    sql.execute_sql_with_conn(conn, some_sql, item_info['item'], item_info['api'], item_info['index'], item_info['store'])
 
 
 # SELECT
@@ -76,17 +76,17 @@ def query_accounts_with_characters(conn, some_sql):
 
 # Deletes a single item based on inventory ID.
 def delete_item(conn, item, inv_id):
-    sql.execute_sql(conn, sql.delete_item(), item, inv_id)
+    sql.execute_sql_with_conn(conn, sql.delete_item(), item, inv_id)
 
 
 # Deletes all items based on character ID.
 def delete_all_character_items(conn, char_id):
-    sql.execute_sql(conn, sql.delete_all('items', 'character_id'), char_id)
+    sql.execute_sql_with_conn(conn, sql.delete_all('items', 'character_id'), char_id)
 
 
 # Deletes all character inventories based on character ID.
 def delete_character_inventories(conn, char_id):
-    sql.execute_sql(conn, sql.delete_all('inventories', 'character_id'), char_id)
+    sql.execute_sql_with_conn(conn, sql.delete_all('inventories', 'character_id'), char_id)
 
 
 # TODO: test this
@@ -94,7 +94,7 @@ def delete_character_inventories(conn, char_id):
 def delete_character(conn, char_id):
     delete_all_character_items(conn, char_id)
     delete_character_inventories(conn, char_id)
-    sql.execute_sql(conn, sql.delete_all('characters', 'id'), char_id)
+    sql.execute_sql_with_conn(conn, sql.delete_all('characters', 'id'), char_id)
 
 
 # Update
@@ -117,14 +117,14 @@ def in_inventory(conn, inv_id, item, add_subtract=None):
             if add_subtract == '+':
                 int_quantity = int(tup[1])
                 int_quantity += 1
-                sql.execute_sql(conn, sql.update_quantity(), int_quantity, tup[0], inv_id)
+                sql.execute_sql_with_conn(conn, sql.update_quantity(), int_quantity, tup[0], inv_id)
                 return True
 
             elif add_subtract == '-':
                 int_quantity = int(tup[1])
                 if int_quantity > 1:
                     int_quantity -= 1
-                    sql.execute_sql(conn, sql.update_quantity(), int_quantity, tup[0], inv_id)
+                    sql.execute_sql_with_conn(conn, sql.update_quantity(), int_quantity, tup[0], inv_id)
                     return True
     return False
 

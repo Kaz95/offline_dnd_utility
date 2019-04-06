@@ -14,10 +14,10 @@ import sqlite3
 # TODO: Test
 # Four sqlite statements which create the database schema.
 def create_schema(conn):
-    sql.execute_sql(conn, sql.create_accounts_table())
-    sql.execute_sql(conn, sql.create_characters_table())
-    sql.execute_sql(conn, sql.create_inventories_table())
-    sql.execute_sql(conn, sql.create_items_table())
+    sql.execute_sql_with_conn(conn, sql.create_accounts_table())
+    sql.execute_sql_with_conn(conn, sql.create_characters_table())
+    sql.execute_sql_with_conn(conn, sql.create_inventories_table())
+    sql.execute_sql_with_conn(conn, sql.create_items_table())
 
 
 # Verifies database setup correctly
@@ -37,18 +37,63 @@ def wrong_schema(conn):
         return True
 
 
-# Updates value of progress bar.
-def update_mainloop(some_bar, count, some_label, window, canceled):
-    percent = round((count/256) * 100)
+# # Updates value of progress bar.
+# def update_mainloop(some_bar, count, some_label, window, canceled):
+#     percent = round((count/256) * 100)
+#
+#     some_label.config(text=f'Installing....{percent}%')
+#     some_bar['value'] = count
+#     time.sleep(.05)
+#     if not canceled:
+#         some_bar.update_idletasks()
+#     else:
+#         window.quit()
+#         sys.exit()
 
-    some_label.config(text=f'Installing....{percent}%')
-    some_bar['value'] = count
-    time.sleep(.05)
-    if not canceled:
-        some_bar.update_idletasks()
-    else:
-        window.quit()
-        sys.exit()
+
+def stock_stores_p1(conn):
+    # TODO: This is a seam
+    store_dict = stores.stores()  # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
+    url = api.construct_api_url('equipment')
+    s = api.create_session()
+    response = api.call_api(url, s)
+    response_dict = api.get_api_all(response)
+    usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
+
+    for dic in usable_dict:
+        temp = {}
+
+        # TODO: Make sure to do with conn: around phases instead of each sql statement. Use new execute function.
+        for key, value in dic.items():
+
+            # TODO: This should be done prior to phase1 DB insertion.
+            if value[0:37] == url:  # if one of those values beings with a url like string
+                num = api.regex(value, 'equipment/')  # slices number off url and captures as variable
+                temp['index'] = num
+
+                # This logic compares the captured number to the numbers in the dict imported earlier
+                # Then it adds a 'store':'some_store' key:value to the temp dictionary
+                if num in store_dict['GS']:
+                    temp['store'] = 'General Store'
+                elif num in store_dict['BS']:
+                    temp['store'] = 'Blacksmith'
+                elif num in store_dict['Ship']:
+                    temp['store'] = 'Shipyard'
+                elif num in store_dict['Stables']:
+                    temp['store'] = 'Stables'
+                else:
+                    temp['store'] = 'No Store'
+            # TODO: First thing will always be to slice ID off url via regex and add to dictionary as 'index'
+            # TODO: Then add item name, url and index to temp dictionary for DB insertion
+            if not temp:    # If temp dictionary is empty
+                temp['item'] = value    # add value with key 'item'
+            else:
+                temp['api'] = value     # add value with key 'api'
+
+        database.add_store_item_p1(conn, sql.add_store_item_p1(), temp)
+
+
+def stock_stores_p2(conn):
 
 
 # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
@@ -66,7 +111,7 @@ def stock_stores(conn, some_bar, window, some_label, some_queue):
     # TODO: This is a seam
     for dic in usable_dict:
         temp = {}
-        # TODO: Make sure to do with conn: around phases instead of each sql statement. Will require need execute_sql.
+        # TODO: Make sure to do with conn: around phases instead of each sql statement. Will require need execute_sql_with_conn.
         for key, value in dic.items():
             # TODO: First thing will always be to slice ID off url via regex and add to dictionary as 'index'
             # TODO: Then add item name, url and index to temp dictionary for DB insertion
@@ -97,15 +142,15 @@ def stock_stores(conn, some_bar, window, some_label, some_queue):
                     temp['store'] = 'No Store'
 
         # TODO: This will be phase2 DB insertion. Inserting the item values where index
-        # TODO: add_store_item will need to be reworked, and, most likely, split into multiple functions
+        # TODO: add_store_item_p1 will need to be reworked, and, most likely, split into multiple functions
         # adds an item to a store table based on information stored in dictionary
-        database.add_store_item(conn, sql.add_store_item(), temp)
+        database.add_store_item_p1(conn, sql.add_store_item_p1(), temp)
         count += 1
         print(count)
         # TODO: Change this to a Daemon thread to avoid having to do this cancel workaround
         if not some_queue.empty():
             canceled = some_queue.get()
-        update_mainloop(some_bar, count, some_label, window, canceled)
+        # update_mainloop(some_bar, count, some_label, window, canceled)
 
     print('done in: ', time.time() - time_to_install)
     print('Done with everything.')

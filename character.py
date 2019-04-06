@@ -38,7 +38,7 @@ class Character:
     # TODO: Test
     # Updates currency column in DB based on character ID and currency.
     def update_currency_db(self, conn):
-        sql.execute_sql(conn, sql.update_currency(), self.currency, self.id)
+        sql.execute_sql_with_conn(conn, sql.update_currency(), self.currency, self.id)
 
     # TODO: action= and conn= aren't exactly optional and should not be treated as such.
     # Gets item price info and adds/subtracts it to/from currency based on [unit] key.

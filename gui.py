@@ -792,7 +792,7 @@ class DashboardPage(MainWindow):
                                              maxvalue=1000)
 
             self.inventory_treeview.set(tup, 'quantity', answer)
-            sql.execute_sql(self.conn, sql.update_quantity(), answer, item_name, user_info['inv'])
+            sql.execute_sql_with_conn(self.conn, sql.update_quantity(), answer, item_name, user_info['inv'])
 
         except TclError:
             error_box.no_inventory_item_selected()

@@ -59,9 +59,9 @@ class TestDatabaseUnitIntegration(unittest.TestCase):
         with mock.patch('database.sqlite3') as mocksql:
             some_item = {'item': 'club', 'api': 'some api', 'store': 'bs', 'currency': 1}
             conn = mocksql.connect()
-            database.add_store_item(conn, sql.add_store_item(), some_item)
-            mocksql.connect().execute.assert_called_with(sql.add_store_item(),
-                                                                  ('club', 'some api', 1, 'bs'))
+            database.add_store_item_p1(conn, sql.add_store_item_p1(), some_item)
+            mocksql.connect().execute.assert_called_with(sql.add_store_item_p1(),
+                                                         ('club', 'some api', 1, 'bs'))
 
     def test_count_rows(self):
         with mock.patch('database.sqlite3') as mocksql:
