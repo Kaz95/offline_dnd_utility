@@ -2,14 +2,9 @@ import database
 import sql
 import stores
 import api
-import character
-import time
 import requests
-from multiprocessing import Pool, Queue
+from multiprocessing import Pool
 import json
-import time
-import threading
-import sys
 
 base_url = "http://www.dnd5eapi.co/api/equipment/"
 session = requests.Session()
