@@ -4,7 +4,15 @@ import stores
 import api
 import character
 import time
+import requests
+from multiprocessing import Pool, Queue
+import json
+import time
+import threading
 import sys
+
+base_url = "http://www.dnd5eapi.co/api/equipment/"
+session = requests.Session()
 
 # TODO: May be required for mock. Not sure atm.
 import sqlite3
@@ -93,64 +101,85 @@ def stock_stores_p1(conn):
         database.add_store_item_p1(conn, sql.add_store_item_p1(), temp)
 
 
-def stock_stores_p2(conn):
+def stock_stores_p2(conn, aggregate):
+    for _ in aggregate:
+        database.add_store_item_p2(conn, sql.add_store_item_p2(), _)
 
 
-# Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
-def stock_stores(conn, some_bar, window, some_label, some_queue):
-    # TODO: This is a seam
-    canceled = False
-    count = 0
-    time_to_install = time.time()
-    store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
-    url = api.construct_api_url('equipment')
-    s = api.create_session()
-    response = api.call_api(url, s)
-    response_dict = api.get_api_all(response)
-    usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
-    # TODO: This is a seam
-    for dic in usable_dict:
-        temp = {}
-        # TODO: Make sure to do with conn: around phases instead of each sql statement. Will require need execute_sql_with_conn.
-        for key, value in dic.items():
-            # TODO: First thing will always be to slice ID off url via regex and add to dictionary as 'index'
-            # TODO: Then add item name, url and index to temp dictionary for DB insertion
-            if not temp:    # If temp dictionary is empty
-                temp['item'] = value    # add value with key 'item'
-            else:
-                temp['api'] = value     # add value with key 'api'
+def get_stuff_parallel(thing_to_get):
+    print(base_url + str(thing_to_get))
+    response = session.get(base_url + str(thing_to_get))
+    temp = {}
+    info_dict = json.loads(response.text)
+    temp['index'] = info_dict['index']
+    temp['name'] = info_dict['name']
+    return temp
 
-            # TODO: This will be a pool of API calls, post phase1 DB insertion
-            item_value = api.get_item_value(temp['item'], character.Character.list_of_item_dicts, s)
-            temp['currency'] = item_value
 
-            # TODO: This should be done prior to phase1 DB insertion.
-            if value[0:37] == url:  # if one of those values beings with a url like string
-                num = api.regex(value, 'equipment/')    # slices number off url and captures as variable
+def map_values():
+    pool = Pool(processes=12)
+    return pool.map(get_stuff_parallel, range(1, 257))
 
-                # This logic compares the captured number to the numbers in the dict imported earlier
-                # Then it adds a 'store':'some_store' key:value to the temp dictionary
-                if num in store_dict['GS']:
-                    temp['store'] = 'General Store'
-                elif num in store_dict['BS']:
-                    temp['store'] = 'Blacksmith'
-                elif num in store_dict['Ship']:
-                    temp['store'] = 'Shipyard'
-                elif num in store_dict['Stables']:
-                    temp['store'] = 'Stables'
-                else:
-                    temp['store'] = 'No Store'
 
-        # TODO: This will be phase2 DB insertion. Inserting the item values where index
-        # TODO: add_store_item_p1 will need to be reworked, and, most likely, split into multiple functions
-        # adds an item to a store table based on information stored in dictionary
-        database.add_store_item_p1(conn, sql.add_store_item_p1(), temp)
-        count += 1
-        print(count)
-        # TODO: Change this to a Daemon thread to avoid having to do this cancel workaround
-        if not some_queue.empty():
-            canceled = some_queue.get()
-        # update_mainloop(some_bar, count, some_label, window, canceled)
+def stock_stores(conn):
+    stock_stores_p1(conn)
 
-    print('done in: ', time.time() - time_to_install)
-    print('Done with everything.')
+
+# # Stocks stores on initial installation. Also keeps track of progress and updates the progress bar on sister thread.
+# def stock_stores(conn, some_bar, window, some_label, some_queue):
+#     # TODO: This is a seam
+#     canceled = False
+#     count = 0
+#     time_to_install = time.time()
+#     store_dict = stores.stores()    # {'some_store':[1,2,3,4,5]} Used to tell which items in which stores - ints are ids
+#     url = api.construct_api_url('equipment')
+#     s = api.create_session()
+#     response = api.call_api(url, s)
+#     response_dict = api.get_api_all(response)
+#     usable_dict = api.get_nested_api_dict(response_dict, 'results')  # [{'name': 'some_name', 'url': 'some_url'}]
+#     # TODO: This is a seam
+#     for dic in usable_dict:
+#         temp = {}
+#         # TODO: Make sure to do with conn: around phases instead of each sql statement. Will require need execute_sql_with_conn.
+#         for key, value in dic.items():
+#             # TODO: First thing will always be to slice ID off url via regex and add to dictionary as 'index'
+#             # TODO: Then add item name, url and index to temp dictionary for DB insertion
+#             if not temp:    # If temp dictionary is empty
+#                 temp['item'] = value    # add value with key 'item'
+#             else:
+#                 temp['api'] = value     # add value with key 'api'
+#
+#             # TODO: This will be a pool of API calls, post phase1 DB insertion
+#             item_value = api.get_item_value(temp['item'], character.Character.list_of_item_dicts, s)
+#             temp['currency'] = item_value
+#
+#             # TODO: This should be done prior to phase1 DB insertion.
+#             if value[0:37] == url:  # if one of those values beings with a url like string
+#                 num = api.regex(value, 'equipment/')    # slices number off url and captures as variable
+#
+#                 # This logic compares the captured number to the numbers in the dict imported earlier
+#                 # Then it adds a 'store':'some_store' key:value to the temp dictionary
+#                 if num in store_dict['GS']:
+#                     temp['store'] = 'General Store'
+#                 elif num in store_dict['BS']:
+#                     temp['store'] = 'Blacksmith'
+#                 elif num in store_dict['Ship']:
+#                     temp['store'] = 'Shipyard'
+#                 elif num in store_dict['Stables']:
+#                     temp['store'] = 'Stables'
+#                 else:
+#                     temp['store'] = 'No Store'
+#
+#         # TODO: This will be phase2 DB insertion. Inserting the item values where index
+#         # TODO: add_store_item_p1 will need to be reworked, and, most likely, split into multiple functions
+#         # adds an item to a store table based on information stored in dictionary
+#         database.add_store_item_p1(conn, sql.add_store_item_p1(), temp)
+#         count += 1
+#         print(count)
+#         # TODO: Change this to a Daemon thread to avoid having to do this cancel workaround
+#         if not some_queue.empty():
+#             canceled = some_queue.get()
+#         # update_mainloop(some_bar, count, some_label, window, canceled)
+#
+#     print('done in: ', time.time() - time_to_install)
+#     print('Done with everything.')

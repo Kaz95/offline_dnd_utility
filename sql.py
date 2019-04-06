@@ -199,8 +199,9 @@ def add_store_item_p1():
     return """INSERT INTO items (item, api, store_index, store)
              VALUES(?,?,?,?)"""
 
+
 def add_store_item_p2():
-    return """INSERT INTO items (unit_value) WHERE store_index = ? VALUES(?)"""
+    return """UPDATE items SET unit_value = ? WHERE store_index = ?"""
 
 
 def count_table_rows():

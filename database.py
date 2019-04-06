@@ -50,7 +50,11 @@ def add_item_row(conn, some_sql, item_info):
 
 # Used to populate store tables
 def add_store_item_p1(conn, some_sql, item_info):
-    sql.execute_sql_with_conn(conn, some_sql, item_info['item'], item_info['api'], item_info['index'], item_info['store'])
+    sql.execute_sql(conn, some_sql, item_info['item'], item_info['api'], item_info['index'], item_info['store'])
+
+
+def add_store_item_p2(conn, some_sql, item_info):
+    sql.execute_sql(conn, some_sql, item_info['index'], item_info['value'])
 
 
 # SELECT
