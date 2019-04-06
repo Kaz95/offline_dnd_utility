@@ -66,6 +66,7 @@ def create_items_table():
                unit_value,
                quantity integer,
                store text,
+               store_index integer,
                FOREIGN KEY (account_id) REFERENCES accounts (id),
                FOREIGN KEY (character_id) REFERENCES characters (id),
                FOREIGN KEY (inventory_id) REFERENCES inventories (id));"""
