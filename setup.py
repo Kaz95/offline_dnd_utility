@@ -66,19 +66,20 @@ def stock_stores(conn, some_bar, window, some_label, some_queue):
     # TODO: This is a seam
     for dic in usable_dict:
         temp = {}
+        # TODO: Make sure to do with conn: around phases instead of each sql statement. Will require need execute_sql.
         for key, value in dic.items():
-            # TODO: First thing will always be to slice ID off url via regex and add to dictionary
-            # TODO: Then add item name and url to dictionary with sliced ID as key
+            # TODO: First thing will always be to slice ID off url via regex and add to dictionary as 'index'
+            # TODO: Then add item name, url and index to temp dictionary for DB insertion
             if not temp:    # If temp dictionary is empty
                 temp['item'] = value    # add value with key 'item'
             else:
                 temp['api'] = value     # add value with key 'api'
 
-            # TODO: API call and add return to dictionary
+            # TODO: This will be a pool of API calls, post phase1 DB insertion
             item_value = api.get_item_value(temp['item'], character.Character.list_of_item_dicts, s)
             temp['currency'] = item_value
 
-            # TODO: Regex id and use to add store 'tag' to dictionary. This isn't DRY. I regex twice.
+            # TODO: This should be done prior to phase1 DB insertion.
             if value[0:37] == url:  # if one of those values beings with a url like string
                 num = api.regex(value, 'equipment/')    # slices number off url and captures as variable
 
@@ -95,8 +96,8 @@ def stock_stores(conn, some_bar, window, some_label, some_queue):
                 else:
                     temp['store'] = 'No Store'
 
-        # TODO: Get from queue and DB Insert
-        # TODO: Either as each specific column value becomes available, or only full item info dictionaries.
+        # TODO: This will be phase2 DB insertion. Inserting the item values where index
+        # TODO: add_store_item will need to be reworked, and, most likely, split into multiple functions
         # adds an item to a store table based on information stored in dictionary
         database.add_store_item(conn, sql.add_store_item(), temp)
         count += 1
